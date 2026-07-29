@@ -203,6 +203,20 @@ A separate workflow deploys to GitHub Pages, ideal for forks:
 The `VITE_BASE_PATH` env var is set automatically to `/<repo-name>/` during the
 GitHub Pages build so asset paths resolve correctly.
 
+### Rayfin / Microsoft Fabric
+
+The app can also be deployed as a [Rayfin](https://github.com/microsoft/project-rayfin) app
+(Fabric Data App):
+
+```bash
+npx rayfin login
+npx rayfin up
+```
+
+This is purely additive — the Static Web Apps and GitHub Pages paths above are unaffected. The
+frontend calls Rayfin functions only when `VITE_RAYFIN_API_URL` is set, and otherwise keeps using the
+`/api` endpoints. See the [Rayfin Deployment Guide](docs/rayfin.md).
+
 ### Environment Variables
 
 | Variable | Default | Description |
@@ -212,6 +226,9 @@ GitHub Pages build so asset paths resolve correctly.
 | `VITE_BASE_PATH` | `/` | Base path for the app (set automatically for GitHub Pages) |
 | `VITE_GITHUB_CLIENT_ID` | *(empty)* | GitHub OAuth App client ID for one-click catalogue PRs ([setup guide](docs/github-oauth-setup.md)) |
 | `VITE_GITHUB_OAUTH_BASE` | *(empty)* | External OAuth proxy URL for GitHub Pages deployments (e.g. Cloudflare Worker URL) |
+| `VITE_RAYFIN_API_URL` | *(empty)* | Rayfin API base URL — setting it switches the backend to Rayfin functions ([guide](docs/rayfin.md)) |
+| `VITE_RAYFIN_PUBLISHABLE_KEY` | *(empty)* | Rayfin publishable key (`pk-…`), safe to expose client-side |
+| `VITE_RAYFIN_FUNCTIONS_URL` | *(empty)* | Optional local Azure Functions host URL for debugging Rayfin functions |
 
 ## Project Structure
 
@@ -228,6 +245,7 @@ Ontology-Playground/
 ├── content/learn/        # Course directories with markdown articles, quizzes, and metadata
 ├── scripts/              # Build-time compilers (catalogue, learning content)
 ├── api/                  # Azure Functions backend (optional, for AI builder)
+├── rayfin/               # Rayfin app config, functions, and data schema (optional)
 ├── docs/                 # Guides and documentation
 ├── public/               # Static assets (compiled catalogue.json, learn.json)
 └── .github/workflows/    # CI/CD (Azure SWA + GitHub Pages)
@@ -246,6 +264,7 @@ The table below lists the main end-user and contributor guides. Internal plannin
 | [Embedding Guide](docs/embed-guide.md) | How to embed interactive ontology widgets on any web page |
 | [GitHub OAuth Setup](docs/github-oauth-setup.md) | How to configure GitHub OAuth for one-click catalogue PRs |
 | [Embed Security](docs/embed-security.md) | Security model for the embeddable widget |
+| [Rayfin Deployment Guide](docs/rayfin.md) | How to deploy and run the Playground on Rayfin (Microsoft Fabric) |
 | [Learning Content Guide](docs/learn-content-guide.md) | How to author courses, articles, quizzes, and ontology embeds for the Ontology School |
 | [Ontology School Review Workflow](docs/ontology-school-review-workflow.md) | Human review and approval flow for school lesson content |
 | [Theme Authoring Guide](docs/theme-authoring-guide.md) | How to plug a new color theme into the Playground — token contract, the appStore + CSS steps, and contrast gotchas |

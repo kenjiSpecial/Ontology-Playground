@@ -103,3 +103,21 @@ npx tsc --noEmit
 - **Framer Motion** - Animations
 - **Lucide Icons** - Icon library
 - **marked** - Markdown compilation (build-time)
+
+## Rayfin (optional backend)
+
+This repo can also deploy to [Rayfin](https://github.com/microsoft/project-rayfin) (Fabric Data App)
+in addition to Azure Static Web Apps and GitHub Pages. See `docs/rayfin.md`.
+
+Rayfin support is **purely additive** — `api/`, `staticwebapp.config.json` and the SWA/Pages workflows
+must keep working untouched. The frontend picks its backend at runtime: when `VITE_RAYFIN_API_URL` is
+set it invokes Rayfin functions, otherwise it uses the existing `fetch('/api/...')` calls.
+
+When writing Rayfin code, load `.agents/skills/rayfin/SKILL.md` and the `rayfin` MCP server in
+`.mcp.json` first. Rayfin docs are version-locked to the packages installed here — prefer the MCP
+tools `search_docs`, `get_doc`, `list_docs` and `discover_packages`. If MCP is unavailable, run
+`npx rayfin docs ...` from the project root so the CLI reads this project's `node_modules`.
+
+Key point: Rayfin functions are **RPC-style** (`udf.func(name, handler)` invoked via
+`client.functions.<name>.invoke(...)`), not HTTP-triggered routes — the `api/` handlers and the
+`rayfin/functions/` handlers are separate implementations of the same behaviour.
