@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "ESNext.Decorators"],
+    "experimentalDecorators": false,
+    "isolatedModules": true,
+    "composite": true,
+    "declaration": true,
+    "outDir": ".temp/compiled",
+    "rootDir": ".",
+    "noEmit": false,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["data"],
+  "exclude": [".temp/**/*", "functions/**/*"]
+}

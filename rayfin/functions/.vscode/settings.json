@@ -1,0 +1,11 @@
+{
+  "files.exclude": {
+    "host.json": true,
+    "extensions.csproj": true,
+    "deploymetadata.json": true,
+    "bin": true,
+    "obj": true,
+    ".temp":true,
+    "Nuget.config":true
+  }
+}

@@ -36,3 +36,13 @@ release-review/
 data/codemind*.db
 **/codemind*.db
 .codemind/
+
+# Rayfin
+.env.local
+rayfin/.env*
+!rayfin/.env.example
+rayfin/.temp/
+rayfin/.deployments.json
+rayfin/functions/local.settings.json
+rayfin/functions/bin/
+rayfin/functions/obj/
