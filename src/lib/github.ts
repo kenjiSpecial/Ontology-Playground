@@ -34,22 +34,26 @@ type OAuthPath = 'login/device/code' | 'login/oauth/access_token';
 
 /**
  * POST to one of GitHub's device-flow endpoints through whichever proxy is
- * available: the Rayfin `githubOAuth` function when the app runs on Rayfin,
- * otherwise the Vite dev proxy / Azure Function under `GITHUB_OAUTH_BASE`.
+ * available: an explicitly configured external proxy
+ * (`VITE_GITHUB_OAUTH_BASE`) wins, then the Rayfin `githubOAuth` function when
+ * the app runs on Rayfin, then the Vite dev proxy / Azure Function.
  *
- * `onHttpError` is only consulted on the fetch path — the Rayfin function
- * throws on transport failures itself, and reports GitHub's OAuth-level errors
- * (`authorization_pending`, `slow_down`, …) in the response body, exactly like
- * a direct call would.
+ * `onHttpError` is applied to the upstream status on every path, so a failed
+ * request surfaces the same error regardless of which proxy handled it.
+ * GitHub's OAuth protocol states (`authorization_pending`, `slow_down`, …)
+ * arrive in the body of a 200 and are returned as data.
  */
 async function postOAuth<T>(
   path: OAuthPath,
   body: object,
   onHttpError?: (status: number) => string,
 ): Promise<T> {
-  if (isRayfinConfigured()) {
-    const data = await getRayfinClient().functions.githubOAuth.invoke({ path, body });
-    return data as T;
+  if (isRayfinConfigured() && !import.meta.env.VITE_GITHUB_OAUTH_BASE) {
+    const res = await getRayfinClient().functions.githubOAuth.invoke({ path, body });
+    if (onHttpError && (res.status < 200 || res.status >= 300)) {
+      throw new Error(onHttpError(res.status));
+    }
+    return res.body as T;
   }
 
   const res = await fetch(`${GITHUB_OAUTH_BASE}/${path}`, {

@@ -35,6 +35,9 @@ are therefore two implementations of the same behaviour — **if you change one,
 The proxy's `{*path}` wildcard segment becomes an explicit `path` parameter, guarded by the same
 two-entry allowlist (`login/device/code`, `login/oauth/access_token`).
 
+`rayfin/functions/src/types.ts` is **auto-generated** from the `udf.func()` registrations — it is
+rewritten by `rayfin dev functions apply`, so hand-written types belong in `models.ts` instead.
+
 ## Prerequisites
 
 - Node.js 20+
@@ -44,28 +47,20 @@ two-entry allowlist (`login/device/code`, `login/oauth/access_token`).
 ## Configure secrets
 
 The `generateOntology` function reads its Azure OpenAI configuration through `ctx.getSecret(...)`.
+Secrets are stored encrypted on the deployed workload, so the item has to exist first:
 
-1. Copy the example file and fill in your values:
+```bash
+npx rayfin up                                  # deploy once to create the endpoint
+npx rayfin secret set AZURE_OPENAI_ENDPOINT    # prompts for the value (masked)
+npx rayfin secret set AZURE_OPENAI_API_KEY
+npx rayfin secret set AZURE_OPENAI_DEPLOYMENT
+npx rayfin secret list                         # names and timestamps only
+```
 
-   ```bash
-   cp rayfin/.env.example rayfin/.env
-   ```
+The name passed to `rayfin secret set` is exactly the name read by `ctx.getSecret(...)` in
+`rayfin/functions/src/function_app.ts`.
 
-   ```bash
-   # rayfin/.env  (gitignored)
-   RAYFIN_SECRET_AZURE_OPENAI_ENDPOINT=https://YOUR-RESOURCE.openai.azure.com/
-   RAYFIN_SECRET_AZURE_OPENAI_API_KEY=YOUR-API-KEY
-   RAYFIN_SECRET_AZURE_OPENAI_DEPLOYMENT=gpt-4o-mini
-   ```
-
-   The `RAYFIN_SECRET_` prefix is stripped to form the secret name, so
-   `RAYFIN_SECRET_AZURE_OPENAI_API_KEY` is read as `ctx.getSecret('AZURE_OPENAI_API_KEY')`.
-
-2. Deploy once (this creates the item and its workload endpoint), then push the secrets:
-
-   ```bash
-   npx rayfin up secrets apply
-   ```
+`AZURE_OPENAI_DEPLOYMENT` is optional and defaults to `gpt-4o-mini`.
 
 For local function debugging, copy `rayfin/functions/local.settings.json.template` to
 `local.settings.json` and put the same values under `Values` instead.
@@ -128,8 +123,12 @@ These are generated into `.env.local` by `rayfin env --framework vite` — don't
   not been confirmed against a live deployment. If invocations come back `401`, the fix is to add
   Fabric SSO (`@microsoft/rayfin-auth-provider-fabric`) and gate *only* these two features behind it,
   not the whole app — everything else in the Playground works offline and must stay anonymous.
-- `VITE_GITHUB_OAUTH_BASE` still overrides the OAuth proxy on both backends. Set it if you'd rather
-  route the device flow through an external worker than through the Rayfin function.
+- **If anonymous invocation does work, `generateOntology` is publicly callable.** The publishable key
+  ships in the bundle, so anyone can drive the metered Azure OpenAI deployment. The function caps the
+  prompt at 4000 characters, but there is no rate limiting — put a quota on the Azure OpenAI
+  deployment before treating this as production-ready.
+- `VITE_GITHUB_OAUTH_BASE` takes precedence over the Rayfin function on both backends. Set it if
+  you'd rather route the device flow through an external worker.
 - **The GitHub publishing UI is currently dormant upstream.** `src/lib/github.ts` is covered by tests
   but isn't imported by any component yet, on `main` or here, so the device flow (and therefore the
   `githubOAuth` function) is not reachable from the UI. The port keeps both backends at parity so the

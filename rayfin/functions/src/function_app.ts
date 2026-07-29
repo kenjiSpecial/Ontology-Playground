@@ -1,7 +1,7 @@
 import { UserDataFunctions } from '@microsoft/fabric-user-data-functions';
 import type { RayfinContext } from '@microsoft/fabric-user-data-functions';
 
-import type { GeneratedOntology, GitHubOAuthResponse } from './types.js';
+import type { GeneratedOntology, GitHubOAuthResult } from './models.js';
 
 const udf = new UserDataFunctions();
 
@@ -60,6 +60,9 @@ interface OpenAIResponse {
   choices?: Array<{ message?: { content?: string } }>;
 }
 
+/** Upper bound on the prompt accepted from anonymous callers. */
+const MAX_DESCRIPTION_LENGTH = 4000;
+
 udf.func(
   'generateOntology',
   async (
@@ -68,6 +71,14 @@ udf.func(
   ): Promise<{ ontology: GeneratedOntology }> => {
     if (!description || typeof description !== 'string' || !description.trim()) {
       throw new Error("Missing 'description' parameter.");
+    }
+
+    // The app is anonymous, so the publishable key is all a caller needs to
+    // reach this function. Cap the input to bound spend on the metered model.
+    if (description.length > MAX_DESCRIPTION_LENGTH) {
+      throw new Error(
+        `Description is too long (${description.length} characters, maximum ${MAX_DESCRIPTION_LENGTH}).`
+      );
     }
 
     // Secrets live in `rayfin/.env` as RAYFIN_SECRET_* and are pushed with
@@ -148,16 +159,17 @@ udf.func(
  * The Azure Functions version took the path from the `{*path}` route segment;
  * Rayfin functions are RPC-style, so it becomes an explicit parameter.
  *
- * Note: GitHub signals OAuth-level failures (`authorization_pending`,
- * `slow_down`, …) inside a 200 response body. Those are returned to the caller
- * as data — `pollForToken()` drives its polling loop from them — so only a
- * disallowed path or a transport failure throws.
+ * Returns the upstream status alongside the body so the caller can apply the
+ * same error handling it would to a direct `fetch`. GitHub signals OAuth
+ * protocol states (`authorization_pending`, `slow_down`, …) inside a 200
+ * response, and `pollForToken()` drives its polling loop from them, so those
+ * must reach the caller as data rather than as a thrown error.
  */
 const ALLOWED_PATHS = new Set(['login/device/code', 'login/oauth/access_token']);
 
 udf.func(
   'githubOAuth',
-  async (path: string, body: object): Promise<GitHubOAuthResponse> => {
+  async (path: string, body: object): Promise<GitHubOAuthResult> => {
     if (!ALLOWED_PATHS.has(path)) {
       throw new Error(`Unsupported GitHub OAuth path: ${path}`);
     }
@@ -178,9 +190,12 @@ udf.func(
 
     const text = await upstream.text();
 
+    // A non-JSON body is only meaningful when the request itself failed; the
+    // caller turns the status into the same error a direct fetch would raise.
     try {
-      return JSON.parse(text) as GitHubOAuthResponse;
+      return { status: upstream.status, body: JSON.parse(text) };
     } catch {
+      if (!upstream.ok) return { status: upstream.status, body: {} };
       throw new Error(
         `GitHub returned a non-JSON response (HTTP ${upstream.status})`
       );

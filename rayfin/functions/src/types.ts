@@ -1,78 +1,28 @@
 /**
  * Function schema types for RayfinClient.
  *
- * Maps each function name to its input/output type pair. Imported by the
- * frontend when constructing RayfinClient so invocations are type-checked.
+ * AUTO-GENERATED — do not edit manually.
+ * Re-generated automatically when function source files change.
  *
- * IMPORTANT: This file must NOT import any Node.js packages — it is resolved
- * by the frontend app's TypeScript compiler.
- */
-
-/**
- * Ontology shape returned by `generateOntology`.
+ * If this file is not updating automatically, run:
+ *   rayfin dev functions apply
  *
- * Structurally compatible with `Ontology` in `src/data/ontology.ts`, but
- * declared independently so this file stays free of frontend imports.
- * The model is prompted for this schema but its output is not guaranteed —
- * the frontend applies default colours before use.
- */
-export interface GeneratedOntology {
-  name: string;
-  description?: string;
-  entityTypes: Array<{
-    id: string;
-    name: string;
-    description: string;
-    properties: Array<{
-      name: string;
-      type: string;
-      isIdentifier?: boolean;
-      values?: string[];
-      unit?: string;
-    }>;
-    icon?: string;
-    color?: string;
-  }>;
-  relationships: Array<{
-    id: string;
-    name: string;
-    from: string;
-    to: string;
-    cardinality: string;
-    description?: string;
-  }>;
-}
-
-/**
- * Raw JSON body returned by GitHub's OAuth device-flow endpoints.
+ * The schema is a closed object type: only the function names listed
+ * below are accepted by RayfinClient.functions.<name>.invoke(...).
+ * Adding, renaming, or changing the signature of a udf.func() call
+ * regenerates this file and surfaces type errors at every consumer.
  *
- * Note that GitHub reports OAuth-level failures (`authorization_pending`,
- * `slow_down`, `expired_token`, …) in the body with a 200 status, so this is
- * a success payload as far as the function is concerned.
+ * IMPORTANT: This file must NOT import any Node.js packages — it is
+ * resolved by the frontend app's TypeScript compiler.
  */
-export interface GitHubOAuthResponse {
-  // /login/device/code
-  device_code?: string;
-  user_code?: string;
-  verification_uri?: string;
-  expires_in?: number;
-  interval?: number;
-  // /login/oauth/access_token
-  access_token?: string;
-  token_type?: string;
-  scope?: string;
-  // Error payloads
-  error?: string;
-  error_description?: string;
-}
 
 export type AppFunctionsSchema = {
   generateOntology: {
     input: { description: string };
-    output: { ontology: GeneratedOntology };
+    output: { ontology: { name: string; description?: undefined | string; entityTypes: { id: string; name: string; description: string; properties: { name: string; type: string; isIdentifier?: undefined | false | true; values?: undefined | string[]; unit?: undefined | string }[]; icon?: undefined | string; color?: undefined | string }[]; relationships: { id: string; name: string; from: string; to: string; cardinality: string; description?: undefined | string }[] } };
   };
   githubOAuth: {
     input: { path: string; body: object };
-    output: GitHubOAuthResponse;
+    output: { status: number; body: { device_code?: undefined | string; user_code?: undefined | string; verification_uri?: undefined | string; expires_in?: undefined | number; interval?: undefined | number; access_token?: undefined | string; token_type?: undefined | string; scope?: undefined | string; error?: undefined | string; error_description?: undefined | string } };
   };
 };
