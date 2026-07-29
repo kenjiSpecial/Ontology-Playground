@@ -8,6 +8,9 @@ interface ImportMetaEnv {
   readonly VITE_GITHUB_OAUTH_BASE: string;
   readonly VITE_DEPLOYED_COMMIT_SHA?: string;
   readonly VITE_REPOSITORY?: string;
+  readonly VITE_RAYFIN_API_URL?: string;
+  readonly VITE_RAYFIN_PUBLISHABLE_KEY?: string;
+  readonly VITE_RAYFIN_FUNCTIONS_URL?: string;
 }
 
 interface ImportMeta {

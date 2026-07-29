@@ -9,8 +9,11 @@
  * The GitHub OAuth endpoints (github.com/login/device/code and
  * github.com/login/oauth/access_token) don't support CORS. In dev we proxy
  * them through Vite (/__github/…). In production we proxy through an Azure
- * Function at /api/github-oauth/….
+ * Function at /api/github-oauth/…, or — when the app runs on Rayfin — through
+ * the `githubOAuth` Rayfin function.
  */
+
+import { getRayfinClient, isRayfinConfigured } from '../services/rayfinClient';
 
 const GITHUB_API = 'https://api.github.com';
 
@@ -25,6 +28,41 @@ const GITHUB_OAUTH_BASE = import.meta.env.DEV
 // Change these if the repo moves.
 const UPSTREAM_OWNER = 'microsoft';
 const UPSTREAM_REPO = 'Ontology-Playground';
+
+/** The only two GitHub endpoints the proxy is allowed to forward to. */
+type OAuthPath = 'login/device/code' | 'login/oauth/access_token';
+
+/**
+ * POST to one of GitHub's device-flow endpoints through whichever proxy is
+ * available: the Rayfin `githubOAuth` function when the app runs on Rayfin,
+ * otherwise the Vite dev proxy / Azure Function under `GITHUB_OAUTH_BASE`.
+ *
+ * `onHttpError` is only consulted on the fetch path — the Rayfin function
+ * throws on transport failures itself, and reports GitHub's OAuth-level errors
+ * (`authorization_pending`, `slow_down`, …) in the response body, exactly like
+ * a direct call would.
+ */
+async function postOAuth<T>(
+  path: OAuthPath,
+  body: object,
+  onHttpError?: (status: number) => string,
+): Promise<T> {
+  if (isRayfinConfigured()) {
+    const data = await getRayfinClient().functions.githubOAuth.invoke({ path, body });
+    return data as T;
+  }
+
+  const res = await fetch(`${GITHUB_OAUTH_BASE}/${path}`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (onHttpError && !res.ok) throw new Error(onHttpError(res.status));
+  return res.json();
+}
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -92,16 +130,11 @@ export function clearToken(): void {
  * direct the user to `verification_uri`, then call `pollForToken()`.
  */
 export async function startDeviceFlow(clientId: string): Promise<DeviceCodeResponse> {
-  const res = await fetch(`${GITHUB_OAUTH_BASE}/login/device/code`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ client_id: clientId, scope: 'public_repo' }),
-  });
-  if (!res.ok) throw new Error(`Device flow start failed (${res.status})`);
-  return res.json();
+  return postOAuth<DeviceCodeResponse>(
+    'login/device/code',
+    { client_id: clientId, scope: 'public_repo' },
+    (status) => `Device flow start failed (${status})`,
+  );
 }
 
 /**
@@ -127,20 +160,15 @@ export async function pollForToken(
     await wait(pollInterval);
     if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
-    const res = await fetch(`${GITHUB_OAUTH_BASE}/login/oauth/access_token`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        client_id: clientId,
-        device_code: deviceCode,
-        grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
-      }),
+    const data = await postOAuth<{
+      access_token?: string;
+      error?: string;
+      error_description?: string;
+    }>('login/oauth/access_token', {
+      client_id: clientId,
+      device_code: deviceCode,
+      grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
     });
-
-    const data = await res.json();
 
     if (data.access_token) {
       storeToken(data.access_token);

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3, Mic, MicOff } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Ontology } from '../data/ontology';
+import { getRayfinClient, isRayfinConfigured } from '../services/rayfinClient';
 
 // Web Speech API types
 interface SpeechRecognitionEvent extends Event {
@@ -52,6 +53,36 @@ interface NLBuilderModalProps {
 }
 
 type Step = 'input' | 'loading' | 'preview' | 'error';
+
+/**
+ * Ask the backend to turn a prose scenario into an ontology.
+ *
+ * Uses the Rayfin `generateOntology` function when a Rayfin backend is
+ * configured, otherwise the Azure Functions endpoint at `/api`. Both return the
+ * same shape; the caller backfills any missing entity colours.
+ */
+async function requestOntology(description: string): Promise<Ontology> {
+  if (isRayfinConfigured()) {
+    const { ontology } = await getRayfinClient().functions.generateOntology.invoke({
+      description,
+    });
+    return ontology as unknown as Ontology;
+  }
+
+  const response = await fetch('/api/generate-ontology', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || 'Failed to generate ontology');
+  }
+
+  const { ontology } = await response.json();
+  return ontology as Ontology;
+}
 
 export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   const [description, setDescription] = useState('');
@@ -193,22 +224,11 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
     setError(null);
     
     try {
-      const response = await fetch('/api/generate-ontology', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: description.trim() }),
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to generate ontology');
-      }
-      
-      const { ontology } = await response.json();
+      const ontology = await requestOntology(description.trim());
       
       // Assign default colors if missing
       const defaultColors = ['#0078D4', '#107C10', '#5C2D91', '#FFB900', '#D83B01', '#00A9E0', '#8764B8', '#00B294'];
-      ontology.entityTypes = ontology.entityTypes.map((entity: { color?: string }, index: number) => ({
+      ontology.entityTypes = ontology.entityTypes.map((entity, index) => ({
         ...entity,
         color: entity.color || defaultColors[index % defaultColors.length]
       }));
