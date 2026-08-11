@@ -47,4 +47,11 @@ describe('validateJapaneseCatalog', () => {
       { path: 'meta.productName', reason: 'empty' },
     ]);
   });
+
+  it('rejects unused embedded English exceptions', () => {
+    expect(validateJapaneseCatalog({ common: { close: '閉じる' } }, [], ['GitHub'])).toContainEqual({
+      path: 'GitHub',
+      reason: 'unused-embedded-allowlist',
+    });
+  });
 });

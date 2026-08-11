@@ -167,6 +167,13 @@ describe('validateJapaneseCatalog', () => {
       { path: 'meta.productName', reason: 'empty' },
     ]);
   });
+
+  it('rejects unused embedded English exceptions', () => {
+    expect(validateJapaneseCatalog({ common: { close: '閉じる' } }, [], ['GitHub'])).toContainEqual({
+      path: 'GitHub',
+      reason: 'unused-embedded-allowlist',
+    });
+  });
 });
 ```
 
@@ -187,7 +194,11 @@ export interface MessageTree {
   readonly [key: string]: string | MessageTree;
 }
 
-export type CatalogProblemReason = 'empty' | 'english-only' | 'unused-allowlist';
+export type CatalogProblemReason =
+  | 'empty'
+  | 'english-only'
+  | 'unused-allowlist'
+  | 'unused-embedded-allowlist';
 
 export interface CatalogProblem {
   path: string;
@@ -197,11 +208,21 @@ export interface CatalogProblem {
 const JAPANESE_TEXT = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u;
 const LATIN_TEXT = /\p{Script=Latin}/u;
 
-function stripAllowedEnglishTerms(value: string, allowedTerms: readonly string[]): string {
-  return [...allowedTerms]
-    .filter((term) => term.length > 0)
-    .sort((left, right) => right.length - left.length)
-    .reduce((remaining, term) => remaining.split(term).join(''), value);
+interface EmbeddedEnglishScan {
+  remaining: string;
+  usedTerms: string[];
+}
+
+function stripAllowedEnglishTerms(value: string, allowedTerms: readonly string[]): EmbeddedEnglishScan {
+  let remaining = value;
+  const usedTerms: string[] = [];
+  for (const term of [...allowedTerms].sort((left, right) => right.length - left.length)) {
+    if (remaining.includes(term)) {
+      usedTerms.push(term);
+      remaining = remaining.split(term).join('');
+    }
+  }
+  return { remaining, usedTerms };
 }
 
 export function validateJapaneseCatalog(
@@ -210,7 +231,9 @@ export function validateJapaneseCatalog(
   allowedEmbeddedEnglishTerms: readonly string[] = [],
 ): CatalogProblem[] {
   const allowed = new Set(allowedEnglishOnlyPaths);
+  const embeddedTerms = [...new Set(allowedEmbeddedEnglishTerms.filter((term) => term.length > 0))];
   const used = new Set<string>();
+  const usedEmbeddedTerms = new Set<string>();
   const problems: CatalogProblem[] = [];
 
   const visit = (node: MessageTree, parentPath = ''): void => {
@@ -223,8 +246,10 @@ export function validateJapaneseCatalog(
         } else if (!JAPANESE_TEXT.test(value)) {
           if (allowed.has(path)) used.add(path);
           else problems.push({ path, reason: 'english-only' });
-        } else if (LATIN_TEXT.test(stripAllowedEnglishTerms(value, allowedEmbeddedEnglishTerms))) {
-          problems.push({ path, reason: 'english-only' });
+        } else {
+          const scan = stripAllowedEnglishTerms(value, embeddedTerms);
+          for (const term of scan.usedTerms) usedEmbeddedTerms.add(term);
+          if (LATIN_TEXT.test(scan.remaining)) problems.push({ path, reason: 'english-only' });
         }
       } else {
         visit(value, path);
@@ -236,6 +261,9 @@ export function validateJapaneseCatalog(
   for (const path of allowed) {
     if (!used.has(path)) problems.push({ path, reason: 'unused-allowlist' });
   }
+  for (const term of embeddedTerms) {
+    if (!usedEmbeddedTerms.has(term)) problems.push({ path: term, reason: 'unused-embedded-allowlist' });
+  }
   return problems;
 }
 ```
@@ -246,7 +274,7 @@ export function validateJapaneseCatalog(
 npx vitest run src/locales/validateJa.test.ts
 ```
 
-Expected: eight tests pass.
+Expected: nine tests pass.
 
 - [ ] **Step 5: Commit the validator**
 
@@ -457,7 +485,8 @@ names in their established form when translation would reduce clarity.
 ## Source rules
 
 - Put reusable UI text in `src/locales/ja.ts`; do not add new natural-language literals to components.
-- Add an English-only exception only for a proper noun or standard name, with a focused catalog path.
+- Add an English-only path exception only when the entire value is a proper noun or standard name.
+- Add an embedded English term exception only when that exact proper noun or standard name appears inside Japanese text.
 - Keep imported RDF/OWL and user-entered values on the non-localized data path.
 - Run `npm run qa:ja`, `npm test`, and `npm run build` before every localization PR.
 ```
@@ -496,7 +525,7 @@ npm run build
 git diff --check origin/main...HEAD
 ```
 
-Expected: all commands pass; `npm test` reports 26 files and 404 tests; build produces the app and embed widget.
+Expected: all commands pass; `npm test` reports 26 files and 405 tests; build produces the app and embed widget.
 
 - [ ] **Step 2: Verify scope and identifiers**
 
@@ -545,7 +574,7 @@ RDF/OWL URIs, internal IDs, JSON keys, routes, slugs, filenames, syntax, license
 
 - `npm ci --ignore-scripts`
 - `npm run qa:ja`
-- `npm test` — 26 files / 404 tests passed
+- `npm test` — 26 files / 405 tests passed
 - `npm run build`
 - `git diff --check origin/main...HEAD`
 
