@@ -4,6 +4,7 @@ import {
   Search, Command
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { jaMessages } from '../locales/ja';
 
 export interface CommandItem {
   id: string;
@@ -108,15 +109,15 @@ export function CommandPalette({ open, onClose, commands }: CommandPaletteProps)
             ref={inputRef}
             className="command-palette-input"
             type="text"
-            placeholder="Type a command…"
+            placeholder={jaMessages.commandPalette.placeholder}
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
-          <kbd className="command-palette-kbd">esc</kbd>
+          <kbd className="command-palette-kbd">Esc</kbd>
         </div>
         <div className="command-palette-list" ref={listRef}>
           {filtered.length === 0 && (
-            <div className="command-palette-empty">No matching commands</div>
+            <div className="command-palette-empty">{jaMessages.commandPalette.empty}</div>
           )}
           {filtered.map((cmd, i) => (
             <button
@@ -132,9 +133,9 @@ export function CommandPalette({ open, onClose, commands }: CommandPaletteProps)
           ))}
         </div>
         <div className="command-palette-footer">
-          <span><Command size={12} /> <span>K</span> to open</span>
-          <span>↑↓ navigate</span>
-          <span>↵ select</span>
+          <span><Command size={12} /> {jaMessages.commandPalette.open}</span>
+          <span>{jaMessages.commandPalette.navigate}</span>
+          <span>{jaMessages.commandPalette.select}</span>
         </div>
       </motion.div>
     </motion.div>

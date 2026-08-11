@@ -4,6 +4,7 @@ import { useRoute } from '../hooks/useRoute';
 import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
+import { jaFormatters, jaMessages } from '../locales/ja';
 import { Palette, Check, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info } from 'lucide-react';
 
 interface HeaderProps {
@@ -27,7 +28,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const themeMenuRef = useRef<HTMLDivElement>(null);
 
-  const ontologyDisplayName = currentOntology.name || 'Untitled Ontology';
+  const ontologyDisplayName = currentOntology.name || jaMessages.shell.untitledOntology;
 
   const shareableId = route.page === 'catalogue' && route.ontologyId ? route.ontologyId : null;
 
@@ -69,7 +70,13 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
     }
   };
 
-  const shareLabel = shareStatus === 'copied' ? 'Copied!' : shareStatus === 'downloaded' ? 'Downloaded RDF' : shareStatus === 'copying' ? 'Encoding…' : 'Share';
+  const shareLabel = shareStatus === 'copied'
+    ? jaMessages.shell.copied
+    : shareStatus === 'downloaded'
+      ? jaMessages.shell.downloadedRdf
+      : shareStatus === 'copying'
+        ? jaMessages.shell.encoding
+        : jaMessages.shell.share;
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -109,7 +116,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         </svg>
         <div>
           <span className="header-title">
-            Ontology Playground <span className="header-title-preview">(Preview)</span>
+            {jaMessages.meta.productName} <span className="header-title-preview">{jaMessages.shell.preview}</span>
           </span>
           <span className="header-context">{ontologyDisplayName}</span>
         </div>
@@ -118,13 +125,11 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
       <div className="header-stats">
         <div className="stat-item">
           <Trophy size={18} />
-          <span className="stat-value">{totalPoints}</span>
-          <span>points</span>
+          <span className="stat-value">{jaFormatters.points(totalPoints)}</span>
         </div>
         <div className="stat-item">
           <span style={{ fontSize: 18 }}>🏆</span>
-          <span className="stat-value">{earnedBadges.length}</span>
-          <span>badges</span>
+          <span className="stat-value">{jaFormatters.badges(earnedBadges.length)}</span>
         </div>
       </div>
 
@@ -132,48 +137,48 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
         <button
           className="header-text-btn"
           onClick={handleShare}
-          title={shareableId ? 'Copy shareable link to this ontology' : 'Share this ontology via link'}
+          title={shareableId ? jaMessages.shell.copyShareableLink : jaMessages.shell.shareViaUrl}
           style={shareStatus === 'copied' ? { color: 'var(--ms-green, #107C10)' } : shareStatus === 'downloaded' ? { color: 'var(--ms-blue, #0078D4)' } : undefined}
         >
           {shareStatus === 'downloaded' ? <Download size={16} /> : <Share2 size={16} />}
           <span>{shareLabel}</span>
         </button>
-        <button className="header-text-btn" onClick={onSummaryClick} title="View Ontology Summary">
+        <button className="header-text-btn" onClick={onSummaryClick} title={jaMessages.shell.viewSummary}>
           <FileText size={16} />
-          <span>Summary</span>
+          <span>{jaMessages.shell.summary}</span>
         </button>
         {onNLBuilderClick && (
-          <button className="icon-btn" onClick={onNLBuilderClick} data-tooltip="AI Builder" aria-label="AI Builder">
+          <button className="icon-btn" onClick={onNLBuilderClick} data-tooltip={jaMessages.shell.aiBuilder} aria-label={jaMessages.shell.aiBuilder}>
             <Sparkles size={20} />
           </button>
         )}
-        <button className="icon-btn" onClick={onGalleryClick} data-tooltip="Catalogue" aria-label="Catalogue">
+        <button className="icon-btn" onClick={onGalleryClick} data-tooltip={jaMessages.shell.catalogue} aria-label={jaMessages.shell.catalogue}>
           <LayoutGrid size={20} />
         </button>
-        <button className="icon-btn" onClick={onDesignerClick} data-tooltip="Designer" aria-label="Designer">
+        <button className="icon-btn" onClick={onDesignerClick} data-tooltip={jaMessages.shell.designer} aria-label={jaMessages.shell.designer} data-tour-target="designer">
           <PenTool size={20} />
         </button>
-        <button className="icon-btn" onClick={onLearnClick} data-tooltip="Ontology School" aria-label="Ontology School">
+        <button className="icon-btn" onClick={onLearnClick} data-tooltip={jaMessages.shell.ontologySchool} aria-label={jaMessages.shell.ontologySchool}>
           <BookOpen size={20} />
         </button>
-        <button className="icon-btn" onClick={onImportExportClick} data-tooltip="Import / Export" aria-label="Import / Export">
+        <button className="icon-btn" onClick={onImportExportClick} data-tooltip={jaMessages.shell.importExport} aria-label={jaMessages.shell.importExport}>
           <FileJson size={20} />
         </button>
-        <button className="icon-btn" onClick={onHelpClick} data-tooltip="Help" aria-label="Help">
+        <button className="icon-btn" onClick={onHelpClick} data-tooltip={jaMessages.shell.help} aria-label={jaMessages.shell.help}>
           <HelpCircle size={20} />
         </button>
-        <button className="icon-btn" onClick={onAboutClick} data-tooltip="About" aria-label="About">
+        <button className="icon-btn" onClick={onAboutClick} data-tooltip={jaMessages.shell.about} aria-label={jaMessages.shell.about}>
           <Info size={20} />
         </button>
-        <button className="icon-btn" onClick={onDataSourcesClick} data-tooltip="Data Sources" aria-label="Data Sources">
+        <button className="icon-btn" onClick={onDataSourcesClick} data-tooltip={jaMessages.shell.dataSources} aria-label={jaMessages.shell.dataSources}>
           <Database size={20} />
         </button>
         <div className="theme-picker" ref={themeMenuRef}>
           <button
             className="icon-btn"
             onClick={() => setThemeMenuOpen((o) => !o)}
-            data-tooltip="Theme"
-            aria-label="Theme"
+            data-tooltip={jaMessages.shell.theme}
+            aria-label={jaMessages.shell.theme}
             aria-haspopup="menu"
             aria-expanded={themeMenuOpen}
           >
@@ -201,51 +206,49 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
 
       {/* Mobile hamburger menu */}
       <div className="header-mobile-menu" ref={menuRef}>
-        <button className="icon-btn header-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+        <button className="icon-btn header-hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label={jaMessages.shell.menu}>
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
         {menuOpen && (
           <div className="mobile-menu-dropdown">
             <div className="mobile-menu-stats">
               <Trophy size={16} />
-              <span className="stat-value">{totalPoints}</span>
-              <span>points</span>
+              <span className="stat-value">{jaFormatters.points(totalPoints)}</span>
               <span style={{ margin: '0 8px', color: 'var(--text-tertiary)' }}>·</span>
               <span>🏆</span>
-              <span className="stat-value">{earnedBadges.length}</span>
-              <span>badges</span>
+              <span className="stat-value">{jaFormatters.badges(earnedBadges.length)}</span>
             </div>
             <button className="mobile-menu-item" onClick={menuAction(handleShare)}>
               <Share2 size={18} /> {shareLabel}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onSummaryClick)}>
-              <FileText size={18} /> Summary
+              <FileText size={18} /> {jaMessages.shell.summary}
             </button>
             {onNLBuilderClick && (
               <button className="mobile-menu-item" onClick={menuAction(onNLBuilderClick)}>
-                <Sparkles size={18} /> AI Builder
+                <Sparkles size={18} /> {jaMessages.shell.aiBuilder}
               </button>
             )}
             <button className="mobile-menu-item" onClick={menuAction(onGalleryClick)}>
-              <LayoutGrid size={18} /> Catalogue
+              <LayoutGrid size={18} /> {jaMessages.shell.catalogue}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onDesignerClick)}>
-              <PenTool size={18} /> Designer
+              <PenTool size={18} /> {jaMessages.shell.designer}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onLearnClick)}>
-              <BookOpen size={18} /> Ontology School
+              <BookOpen size={18} /> {jaMessages.shell.ontologySchool}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onImportExportClick)}>
-              <FileJson size={18} /> Import / Export
+              <FileJson size={18} /> {jaMessages.shell.importExport}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onHelpClick)}>
-              <HelpCircle size={18} /> Help
+              <HelpCircle size={18} /> {jaMessages.shell.help}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onAboutClick)}>
-              <Info size={18} /> About
+              <Info size={18} /> {jaMessages.shell.about}
             </button>
             <button className="mobile-menu-item" onClick={menuAction(onDataSourcesClick)}>
-              <Database size={18} /> Data Sources
+              <Database size={18} /> {jaMessages.shell.dataSources}
             </button>
             <div className="mobile-menu-themes">
               {THEME_OPTIONS.map((opt) => (

@@ -1,4 +1,5 @@
 import { Sparkles } from 'lucide-react';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 export function AppFooter() {
   const deployedCommitSha = import.meta.env.VITE_DEPLOYED_COMMIT_SHA;
@@ -12,21 +13,21 @@ export function AppFooter() {
     <footer className="app-footer">
       <a href="https://github.com/features/copilot" target="_blank" rel="noopener noreferrer">
         <Sparkles size={14} />
-        Built with GitHub Copilot
+        {jaMessages.footer.builtWithCopilot}
       </a>
       <span className="app-footer-sep">&middot;</span>
       <a href="https://github.com/videlalvaro" target="_blank" rel="noopener noreferrer">
-        Supervised by videlalvaro
+        {jaMessages.footer.supervisedBy}
       </a>
       {shortCommit && (
         <>
           <span className="app-footer-sep">&middot;</span>
           {commitUrl ? (
             <a href={commitUrl} target="_blank" rel="noopener noreferrer" title={deployedCommitSha}>
-              Deployed commit {shortCommit}
+              {jaFormatters.deployedCommit(shortCommit)}
             </a>
           ) : (
-            <span title={deployedCommitSha}>Deployed commit {shortCommit}</span>
+            <span title={deployedCommitSha}>{jaFormatters.deployedCommit(shortCommit)}</span>
           )}
         </>
       )}

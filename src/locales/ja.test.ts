@@ -18,5 +18,7 @@ describe('Japanese message catalog', () => {
     expect(jaFormatters.points(3)).toBe('3ポイント');
     expect(jaFormatters.badges(2)).toBe('2個のバッジ');
     expect(jaFormatters.loadFailed(404)).toBe('読み込みに失敗しました（404）');
+    expect(jaFormatters.questComplete('グラフ探索者')).toBe('クエスト完了！獲得: グラフ探索者');
+    expect(jaFormatters.deployedCommit('abc1234')).toBe('デプロイ済みコミット abc1234');
   });
 });
