@@ -32,6 +32,7 @@ import { useRoute } from './hooks/useRoute';
 import { navigate } from './lib/router';
 import { decodeSharePayload } from './lib/shareCodec';
 import type { Catalogue } from './types/catalogue';
+import { jaFormatters, jaMessages } from './locales/ja';
 import { Search, MessageSquare, Info, Compass, LayoutGrid, PenTool, BookOpen, FileJson, HelpCircle, Database, Palette, FileText } from 'lucide-react';
 import './styles/app.css';
 
@@ -63,7 +64,7 @@ function App() {
     if (earnedBadges.length > 0) {
       const latestBadge = earnedBadges[earnedBadges.length - 1];
       setToast({
-        message: `Quest Complete! Earned: ${latestBadge.badge}`,
+        message: jaFormatters.questComplete(latestBadge.badge),
         icon: latestBadge.icon
       });
       
@@ -168,15 +169,15 @@ function App() {
 
   // ── Command palette items ──────────────────────────────
   const commands = useMemo<CommandItem[]>(() => [
-    { id: 'catalogue', label: 'Open Catalogue', icon: <LayoutGrid size={18} />, action: openGallery },
-    { id: 'designer', label: 'Open Designer', icon: <PenTool size={18} />, action: openDesigner },
-    { id: 'learn', label: 'Open Ontology School', icon: <BookOpen size={18} />, action: openLearn },
-    { id: 'import-export', label: 'Import / Export', icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
-    { id: 'summary', label: 'View Summary', icon: <FileText size={18} />, action: () => setShowSummary(true) },
-    { id: 'about', label: 'About & Trademark Notice', icon: <Info size={18} />, action: () => setShowAbout(true) },
-    { id: 'help', label: 'Help', icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
-    { id: 'data-sources', label: 'Data Sources', icon: <Database size={18} />, action: () => setShowDataSources(true) },
-    { id: 'theme', label: 'Switch Theme', icon: <Palette size={18} />, action: cycleTheme },
+    { id: 'catalogue', label: jaMessages.commands.openCatalogue, icon: <LayoutGrid size={18} />, action: openGallery },
+    { id: 'designer', label: jaMessages.commands.openDesigner, icon: <PenTool size={18} />, action: openDesigner },
+    { id: 'learn', label: jaMessages.commands.openSchool, icon: <BookOpen size={18} />, action: openLearn },
+    { id: 'import-export', label: jaMessages.commands.importExport, icon: <FileJson size={18} />, action: () => setShowImportExport(true) },
+    { id: 'summary', label: jaMessages.commands.viewSummary, icon: <FileText size={18} />, action: () => setShowSummary(true) },
+    { id: 'about', label: jaMessages.commands.aboutTrademark, icon: <Info size={18} />, action: () => setShowAbout(true) },
+    { id: 'help', label: jaMessages.commands.help, icon: <HelpCircle size={18} />, shortcut: '?', action: () => setShowHelp(true) },
+    { id: 'data-sources', label: jaMessages.commands.dataSources, icon: <Database size={18} />, action: () => setShowDataSources(true) },
+    { id: 'theme', label: jaMessages.commands.switchTheme, icon: <Palette size={18} />, action: cycleTheme },
   ], [openGallery, openDesigner, openLearn, cycleTheme]);
 
   // Full-page views
@@ -213,23 +214,23 @@ function App() {
       {/* Mobile bottom tabs — visible only on small screens via CSS */}
       <div className="mobile-panel-tabs">
         <button className={`mobile-tab ${mobilePanel === 'graph' ? 'active' : ''}`} onClick={() => setMobilePanel('graph')}>
-          <Search size={18} /> Graph
+          <Search size={18} /> {jaMessages.shell.graph}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'quests' ? 'active' : ''}`} onClick={() => setMobilePanel('quests')}>
-          <Compass size={18} /> Quests
+          <Compass size={18} /> {jaMessages.shell.quests}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'inspector' ? 'active' : ''}`} onClick={() => setMobilePanel('inspector')}>
-          <Info size={18} /> Inspector
+          <Info size={18} /> {jaMessages.shell.inspector}
         </button>
         <button className={`mobile-tab ${mobilePanel === 'query' ? 'active' : ''}`} onClick={() => setMobilePanel('query')}>
-          <MessageSquare size={18} /> Query
+          <MessageSquare size={18} /> {jaMessages.shell.query}
         </button>
       </div>
 
       {/* Mobile panel drawer — visible only on small screens when a panel is selected */}
       {mobilePanel !== 'graph' && (
         <div className="mobile-panel-drawer">
-          <button className="mobile-panel-close" onClick={() => setMobilePanel('graph')}>✕ Close</button>
+          <button className="mobile-panel-close" onClick={() => setMobilePanel('graph')}>✕ {jaMessages.shell.closeDrawer}</button>
           {mobilePanel === 'quests' && <QuestPanel />}
           {mobilePanel === 'inspector' && (
             <>

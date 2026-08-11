@@ -4,14 +4,15 @@ import { quests as defaultQuests } from '../data/quests';
 import type { Ontology, DataBinding } from '../data/ontology';
 import { cosmicCoffeeOntology, sampleBindings } from '../data/ontology';
 import { generateQuestsForOntology } from '../data/questGenerator';
+import { jaMessages } from '../locales/ja';
 
 export type ThemeId = 'dark' | 'light' | 'aurora' | 'crimson';
 
 export const THEME_OPTIONS: { id: ThemeId; label: string; swatch: string }[] = [
-  { id: 'dark', label: 'Dark', swatch: '#1B1B1B' },
-  { id: 'light', label: 'Light', swatch: '#F5F5F5' },
-  { id: 'aurora', label: 'Aurora', swatch: '#2AAA92' },
-  { id: 'crimson', label: 'Crimson', swatch: '#D6002A' },
+  { id: 'dark', label: jaMessages.themes.dark, swatch: '#1B1B1B' },
+  { id: 'light', label: jaMessages.themes.light, swatch: '#F5F5F5' },
+  { id: 'aurora', label: jaMessages.themes.aurora, swatch: '#2AAA92' },
+  { id: 'crimson', label: jaMessages.themes.crimson, swatch: '#D6002A' },
 ];
 
 const DARK_BASED_THEMES: ThemeId[] = ['dark', 'aurora'];

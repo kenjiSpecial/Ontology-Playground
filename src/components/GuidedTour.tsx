@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 interface TourStep {
   target: string;        // CSS selector for the element to spotlight
@@ -12,32 +13,32 @@ interface TourStep {
 const tourSteps: TourStep[] = [
   {
     target: '.header',
-    title: 'Navigation & Actions',
-    description: 'Use the toolbar to access the Catalogue, Designer, Learn articles, Import/Export, and more. Press ⌘K anytime to open the command palette.',
+    title: jaMessages.tour.steps.navigation.title,
+    description: jaMessages.tour.steps.navigation.description,
     placement: 'bottom',
   },
   {
     target: '.graph-container',
-    title: 'Ontology Graph',
-    description: 'This is your ontology visualized as an interactive graph. Click on entity nodes or relationship edges to inspect them.',
+    title: jaMessages.tour.steps.graph.title,
+    description: jaMessages.tour.steps.graph.description,
     placement: 'bottom',
   },
   {
     target: '.quest-panel',
-    title: 'Quests',
-    description: 'Complete guided quests to learn ontology concepts step by step. Earn badges and points along the way!',
+    title: jaMessages.tour.steps.quests.title,
+    description: jaMessages.tour.steps.quests.description,
     placement: 'right',
   },
   {
     target: '.right-sidebar',
-    title: 'Inspector & Query',
-    description: 'Select an entity to see its properties and data bindings. Use the query bar at the bottom to ask natural language questions.',
+    title: jaMessages.tour.steps.inspector.title,
+    description: jaMessages.tour.steps.inspector.description,
     placement: 'left',
   },
   {
-    target: '.header-actions [data-tooltip="Designer"]',
-    title: 'Ontology Designer',
-    description: 'Build your own ontologies from scratch or start from a template. Export as RDF or submit to the community catalogue.',
+    target: '.header-actions [data-tour-target="designer"]',
+    title: jaMessages.tour.steps.designer.title,
+    description: jaMessages.tour.steps.designer.description,
     placement: 'bottom',
   },
 ];
@@ -174,8 +175,8 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
         style={tooltipStyle()}
       >
         <div className="tour-tooltip-header">
-          <span className="tour-tooltip-step">{stepIdx + 1}/{visibleSteps.length}</span>
-          <button className="tour-tooltip-close" onClick={dismiss} aria-label="Close tour">
+          <span className="tour-tooltip-step">{jaFormatters.tourStep(stepIdx + 1, visibleSteps.length)}</span>
+          <button className="tour-tooltip-close" onClick={dismiss} aria-label={jaMessages.tour.close}>
             <X size={16} />
           </button>
         </div>
@@ -184,19 +185,19 @@ export function GuidedTour({ onComplete }: GuidedTourProps) {
         <div className="tour-tooltip-actions">
           {stepIdx > 0 && (
             <button className="tour-btn tour-btn-secondary" onClick={prev}>
-              <ChevronLeft size={14} /> Back
+              <ChevronLeft size={14} /> {jaMessages.tour.back}
             </button>
           )}
           <button className="tour-btn tour-btn-primary" onClick={next}>
             {stepIdx < visibleSteps.length - 1 ? (
-              <>Next <ChevronRight size={14} /></>
+              <>{jaMessages.tour.next} <ChevronRight size={14} /></>
             ) : (
-              'Get started!'
+              jaMessages.tour.start
             )}
           </button>
         </div>
         <button className="tour-skip" onClick={dismiss}>
-          Skip tour · don't show again
+          {jaMessages.tour.skip}
         </button>
       </motion.div>
     </AnimatePresence>
