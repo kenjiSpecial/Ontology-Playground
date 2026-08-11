@@ -10,10 +10,19 @@ export interface CatalogProblem {
 }
 
 const JAPANESE_TEXT = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u;
+const LATIN_TEXT = /\p{Script=Latin}/u;
+
+function stripAllowedEnglishTerms(value: string, allowedTerms: readonly string[]): string {
+  return [...allowedTerms]
+    .filter((term) => term.length > 0)
+    .sort((left, right) => right.length - left.length)
+    .reduce((remaining, term) => remaining.split(term).join(''), value);
+}
 
 export function validateJapaneseCatalog(
   catalog: MessageTree,
   allowedEnglishOnlyPaths: readonly string[],
+  allowedEmbeddedEnglishTerms: readonly string[] = [],
 ): CatalogProblem[] {
   const allowed = new Set(allowedEnglishOnlyPaths);
   const used = new Set<string>();
@@ -25,9 +34,12 @@ export function validateJapaneseCatalog(
       if (typeof value === 'string') {
         if (value.trim().length === 0) {
           problems.push({ path, reason: 'empty' });
+          if (allowed.has(path)) used.add(path);
         } else if (!JAPANESE_TEXT.test(value)) {
           if (allowed.has(path)) used.add(path);
           else problems.push({ path, reason: 'english-only' });
+        } else if (LATIN_TEXT.test(stripAllowedEnglishTerms(value, allowedEmbeddedEnglishTerms))) {
+          problems.push({ path, reason: 'english-only' });
         }
       } else {
         visit(value, path);

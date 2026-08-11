@@ -35,6 +35,7 @@ names in their established form when translation would reduce clarity.
 ## Source rules
 
 - Put reusable UI text in `src/locales/ja.ts`; do not add new natural-language literals to components.
-- Add an English-only exception only for a proper noun or standard name, with a focused catalog path.
+- Add an English-only path exception only when the entire value is a proper noun or standard name.
+- Add an embedded English term exception only when that exact proper noun or standard name appears inside Japanese text.
 - Keep imported RDF/OWL and user-entered values on the non-localized data path.
 - Run `npm run qa:ja`, `npm test`, and `npm run build` before every localization PR.

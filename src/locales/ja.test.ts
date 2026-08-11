@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { jaAllowedEnglishOnlyPaths, jaFormatters, jaMessages } from './ja';
+import {
+  jaAllowedEmbeddedEnglishTerms,
+  jaAllowedEnglishOnlyPaths,
+  jaFormatters,
+  jaMessages,
+} from './ja';
 import { validateJapaneseCatalog } from './validateJa';
 
 describe('Japanese message catalog', () => {
   it('contains no invalid or stale values', () => {
-    expect(validateJapaneseCatalog(jaMessages, jaAllowedEnglishOnlyPaths)).toEqual([]);
+    expect(
+      validateJapaneseCatalog(jaMessages, jaAllowedEnglishOnlyPaths, jaAllowedEmbeddedEnglishTerms),
+    ).toEqual([]);
   });
 
   it('formats counters in Japanese', () => {

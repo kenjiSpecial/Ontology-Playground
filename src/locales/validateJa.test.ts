@@ -20,6 +20,17 @@ describe('validateJapaneseCatalog', () => {
     });
   });
 
+  it('rejects unsupported English embedded in Japanese UI text', () => {
+    expect(validateJapaneseCatalog({ navigation: { catalogue: 'Open catalogue を開く' } }, [], [])).toContainEqual({
+      path: 'navigation.catalogue',
+      reason: 'english-only',
+    });
+  });
+
+  it('accepts an explicit embedded proper-noun exception', () => {
+    expect(validateJapaneseCatalog({ actions: { open: 'GitHubで開く' } }, [], ['GitHub'])).toEqual([]);
+  });
+
   it('accepts an explicit proper-noun exception', () => {
     expect(validateJapaneseCatalog({ meta: { productName: 'Ontology Playground' } }, ['meta.productName'])).toEqual([]);
   });
@@ -29,5 +40,11 @@ describe('validateJapaneseCatalog', () => {
       path: 'meta.productName',
       reason: 'unused-allowlist',
     });
+  });
+
+  it('reports an empty allowlisted value only as empty', () => {
+    expect(validateJapaneseCatalog({ meta: { productName: '   ' } }, ['meta.productName'])).toEqual([
+      { path: 'meta.productName', reason: 'empty' },
+    ]);
   });
 });

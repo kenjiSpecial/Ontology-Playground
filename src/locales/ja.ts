@@ -13,6 +13,7 @@ export const jaMessages = {
     save: '保存',
     loading: '読み込み中…',
     retry: '再試行',
+    openInGithub: 'GitHubで開く',
   },
   navigation: {
     home: 'ホーム',
@@ -36,6 +37,10 @@ export const jaAllowedEnglishOnlyPaths = [
   'terms.github',
   'terms.rdf',
   'terms.owl',
+] as const;
+
+export const jaAllowedEmbeddedEnglishTerms = [
+  'GitHub',
 ] as const;
 
 export const jaFormatters = {

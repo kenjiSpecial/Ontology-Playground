@@ -27,6 +27,7 @@
 
 **Files:**
 - Create: `.nvmrc`
+- Modify: `README.md`
 - Modify: `package.json`
 - Modify: `package-lock.json`
 - Modify: `vitest.config.ts`
@@ -63,6 +64,8 @@ Add this top-level object after `"type": "module"` in `package.json`:
 },
 ```
 
+Update the README prerequisite from `Node.js 18+` to exactly `Node.js 20` so the human-facing requirement matches the machine-readable range.
+
 Run:
 
 ```bash
@@ -94,11 +97,11 @@ Expected: 24 test files and 394 tests pass; no timeout failure remains.
 - [ ] **Step 5: Commit the runtime baseline**
 
 ```bash
-git add -- .nvmrc package.json package-lock.json vitest.config.ts
+git add -- .nvmrc README.md package.json package-lock.json vitest.config.ts
 git commit -m "chore(i18n): pin Japanese QA runtime"
 ```
 
-Expected: one commit containing only the four runtime/configuration files.
+Expected: one commit containing only the five runtime/documentation files.
 
 ### Task 2: Build the typed Japanese catalog validator with TDD
 
@@ -107,7 +110,7 @@ Expected: one commit containing only the four runtime/configuration files.
 - Create: `src/locales/validateJa.test.ts`
 
 **Interfaces:**
-- Produces: `MessageTree`, `CatalogProblem`, and `validateJapaneseCatalog(catalog, allowedEnglishOnlyPaths)`.
+- Produces: `MessageTree`, `CatalogProblem`, and `validateJapaneseCatalog(catalog, allowedEnglishOnlyPaths, allowedEmbeddedEnglishTerms)`.
 - Consumed by: Task 3 catalog tests and every later localization phase.
 
 - [ ] **Step 1: Write the failing validator tests**
@@ -137,6 +140,17 @@ describe('validateJapaneseCatalog', () => {
     });
   });
 
+  it('rejects unsupported English embedded in Japanese UI text', () => {
+    expect(validateJapaneseCatalog({ navigation: { catalogue: 'Open catalogue を開く' } }, [], [])).toContainEqual({
+      path: 'navigation.catalogue',
+      reason: 'english-only',
+    });
+  });
+
+  it('accepts an explicit embedded proper-noun exception', () => {
+    expect(validateJapaneseCatalog({ actions: { open: 'GitHubで開く' } }, [], ['GitHub'])).toEqual([]);
+  });
+
   it('accepts an explicit proper-noun exception', () => {
     expect(validateJapaneseCatalog({ meta: { productName: 'Ontology Playground' } }, ['meta.productName'])).toEqual([]);
   });
@@ -146,6 +160,12 @@ describe('validateJapaneseCatalog', () => {
       path: 'meta.productName',
       reason: 'unused-allowlist',
     });
+  });
+
+  it('reports an empty allowlisted value only as empty', () => {
+    expect(validateJapaneseCatalog({ meta: { productName: '   ' } }, ['meta.productName'])).toEqual([
+      { path: 'meta.productName', reason: 'empty' },
+    ]);
   });
 });
 ```
@@ -175,10 +195,19 @@ export interface CatalogProblem {
 }
 
 const JAPANESE_TEXT = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u;
+const LATIN_TEXT = /\p{Script=Latin}/u;
+
+function stripAllowedEnglishTerms(value: string, allowedTerms: readonly string[]): string {
+  return [...allowedTerms]
+    .filter((term) => term.length > 0)
+    .sort((left, right) => right.length - left.length)
+    .reduce((remaining, term) => remaining.split(term).join(''), value);
+}
 
 export function validateJapaneseCatalog(
   catalog: MessageTree,
   allowedEnglishOnlyPaths: readonly string[],
+  allowedEmbeddedEnglishTerms: readonly string[] = [],
 ): CatalogProblem[] {
   const allowed = new Set(allowedEnglishOnlyPaths);
   const used = new Set<string>();
@@ -190,9 +219,12 @@ export function validateJapaneseCatalog(
       if (typeof value === 'string') {
         if (value.trim().length === 0) {
           problems.push({ path, reason: 'empty' });
+          if (allowed.has(path)) used.add(path);
         } else if (!JAPANESE_TEXT.test(value)) {
           if (allowed.has(path)) used.add(path);
           else problems.push({ path, reason: 'english-only' });
+        } else if (LATIN_TEXT.test(stripAllowedEnglishTerms(value, allowedEmbeddedEnglishTerms))) {
+          problems.push({ path, reason: 'english-only' });
         }
       } else {
         visit(value, path);
@@ -214,7 +246,7 @@ export function validateJapaneseCatalog(
 npx vitest run src/locales/validateJa.test.ts
 ```
 
-Expected: five tests pass.
+Expected: eight tests pass.
 
 - [ ] **Step 5: Commit the validator**
 
@@ -232,7 +264,7 @@ git commit -m "test(i18n): validate Japanese message values"
 - Modify: `package-lock.json`
 
 **Interfaces:**
-- Produces: `jaMessages`, `jaAllowedEnglishOnlyPaths`, `jaFormatters`, `JapaneseMessages`, and `npm run qa:ja`.
+- Produces: `jaMessages`, `jaAllowedEnglishOnlyPaths`, `jaAllowedEmbeddedEnglishTerms`, `jaFormatters`, `JapaneseMessages`, and `npm run qa:ja`.
 - Consumed by: A2-A4 component migrations and Q1 completeness checks.
 
 - [ ] **Step 1: Write the failing catalog tests**
@@ -241,12 +273,19 @@ Create `src/locales/ja.test.ts`:
 
 ```ts
 import { describe, expect, it } from 'vitest';
-import { jaAllowedEnglishOnlyPaths, jaFormatters, jaMessages } from './ja';
+import {
+  jaAllowedEmbeddedEnglishTerms,
+  jaAllowedEnglishOnlyPaths,
+  jaFormatters,
+  jaMessages,
+} from './ja';
 import { validateJapaneseCatalog } from './validateJa';
 
 describe('Japanese message catalog', () => {
   it('contains no invalid or stale values', () => {
-    expect(validateJapaneseCatalog(jaMessages, jaAllowedEnglishOnlyPaths)).toEqual([]);
+    expect(
+      validateJapaneseCatalog(jaMessages, jaAllowedEnglishOnlyPaths, jaAllowedEmbeddedEnglishTerms),
+    ).toEqual([]);
   });
 
   it('formats counters in Japanese', () => {
@@ -285,6 +324,7 @@ export const jaMessages = {
     save: '保存',
     loading: '読み込み中…',
     retry: '再試行',
+    openInGithub: 'GitHubで開く',
   },
   navigation: {
     home: 'ホーム',
@@ -308,6 +348,10 @@ export const jaAllowedEnglishOnlyPaths = [
   'terms.github',
   'terms.rdf',
   'terms.owl',
+] as const;
+
+export const jaAllowedEmbeddedEnglishTerms = [
+  'GitHub',
 ] as const;
 
 export const jaFormatters = {
@@ -452,7 +496,7 @@ npm run build
 git diff --check origin/main...HEAD
 ```
 
-Expected: all commands pass; `npm test` reports 26 files and 401 tests; build produces the app and embed widget.
+Expected: all commands pass; `npm test` reports 26 files and 404 tests; build produces the app and embed widget.
 
 - [ ] **Step 2: Verify scope and identifiers**
 
@@ -501,7 +545,7 @@ RDF/OWL URIs, internal IDs, JSON keys, routes, slugs, filenames, syntax, license
 
 - `npm ci --ignore-scripts`
 - `npm run qa:ja`
-- `npm test` — 26 files / 401 tests passed
+- `npm test` — 26 files / 404 tests passed
 - `npm run build`
 - `git diff --check origin/main...HEAD`
 
