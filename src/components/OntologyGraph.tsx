@@ -4,6 +4,7 @@ import fcose from 'cytoscape-fcose';
 import type { Core, EventObject, LayoutOptions } from 'cytoscape';
 import { useAppStore } from '../store/appStore';
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'lucide-react';
+import { jaMessages } from '../locales/ja';
 
 // Register fcose layout
 cytoscape.use(fcose);
@@ -539,45 +540,52 @@ export function OntologyGraph() {
 
   return (
     <div className="graph-container">
-      <div ref={containerRef} className="graph-canvas" data-testid="ontology-graph-canvas" />
+      <div
+        ref={containerRef}
+        className="graph-canvas"
+        data-testid="ontology-graph-canvas"
+        role="img"
+        aria-label={jaMessages.exploration.graph.canvasLabel}
+      />
 
       {focusNodeId && (
         <div className="graph-focus-badge">
           <Crosshair size={13} />
-          <span>Focus mode</span>
+          <span>{jaMessages.exploration.graph.focusMode}</span>
           <button
             className="graph-focus-exit"
+            aria-label={jaMessages.exploration.graph.exitFocus}
             onClick={() => {
               setFocusNodeId(null);
               const cy = getCy();
               if (cy) cy.elements().removeClass('dimmed');
             }}
           >
-            Click background or ✕ to exit
+            {jaMessages.exploration.graph.exitFocus}
           </button>
         </div>
       )}
       
       <div className="graph-controls">
-        <button className="graph-control-btn" onClick={handleZoomIn} title="Zoom In">
+        <button className="graph-control-btn" onClick={handleZoomIn} title={jaMessages.exploration.graph.zoomIn} aria-label={jaMessages.exploration.graph.zoomIn}>
           <ZoomIn size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleZoomOut} title="Zoom Out">
+        <button className="graph-control-btn" onClick={handleZoomOut} title={jaMessages.exploration.graph.zoomOut} aria-label={jaMessages.exploration.graph.zoomOut}>
           <ZoomOut size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleFit} title="Fit to View">
+        <button className="graph-control-btn" onClick={handleFit} title={jaMessages.exploration.graph.fitToView} aria-label={jaMessages.exploration.graph.fitToView}>
           <Maximize2 size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleReset} title="Reset Layout">
+        <button className="graph-control-btn" onClick={handleReset} title={jaMessages.exploration.graph.resetLayout} aria-label={jaMessages.exploration.graph.resetLayout}>
           <RotateCcw size={18} />
         </button>
-        <button className="graph-control-btn" onClick={handleDownload} title="Download Graph as PNG" data-testid="download-ontology-png">
+        <button className="graph-control-btn" onClick={handleDownload} title={jaMessages.exploration.graph.downloadPng} aria-label={jaMessages.exploration.graph.downloadPng} data-testid="download-ontology-png">
           <Download size={18} />
         </button>
       </div>
 
       <div className="graph-legend">
-        <div className="legend-title">Entity Types</div>
+        <div className="legend-title">{jaMessages.exploration.graph.entityTypes}</div>
         {currentOntology.entityTypes.map(entity => (
           <div key={entity.id} className="legend-item">
             <div className="legend-dot" style={{ backgroundColor: entity.color }} />
