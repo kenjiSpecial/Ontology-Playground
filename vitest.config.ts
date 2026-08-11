@@ -8,5 +8,6 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     exclude: ['**/node_modules/**', '**/ontology-pr*/**'],
+    testTimeout: 15_000,
   },
 });

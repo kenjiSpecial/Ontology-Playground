@@ -2,6 +2,13 @@
 
 > Note: This project was developed with AI-assisted coding.
 
+> [!IMPORTANT]
+> This repository is the Japanese edition maintained by `kenjiSpecial`, forked from
+> [`microsoft/Ontology-Playground`](https://github.com/microsoft/Ontology-Playground).
+> The Japanese edition preserves the upstream MIT License, copyright, trademark
+> notice, technical identifiers, and attribution. Japanese UI migration is being
+> delivered in dependency-ordered phases tracked in this repository's Issues.
+
 **[Try it live &#x2192; microsoft.github.io/Ontology-Playground](https://microsoft.github.io/Ontology-Playground/)**
 
 [![Ontology Playground screenshot](public/og-image.png)](https://microsoft.github.io/Ontology-Playground/)
@@ -140,7 +147,7 @@ Client-side hash routing with shareable URLs for every page:
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20
 - npm 9+
 
 ### Installation
