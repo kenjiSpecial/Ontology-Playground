@@ -13,6 +13,7 @@
     "build": "npm run catalogue:build && npm run learn:build && tsc -b && vite build && npm run build:embed",
     "build:embed": "vite build --config vite.config.embed.ts",
     "lint": "eslint .",
+    "qa:ja": "vitest run src/locales",
     "hooks:install": "git config core.hooksPath .githooks",
     "preview": "vite preview",
     "security:setup": "sh scripts/security-setup.sh",
