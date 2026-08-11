@@ -156,6 +156,52 @@ export const jaMessages = {
     aurora: 'オーロラ',
     crimson: 'クリムゾン',
   },
+  exploration: {
+    graph: {
+      canvasLabel: 'オントロジーグラフ',
+      focusMode: 'フォーカスモード',
+      exitFocus: '背景または✕を選択して終了',
+      zoomIn: '拡大',
+      zoomOut: '縮小',
+      fitToView: '全体を表示',
+      resetLayout: 'レイアウトをリセット',
+      downloadPng: 'グラフをPNGでダウンロード',
+      entityTypes: 'エンティティ型',
+    },
+    stats: {
+      title: 'オントロジーの概要',
+      entities: 'エンティティ',
+      relationships: 'リレーションシップ',
+      properties: 'プロパティ',
+    },
+    pathFinder: {
+      title: '経路探索',
+      from: '始点',
+      to: '終点',
+      selectEntity: 'エンティティを選択…',
+      findPath: '経路を探索',
+      clear: 'クリア',
+      selectDifferentEntities: '異なる2つのエンティティを選択してください。',
+      noDirectedPath: 'これらのエンティティ間に有向経路はありません。',
+    },
+    search: {
+      title: '検索と絞り込み',
+      placeholder: 'エンティティやプロパティを検索…',
+      results: '検索結果',
+      clear: '検索をクリア',
+    },
+    inspector: {
+      title: 'インスペクター',
+      selectElement: '要素を選択',
+      emptyText: 'グラフ上のエンティティ型またはリレーションシップを選択すると、プロパティ、データ バインディング、接続を確認できます。',
+      relationship: 'リレーションシップ',
+      cardinality: 'カーディナリティ',
+      relationshipAttributes: 'リレーションシップの属性',
+      entityType: 'エンティティ型',
+      dataBindings: 'データ バインディング',
+      identifier: 'ID',
+    },
+  },
 } as const satisfies MessageTree;
 
 export type JapaneseMessages = typeof jaMessages;
@@ -167,6 +213,7 @@ export const jaAllowedEnglishOnlyPaths = [
   'terms.rdf',
   'terms.owl',
   'shell.aiBuilder',
+  'exploration.inspector.identifier',
 ] as const;
 
 export const jaAllowedEmbeddedEnglishTerms = [
@@ -180,6 +227,7 @@ export const jaAllowedEmbeddedEnglishTerms = [
   'RDF',
   'OWL',
   'URL',
+  'PNG',
   'K',
 ] as const;
 
@@ -190,4 +238,10 @@ export const jaFormatters = {
   questComplete: (badge: string): string => `クエスト完了！獲得: ${badge}`,
   deployedCommit: (commit: string): string => `デプロイ済みコミット ${commit}`,
   tourStep: (current: number, total: number): string => `${current}/${total}`,
+  entities: (count: number): string => `エンティティ（${count}）`,
+  relationships: (count: number): string => `リレーションシップ（${count}）`,
+  properties: (count: number): string => `${count}件のプロパティ`,
+  propertiesHeading: (count: number): string => `プロパティ（${count}）`,
+  searchNoResults: (query: string): string => `「${query}」に一致する結果はありません`,
+  shortestPath: (hops: number): string => `最短経路 — ${hops}ホップ`,
 } as const;

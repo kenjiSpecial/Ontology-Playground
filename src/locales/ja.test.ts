@@ -20,5 +20,11 @@ describe('Japanese message catalog', () => {
     expect(jaFormatters.loadFailed(404)).toBe('読み込みに失敗しました（404）');
     expect(jaFormatters.questComplete('グラフ探索者')).toBe('クエスト完了！獲得: グラフ探索者');
     expect(jaFormatters.deployedCommit('abc1234')).toBe('デプロイ済みコミット abc1234');
+    expect(jaFormatters.entities(6)).toBe('エンティティ（6）');
+    expect(jaFormatters.relationships(8)).toBe('リレーションシップ（8）');
+    expect(jaFormatters.properties(6)).toBe('6件のプロパティ');
+    expect(jaFormatters.propertiesHeading(6)).toBe('プロパティ（6）');
+    expect(jaFormatters.searchNoResults('顧客')).toBe('「顧客」に一致する結果はありません');
+    expect(jaFormatters.shortestPath(2)).toBe('最短経路 — 2ホップ');
   });
 });
