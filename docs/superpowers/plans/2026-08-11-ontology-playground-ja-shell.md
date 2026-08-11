@@ -12,7 +12,7 @@
 
 - Work on `feature/ja-shell` from external fork `origin/main` in the isolated worktree.
 - Issue: `kenjiSpecial/Ontology-Playground#3`; parent: `kenjiSpecial/kura#644`.
-- Keep `Ontology Playground`, `Microsoft Fabric IQ`, `GitHub`, `GitHub Copilot`, `RDF`, `AI Builder`, `URL`, `Esc`, and `K` only as explicit proper-name or standard-name exceptions.
+- Keep `Ontology Playground`, `Microsoft Fabric IQ`, `GitHub`, `GitHub Copilot`, `RDF`, `AI Builder`, `URL`, and `K` only as explicit proper-name or standard-name exceptions. Standard keyboard labels such as `Esc`, `⌘K`, arrows, and Enter symbols may remain literal keycaps.
 - Do not translate ontology names, badge names, or other values supplied by application data.
 - Preserve route names, command IDs, theme IDs, storage keys, URLs, external links, and legal meaning.
 - Do not edit graph, quest, query, inspector, designer, gallery, import/export, Fabric export, summary, data sources, AI builder internals, generated `public/**`, catalogue, or learning content.
@@ -107,7 +107,7 @@ tourStep: (current: number, total: number): string => `${current}/${total}`,
 
 - [ ] **Step 3: Allow only used embedded standard terms**
 
-Add exact used values to `jaAllowedEmbeddedEnglishTerms`, including `Ontology Playground`, `Microsoft Fabric IQ`, `GitHub`, `GitHub Copilot`, `RDF`, `AI Builder`, `URL`, `Esc`, and `K`. Every entry must occur in at least one Japanese catalog string.
+Add exact used values to `jaAllowedEmbeddedEnglishTerms`, including `Ontology Playground`, `Microsoft Fabric IQ`, `GitHub`, `GitHub Copilot`, `RDF`, `AI Builder`, `URL`, and `K`. Every entry must occur in at least one Japanese catalog string. Keep literal keyboard keycaps such as `Esc` outside this natural-language allowlist.
 
 - [ ] **Step 4: Verify catalog GREEN**
 
