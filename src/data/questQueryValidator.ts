@@ -1,5 +1,5 @@
 import type { Ontology } from './ontology';
-import { processQuery } from './queryEngine';
+import { isFallbackQueryResponse, processQuery } from './queryEngine';
 import type { Quest } from './quests';
 
 export interface QuestQueryValidationIssue {
@@ -11,11 +11,11 @@ export interface QuestQueryValidationIssue {
   result?: string;
 }
 
-const QUOTED_QUERY_RE = /["“']([^"”']+)["”']/;
+const QUOTED_QUERY_RE = /(?:["“']([^"”']+)["”']|「([^」]+)」)/;
 
 export function extractQueryFromInstruction(instruction: string): string | null {
   const match = instruction.match(QUOTED_QUERY_RE);
-  return match?.[1]?.trim() || null;
+  return match?.[1]?.trim() || match?.[2]?.trim() || null;
 }
 
 export function validateQueryQuestSteps(quests: Quest[], ontology: Ontology): QuestQueryValidationIssue[] {
@@ -37,7 +37,7 @@ export function validateQueryQuestSteps(quests: Quest[], ontology: Ontology): Qu
       }
 
       const response = processQuery(query, ontology);
-      const fellBack = response.result.startsWith(`I couldn't interpret`);
+      const fellBack = isFallbackQueryResponse(response.result);
       const emptyResult = response.result.trim().length === 0;
       const lacksContext = !response.interpretation && response.highlightEntities.length === 0 && response.highlightRelationships.length === 0;
 

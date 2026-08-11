@@ -1,5 +1,6 @@
 import type { Ontology } from './ontology';
 import { nlQueryResponses } from './quests';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 export interface QueryResponse {
   query: string;
@@ -7,6 +8,14 @@ export interface QueryResponse {
   highlightEntities: string[];
   highlightRelationships: string[];
   interpretation?: string;
+}
+
+function normalizeQuery(text: string): string {
+  return text.toLowerCase().trim();
+}
+
+function removePunctuation(text: string): string {
+  return text.replace(/[?!.:,;！？。、，：；「」『』]+/g, '').trim();
 }
 
 function stripLeadingArticle(text: string): string {
@@ -17,59 +26,84 @@ function singularize(text: string): string {
   return text.endsWith('s') ? text.slice(0, -1) : text;
 }
 
-function matchesDemoQuery(normalizedQuery: string, demoQuery: string, matches: string[]): boolean {
-  return normalizedQuery === demoQuery || matches.some(match => normalizedQuery.includes(match));
+function includesAny(text: string, phrases: readonly string[]): boolean {
+  return phrases.some(phrase => text.includes(phrase));
 }
 
-// Generate dynamic query suggestions based on the current ontology
+function hasConnectionIntent(text: string): boolean {
+  return includesAny(text, [
+    'connection',
+    'connections',
+    'relationship',
+    'connect',
+    'relate',
+    'つなが',
+    '接続',
+    '関係',
+    '関連',
+  ]);
+}
+
+function matchesDemoQuery(normalizedQuery: string, demoQuery: string, matches: string[]): boolean {
+  const canonical = removePunctuation(normalizeQuery(demoQuery));
+  return normalizedQuery === canonical || matches.some(match => normalizedQuery.includes(removePunctuation(normalizeQuery(match))));
+}
+
+function propertyList(ontology: Ontology, entityId: string): string {
+  const entity = ontology.entityTypes.find(candidate => candidate.id === entityId);
+  if (!entity) return '';
+  return entity.properties
+    .slice(0, 4)
+    .map(property => `• **${property.name}** (${property.type})${property.isIdentifier ? ' 🔑' : ''}`)
+    .join('\n');
+}
+
+export function isFallbackQueryResponse(result: string): boolean {
+  return result.includes('**では解釈できませんでした。');
+}
+
+// Generate dynamic query suggestions based on the current ontology.
 export function generateQuerySuggestions(ontology: Ontology): string[] {
   const suggestions: string[] = [];
   const entities = ontology.entityTypes;
   const relationships = ontology.relationships;
 
-  // Entity-based queries
   if (entities.length > 0) {
-    const firstEntity = entities[0];
-    suggestions.push(`Show me all ${firstEntity.name.toLowerCase()}s`);
-    
+    suggestions.push(jaFormatters.querySuggestionShowAll(entities[0].name));
+
     if (entities.length > 1) {
-      const secondEntity = entities[1];
-      suggestions.push(`List all ${secondEntity.name.toLowerCase()}s`);
+      suggestions.push(jaFormatters.querySuggestionListAll(entities[1].name));
     }
   }
 
-  // Property-based queries
   entities.forEach(entity => {
-    entity.properties.forEach(prop => {
-      if (prop.type === 'string' && !prop.isIdentifier && prop.name !== 'name') {
-        suggestions.push(`Show ${entity.name.toLowerCase()}s by ${prop.name}`);
+    entity.properties.forEach(property => {
+      if (property.type === 'string' && !property.isIdentifier && property.name !== 'name') {
+        suggestions.push(jaFormatters.querySuggestionByProperty(entity.name, property.name));
       }
     });
   });
 
-  // Relationship-based queries
   if (relationships.length > 0) {
-    const rel = relationships[0];
-    const fromEntity = entities.find(e => e.id === rel.from);
-    const toEntity = entities.find(e => e.id === rel.to);
+    const relationship = relationships[0];
+    const fromEntity = entities.find(entity => entity.id === relationship.from);
+    const toEntity = entities.find(entity => entity.id === relationship.to);
     if (fromEntity && toEntity) {
-      suggestions.push(`How does ${fromEntity.name} connect to ${toEntity.name}?`);
+      suggestions.push(jaFormatters.querySuggestionConnection(fromEntity.name, toEntity.name));
     }
   }
 
-  // Conceptual queries always available
-  suggestions.push("What is an entity type?");
-  suggestions.push("What is a relationship?");
-  suggestions.push("How does ontology work?");
+  suggestions.push('エンティティ型とは何ですか？');
+  suggestions.push('リレーションシップとは何ですか？');
+  suggestions.push('オントロジーはどのように機能しますか？');
 
-  // Return unique suggestions (max 6)
   return [...new Set(suggestions)].slice(0, 6);
 }
 
-// Process a natural language query against the ontology
+// Process a natural-language query against the ontology.
 export function processQuery(query: string, ontology: Ontology): QueryResponse {
-  const normalizedQuery = query.toLowerCase().trim();
-  const normalizedNoPunctuation = normalizedQuery.replace(/[?!.:,;]+/g, '').trim();
+  const normalizedQuery = normalizeQuery(query);
+  const normalizedNoPunctuation = removePunctuation(normalizedQuery);
   const entities = ontology.entityTypes;
   const relationships = ontology.relationships;
 
@@ -84,198 +118,217 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
         result: demoResponse.result,
         highlightEntities: demoResponse.highlightEntities,
         highlightRelationships: demoResponse.highlightRelationships,
-        interpretation: 'Detected: Fourth Coffee sample query'
+        interpretation: jaFormatters.queryDetectedSample(ontology.name),
       };
     }
   }
 
-  // Conceptual queries (work for any ontology)
-  if (normalizedQuery.includes('what is') && (normalizedQuery.includes('entity') || normalizedQuery.includes('ontology'))) {
+  const asksEntityConcept =
+    (normalizedQuery.includes('what is') && (normalizedQuery.includes('entity') || normalizedQuery.includes('ontology'))) ||
+    includesAny(normalizedNoPunctuation, ['エンティティ型とは', 'エンティティとは', 'オントロジーとは']);
+
+  if (asksEntityConcept) {
     return {
       query,
-      result: "An **Entity Type** is a reusable logical model of a real-world concept (like Customer, Product, or Order). In the Fabric IQ Ontology, entity types standardize:\n\n• **Name & Description** - Common terminology\n• **Properties** - Attributes with types and units\n• **Identifier** - Unique key for each instance\n\nEntity types ensure everyone in your organization uses consistent definitions.",
-      highlightEntities: entities.slice(0, 2).map(e => e.id),
+      result: jaMessages.query.conceptEntityResult,
+      highlightEntities: entities.slice(0, 2).map(entity => entity.id),
       highlightRelationships: [],
-      interpretation: "Detected: conceptual question about entity types"
+      interpretation: jaMessages.query.conceptEntityInterpretation,
     };
   }
 
-  if (normalizedQuery.includes('what is') && normalizedQuery.includes('relationship')) {
+  const asksRelationshipConcept =
+    (normalizedQuery.includes('what is') && normalizedQuery.includes('relationship')) ||
+    includesAny(normalizedNoPunctuation, ['リレーションシップとは', '関係とは']);
+
+  if (asksRelationshipConcept) {
     return {
       query,
-      result: "A **Relationship** is a typed, directional link between entity types. Relationships define:\n\n• **Name** - Action verb (e.g., 'places', 'contains')\n• **Direction** - From one entity to another\n• **Cardinality** - One-to-one, one-to-many, etc.\n• **Attributes** - Optional properties on the connection\n\nRelationships let you traverse the ontology to answer complex questions.",
+      result: jaMessages.query.conceptRelationshipResult,
       highlightEntities: [],
-      highlightRelationships: relationships.slice(0, 2).map(r => r.id),
-      interpretation: "Detected: conceptual question about relationships"
+      highlightRelationships: relationships.slice(0, 2).map(relationship => relationship.id),
+      interpretation: jaMessages.query.conceptRelationshipInterpretation,
     };
   }
 
-  if (normalizedQuery.includes('how') && (normalizedQuery.includes('ontology') || normalizedQuery.includes('work'))) {
+  const asksOntologyStructure =
+    (normalizedQuery.includes('how') && (normalizedQuery.includes('ontology') || normalizedQuery.includes('work'))) ||
+    (normalizedQuery.includes('オントロジー') && includesAny(normalizedQuery, ['仕組み', '構造', '機能', 'どのよう']));
+
+  if (asksOntologyStructure) {
     return {
       query,
-      result: `The **${ontology.name}** ontology has:\n\n• **${entities.length} Entity Types** - ${entities.map(e => e.name).join(', ')}\n• **${relationships.length} Relationships** - Connecting entities together\n\nThe ontology acts as a semantic layer that binds to your data platform sources, enabling natural language queries that understand your business concepts.`,
-      highlightEntities: entities.map(e => e.id),
+      result: `**${ontology.name}**オントロジーの構成:\n\n• **${entities.length}個のエンティティ型** - ${entities.map(entity => entity.name).join('、')}\n• **${relationships.length}個のリレーションシップ** - エンティティ同士を接続\n\nオントロジーはデータプラットフォームのソースに結び付くセマンティック層として機能し、ビジネス概念を理解した自然言語クエリを可能にします。`,
+      highlightEntities: entities.map(entity => entity.id),
       highlightRelationships: [],
-      interpretation: "Detected: question about ontology structure"
+      interpretation: jaMessages.query.ontologyStructureInterpretation,
     };
   }
 
-  // Entity definition queries: "What is a Customer?"
-  if (normalizedNoPunctuation.startsWith('what is ')) {
-    const subjectRaw = normalizedNoPunctuation.slice('what is '.length).trim();
-    const subject = stripLeadingArticle(subjectRaw);
+  for (const entity of entities) {
+    const entityNameLower = entity.name.toLowerCase();
+    const entityNameSingular = singularize(entityNameLower);
+    let isDefinitionQuery = false;
 
-    for (const entity of entities) {
-      const entityNameLower = entity.name.toLowerCase();
-      const entityNameSingular = entityNameLower.endsWith('s') ? entityNameLower.slice(0, -1) : entityNameLower;
-
-      if (
+    if (normalizedNoPunctuation.startsWith('what is ')) {
+      const subject = stripLeadingArticle(normalizedNoPunctuation.slice('what is '.length).trim());
+      isDefinitionQuery =
         subject === entityNameLower ||
         subject === entityNameSingular ||
-        singularize(subject) === entityNameSingular
-      ) {
-        const propList = entity.properties
-          .slice(0, 4)
-          .map(p => `• **${p.name}** (${p.type})${p.isIdentifier ? ' 🔑' : ''}`)
-          .join('\n');
-
-        return {
-          query,
-          result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**Properties:**\n${propList}`,
-          highlightEntities: [entity.id],
-          highlightRelationships: [],
-          interpretation: `Detected: definition query for ${entity.name}`
-        };
-      }
+        singularize(subject) === entityNameSingular;
     }
-  }
 
-  // Entity listing queries
-  for (const entity of entities) {
-    const entityNameLower = entity.name.toLowerCase();
-    const entityNamePlural = entityNameLower + 's';
-    
-    if (
-      normalizedQuery.includes(`show me all ${entityNameLower}`) ||
-      normalizedQuery.includes(`show me all ${entityNamePlural}`) ||
-      normalizedQuery.includes(`list all ${entityNameLower}`) ||
-      normalizedQuery.includes(`list all ${entityNamePlural}`) ||
-      normalizedQuery.includes(`show ${entityNamePlural}`) ||
-      normalizedQuery.includes(`list ${entityNamePlural}`)
-    ) {
-      const propList = entity.properties
-        .slice(0, 4)
-        .map(p => `• **${p.name}** (${p.type})${p.isIdentifier ? ' 🔑' : ''}`)
-        .join('\n');
-      
+    isDefinitionQuery ||= includesAny(normalizedNoPunctuation, [
+      `${entityNameLower}とは`,
+      `${entityNameLower}って何`,
+      `${entityNameLower}は何ですか`,
+    ]);
+
+    if (isDefinitionQuery) {
       return {
         query,
-        result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**Properties:**\n${propList}\n\n_In a real deployment, this would query the data platform for actual ${entityNameLower} records._`,
+        result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**${jaFormatters.queryPropertiesHeading(entity.properties.length)}**\n${propertyList(ontology, entity.id)}`,
         highlightEntities: [entity.id],
         highlightRelationships: [],
-        interpretation: `Detected: query for ${entity.name} entities`
-      };
-    }
-  }
-
-  // Relationship/connection queries
-  for (const rel of relationships) {
-    const relationNameNormalized = rel.name.toLowerCase().trim().replace(/\s+/g, ' ');
-    const fromEntity = entities.find(e => e.id === rel.from);
-    const toEntity = entities.find(e => e.id === rel.to);
-
-    if (
-      normalizedNoPunctuation.includes(relationNameNormalized) &&
-      (normalizedNoPunctuation.includes('connection') || normalizedNoPunctuation.includes('connections') || normalizedNoPunctuation.includes('relationship'))
-    ) {
-      return {
-        query,
-        result: `**${rel.name}** connects **${fromEntity?.name ?? rel.from}** to **${toEntity?.name ?? rel.to}** (${rel.cardinality}).${rel.description ? `\n\n${rel.description}` : ''}`,
-        highlightEntities: [rel.from, rel.to],
-        highlightRelationships: [rel.id],
-        interpretation: `Detected: relationship-name query for ${rel.name}`
+        interpretation: jaFormatters.queryDetectedEntityDefinition(entity.name),
       };
     }
   }
 
   for (const entity of entities) {
     const entityNameLower = entity.name.toLowerCase();
-    
-    if (normalizedQuery.includes(`how does ${entityNameLower}`) || 
-        normalizedQuery.includes(`${entityNameLower} connect`) ||
-        normalizedQuery.includes(`${entityNameLower} relate`)) {
-      
-      const relatedRels = relationships.filter(r => r.from === entity.id || r.to === entity.id);
-      
-      if (relatedRels.length > 0) {
-        const relList = relatedRels.map(rel => {
-          const isOutgoing = rel.from === entity.id;
-          const otherEntityId = isOutgoing ? rel.to : rel.from;
-          const otherEntity = entities.find(e => e.id === otherEntityId);
-          const direction = isOutgoing ? '→' : '←';
-          return `• **${rel.name}** ${direction} ${otherEntity?.icon} ${otherEntity?.name} (${rel.cardinality})`;
-        }).join('\n');
+    const entityNamePlural = `${entityNameLower}s`;
+    const legacyListQuery = includesAny(normalizedQuery, [
+      `show me all ${entityNameLower}`,
+      `show me all ${entityNamePlural}`,
+      `list all ${entityNameLower}`,
+      `list all ${entityNamePlural}`,
+      `show ${entityNamePlural}`,
+      `list ${entityNamePlural}`,
+    ]);
+    const japaneseListQuery =
+      normalizedQuery.includes(entityNameLower) &&
+      includesAny(normalizedQuery, ['すべて', '全て', '全部', '一覧']) &&
+      includesAny(normalizedQuery, ['表示', '見せ']);
 
-        return {
-          query,
-          result: `**${entity.name}** ${entity.icon} has ${relatedRels.length} connection(s):\n\n${relList}`,
-          highlightEntities: [entity.id, ...relatedRels.map(r => r.from === entity.id ? r.to : r.from)],
-          highlightRelationships: relatedRels.map(r => r.id),
-          interpretation: `Detected: relationship query for ${entity.name}`
-        };
-      }
+    if (legacyListQuery || japaneseListQuery) {
+      return {
+        query,
+        result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**${jaFormatters.queryPropertiesHeading(entity.properties.length)}**\n${propertyList(ontology, entity.id)}\n\n${jaFormatters.queryEntityProductionNote(entity.name)}`,
+        highlightEntities: [entity.id],
+        highlightRelationships: [],
+        interpretation: jaFormatters.queryDetectedEntityList(entity.name),
+      };
     }
   }
 
-  // Property-based queries
+  for (const relationship of relationships) {
+    const relationshipName = relationship.name.toLowerCase().trim().replace(/\s+/g, ' ');
+    const fromEntity = entities.find(entity => entity.id === relationship.from);
+    const toEntity = entities.find(entity => entity.id === relationship.to);
+
+    if (normalizedNoPunctuation.includes(relationshipName) && hasConnectionIntent(normalizedNoPunctuation)) {
+      return {
+        query,
+        result: `**${relationship.name}**は**${fromEntity?.name ?? relationship.from}**から**${toEntity?.name ?? relationship.to}**を接続します（${relationship.cardinality}）。${relationship.description ? `\n\n${relationship.description}` : ''}`,
+        highlightEntities: [relationship.from, relationship.to],
+        highlightRelationships: [relationship.id],
+        interpretation: jaFormatters.queryDetectedRelationship(relationship.name),
+      };
+    }
+  }
+
   for (const entity of entities) {
-    for (const prop of entity.properties) {
-      if (normalizedQuery.includes(prop.name.toLowerCase()) && normalizedQuery.includes(entity.name.toLowerCase())) {
-        return {
-          query,
-          result: `**${entity.name}.${prop.name}**\n\n• Type: ${prop.type}\n${prop.unit ? `• Unit: ${prop.unit}` : ''}\n${prop.isIdentifier ? '• This is the identifier property 🔑' : ''}\n${prop.description ? `• ${prop.description}` : ''}\n\n_In production, you could filter ${entity.name.toLowerCase()}s by this property._`,
-          highlightEntities: [entity.id],
-          highlightRelationships: [],
-          interpretation: `Detected: property query for ${entity.name}.${prop.name}`
-        };
-      }
-    }
-  }
+    const entityNameLower = entity.name.toLowerCase();
+    if (!normalizedQuery.includes(entityNameLower) || !hasConnectionIntent(normalizedNoPunctuation)) continue;
 
-  // Counting queries
-  if (normalizedQuery.includes('how many')) {
-    for (const entity of entities) {
-      if (normalizedQuery.includes(entity.name.toLowerCase())) {
-        return {
-          query,
-          result: `The ontology defines the **${entity.name}** entity type.\n\n_In production, this query would count actual ${entity.name.toLowerCase()} records from the data platform._\n\nExample: "SELECT COUNT(*) FROM ${entity.name.toLowerCase()}s"`,
-          highlightEntities: [entity.id],
-          highlightRelationships: [],
-          interpretation: `Detected: count query for ${entity.name}`
-        };
-      }
-    }
-  }
+    const relatedRelationships = relationships.filter(
+      relationship => relationship.from === entity.id || relationship.to === entity.id,
+    );
+    if (relatedRelationships.length === 0) continue;
 
-  // Schema overview query
-  if (normalizedQuery.includes('entities') || normalizedQuery.includes('schema') || normalizedQuery.includes('overview')) {
-    const entityList = entities.map(e => `• ${e.icon} **${e.name}** - ${e.description.slice(0, 50)}...`).join('\n');
+    const relationshipList = relatedRelationships.map(relationship => {
+      const isOutgoing = relationship.from === entity.id;
+      const otherEntityId = isOutgoing ? relationship.to : relationship.from;
+      const otherEntity = entities.find(candidate => candidate.id === otherEntityId);
+      const direction = isOutgoing ? '→' : '←';
+      return `• **${relationship.name}** ${direction} ${otherEntity?.icon} ${otherEntity?.name} (${relationship.cardinality})`;
+    }).join('\n');
+
     return {
       query,
-      result: `**${ontology.name}** Schema Overview\n\n${entityList}\n\n**Total:** ${entities.length} entities, ${relationships.length} relationships`,
-      highlightEntities: entities.map(e => e.id),
-      highlightRelationships: [],
-      interpretation: "Detected: schema overview request"
+      result: `${jaFormatters.queryConnectionCount(entity.name, relatedRelationships.length)}\n\n${relationshipList}`,
+      highlightEntities: [entity.id, ...relatedRelationships.map(relationship => relationship.from === entity.id ? relationship.to : relationship.from)],
+      highlightRelationships: relatedRelationships.map(relationship => relationship.id),
+      interpretation: jaFormatters.queryDetectedConnections(entity.name),
     };
   }
 
-  // No match found - provide helpful suggestions
+  for (const entity of entities) {
+    for (const property of entity.properties) {
+      if (!normalizedQuery.includes(property.name.toLowerCase()) || !normalizedQuery.includes(entity.name.toLowerCase())) continue;
+
+      const details = [
+        `• ${jaMessages.query.type}: ${property.type}`,
+        property.unit ? `• ${jaMessages.query.unit}: ${property.unit}` : '',
+        property.isIdentifier ? `• ${jaMessages.query.identifierProperty}` : '',
+        property.description ? `• ${property.description}` : '',
+      ].filter(Boolean).join('\n');
+
+      return {
+        query,
+        result: `**${entity.name}.${property.name}**\n\n${details}\n\n${jaFormatters.queryPropertyProductionNote(entity.name)}`,
+        highlightEntities: [entity.id],
+        highlightRelationships: [],
+        interpretation: jaFormatters.queryDetectedProperty(entity.name, property.name),
+      };
+    }
+  }
+
+  const asksForCount = normalizedQuery.includes('how many') || includesAny(normalizedQuery, ['何件', 'いくつ', '件数']);
+  if (asksForCount) {
+    for (const entity of entities) {
+      if (!normalizedQuery.includes(entity.name.toLowerCase())) continue;
+
+      return {
+        query,
+        result: `オントロジーには**${entity.name}**エンティティ型が定義されています。\n\n${jaFormatters.queryCountProductionNote(entity.name)}\n\n例: "SELECT COUNT(*) FROM ${entity.name.toLowerCase()}s"`,
+        highlightEntities: [entity.id],
+        highlightRelationships: [],
+        interpretation: jaFormatters.queryDetectedCount(entity.name),
+      };
+    }
+  }
+
+  const asksForSchema = includesAny(normalizedQuery, [
+    'entities',
+    'schema',
+    'overview',
+    'エンティティ一覧',
+    'スキーマ',
+    '概要',
+    '全体像',
+  ]);
+
+  if (asksForSchema) {
+    const entityList = entities
+      .map(entity => `• ${entity.icon} **${entity.name}** - ${entity.description.slice(0, 50)}...`)
+      .join('\n');
+    return {
+      query,
+      result: `**${ontology.name}** スキーマ概要\n\n${entityList}\n\n**${jaFormatters.querySchemaTotal(entities.length, relationships.length)}**`,
+      highlightEntities: entities.map(entity => entity.id),
+      highlightRelationships: [],
+      interpretation: jaMessages.query.schemaInterpretation,
+    };
+  }
+
   const suggestions = generateQuerySuggestions(ontology).slice(0, 3);
   return {
     query,
-    result: `I couldn't interpret "${query}" for **${ontology.name}**.\n\nTry asking:\n${suggestions.map(s => `• "${s}"`).join('\n')}\n\nOr click on graph elements to explore the ontology visually.`,
+    result: jaFormatters.queryFallback(query, ontology.name, suggestions),
     highlightEntities: [],
     highlightRelationships: [],
-    interpretation: undefined
+    interpretation: undefined,
   };
 }
