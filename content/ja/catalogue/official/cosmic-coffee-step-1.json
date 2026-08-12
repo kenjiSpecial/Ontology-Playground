@@ -29,7 +29,7 @@
     {
       "id": "product",
       "displayName": "商品",
-      "displayDescription": "販売するメニュー商品または物販商品を表します。"
+      "displayDescription": "販売可能なメニュー商品または物販商品を表します。"
     }
   ],
   "properties": [

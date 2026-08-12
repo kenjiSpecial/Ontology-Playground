@@ -105,8 +105,11 @@ preserving RDF/OWL source data, stable IDs, bindings, query matching, and
 export compatibility. See the [Japanese localization guide](docs/japanese-localization.md)
 for the schema, complete-coverage rules, and validation procedure.
 
-Per-entry catalogue translation is not complete yet; Issues #27–#33 track the
-remaining real-catalogue translation work.
+Japanese display overlays currently cover 8 of the 71 real catalogue entries
+(8/71): the four Cosmic Coffee and four E-commerce entries planned for Issue
+#27. Issue #27 is planned to complete with these overlays; the remaining 63
+entries are tracked in Issues #28–#33. The full catalogue is not yet
+translated.
 
 ### Quest System
 

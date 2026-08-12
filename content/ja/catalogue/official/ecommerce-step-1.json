@@ -29,7 +29,7 @@
     {
       "id": "order",
       "displayName": "注文",
-      "displayDescription": "購入者が行った購入注文を表します。"
+      "displayDescription": "購入者が行った注文を表します。"
     }
   ],
   "properties": [

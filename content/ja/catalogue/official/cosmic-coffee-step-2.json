@@ -29,7 +29,7 @@
     {
       "id": "product",
       "displayName": "商品",
-      "displayDescription": "販売するメニュー商品または物販商品を表します。"
+      "displayDescription": "販売可能なメニュー商品または物販商品を表します。"
     },
     {
       "id": "store",
@@ -75,7 +75,7 @@
     },
     {
       "id": "order_processed_at_store",
-      "displayName": "店舗で処理する",
+      "displayName": "店舗で処理される",
       "displayDescription": "注文が特定の店舗で処理されることを表します。"
     }
   ],

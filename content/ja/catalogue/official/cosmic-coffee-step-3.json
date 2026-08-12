@@ -3,7 +3,7 @@
   "version": 1,
   "entry": {
     "displayName": "フォース・コーヒー — ステップ3：サプライチェーン",
-    "displayDescription": "仕入先と出荷物流を加えた、完全なモデルです。",
+    "displayDescription": "仕入先と出荷の流れを加えた、完全なモデルです。",
     "displayTags": [
       { "tag": "coffee", "displayName": "コーヒー" },
       { "tag": "retail", "displayName": "小売" },
@@ -13,7 +13,7 @@
   },
   "ontology": {
     "displayName": "フォース・コーヒー — ステップ3",
-    "displayDescription": "仕入先と出荷を加え、豆の仕入れから提供までの流れを表す完全なサプライチェーンモデルです。"
+    "displayDescription": "仕入先と出荷の流れを加え、豆の仕入れから提供までを表す完全なサプライチェーンモデルです。"
   },
   "entities": [
     {
@@ -29,7 +29,7 @@
     {
       "id": "product",
       "displayName": "商品",
-      "displayDescription": "販売するメニュー商品または物販商品を表します。"
+      "displayDescription": "販売可能なメニュー商品または物販商品を表します。"
     },
     {
       "id": "store",
@@ -95,12 +95,12 @@
     },
     {
       "id": "order_processed_at_store",
-      "displayName": "店舗で処理する",
+      "displayName": "店舗で処理される",
       "displayDescription": "注文が特定の店舗で処理されることを表します。"
     },
     {
       "id": "product_sourced_from_supplier",
-      "displayName": "仕入先から調達",
+      "displayName": "仕入先から調達される",
       "displayDescription": "商品が仕入先から調達されることを表します。"
     },
     {
@@ -110,7 +110,7 @@
     },
     {
       "id": "shipment_to_store",
-      "displayName": "店舗へ配送",
+      "displayName": "店舗へ配送される",
       "displayDescription": "出荷が店舗へ届けられることを表します。"
     },
     {
