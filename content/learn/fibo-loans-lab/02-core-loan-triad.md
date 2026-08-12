@@ -1,7 +1,7 @@
 ---
-title: ローンの中核三者
+title: ローンの中核3要素
 slug: core-loan-triad
-description: FIBOローンの基礎となるLoan、Borrower、Lenderの三者を、プロパティとリレーションシップでモデル化します。
+description: FIBOローンの基礎となるLoan、Borrower、Lenderの3要素を、プロパティとリレーションシップでモデル化します。
 order: 2
 embed: official/fibo-loans-step-1
 reviewStatus: under-human-review
@@ -57,7 +57,7 @@ FIBOでは、ローン当事者のロールを、契約オブジェクトから�
 
 <ontology-embed id="official/fibo-loans-step-1" height="340px"></ontology-embed>
 
-*3つのエンティティと2つのリレーションシップが、あらゆるFIBO融資モデルの基礎となるローンの中核三者を形成します。*
+*3つのエンティティと2つのリレーションシップが、あらゆるFIBO融資モデルの基礎となるローンの中核3要素を形成します。*
 
 ```quiz
 Q: ローンの返済責任を最も適切に表すリレーションシップはどれですか？

@@ -39,7 +39,7 @@ FIBOは大規模で、証券、デリバティブ、コーポレートアクシ�
 
 4つの段階を通して、10個のエンティティ型と10個のリレーションシップを持つ**ローンオントロジー**をモデル化します。
 
-1. **ローンの中核三者** — `Loan`、`Borrower`、`Lender`
+1. **ローンの中核3要素** — `Loan`、`Borrower`、`Lender`
 2. **担保と返済予定** — `Collateral`、`LoanPaymentSchedule`
 3. **サービシングと支払履歴** — `Servicer`、`PaymentHistory`、`PaymentTransaction`
 4. **リスク分類子** — `OwnershipInterest`、`LenderLienPosition`
