@@ -66,7 +66,7 @@ reviewStatus: under-human-review
 このパターンにより、次のような精密な絞り込みが可能になります。
 
 - 「`hurricaneZone = true`かつ`coastal = true`であるすべての管轄区域を表示」
-- 「`earthquakeZone`に該当する管轄区域での総エクスポージャーはいくらか？」
+- 実運用のローンデータを`Jurisdiction`へ結んだ場合、「`earthquakeZone`に該当する管轄区域での総エクスポージャーはいくらか？」
 
 ## 2つの独立した階層
 
@@ -75,13 +75,13 @@ reviewStatus: under-human-review
 1. **産業**：Sector ← Subsector ← IndustryGroup
 2. **地理**：Region ← Country（Jurisdictionを介する）およびRegion ← Jurisdiction
 
-これらは、後のステップでローン商品と規制上の限度を追加すると接続されます。
+後のステップでは「ローン分類＋規制」の第3クラスターを追加しますが、この産業・地理クラスターとは自動的には接続されません。領域横断分析には、実運用のポートフォリオデータ側で、ローンを`IndustryGroup`、`Jurisdiction`、`LoanType`、`ConcentrationCategory`へ結ぶ関係が必要です。
 
 ## ステップ2のグラフ（ステップ1との差分）
 
 <ontology-embed id="official/fibo-risk-step-2" diff="official/fibo-risk-step-1" height="400px"></ontology-embed>
 
-*強調表示された3つの新しいエンティティが地理の軸を追加します。2つのサブグラフはまだ独立しており、ステップ3で接続されます。*
+*強調表示された3つの新しいエンティティが地理の軸を追加します。産業と地理の2つのサブグラフは独立しており、このラボの後続ステップでも両者を直接結ぶ関係は追加されません。*
 
 ```quiz
 Q: Jurisdictionが単一のriskTypeプロパティではなくbooleanフラグを使うのはなぜですか？
