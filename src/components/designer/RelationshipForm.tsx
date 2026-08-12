@@ -2,6 +2,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useDesignerStore } from '../../store/designerStore';
 import type { Relationship } from '../../data/ontology';
 import { jaFormatters, jaMessages } from '../../locales/ja';
+import { getDisplayName } from '../../lib/displayText';
 
 const CARDINALITY_OPTIONS: Relationship['cardinality'][] = [
   'one-to-one', 'one-to-many', 'many-to-one', 'many-to-many',
@@ -73,9 +74,9 @@ export function RelationshipForm() {
           >
             <div className="designer-rel-header">
               <span className="designer-rel-flow">
-                {fromEntity?.icon ?? '?'} {fromEntity?.name ?? '???'}
+                {fromEntity?.icon ?? '?'} {fromEntity ? getDisplayName(fromEntity) : '???'}
                 <span className="designer-rel-arrow"> → </span>
-                {toEntity?.icon ?? '?'} {toEntity?.name ?? '???'}
+                {toEntity?.icon ?? '?'} {toEntity ? getDisplayName(toEntity) : '???'}
               </span>
               <button
                 className="designer-delete-btn"
@@ -108,7 +109,7 @@ export function RelationshipForm() {
                       onChange={(e) => updateRelationship(rel.id, { from: e.target.value })}
                     >
                       {entities.map((e) => (
-                        <option key={e.id} value={e.id}>{e.icon} {e.name}</option>
+                        <option key={e.id} value={e.id}>{e.icon} {getDisplayName(e)}</option>
                       ))}
                     </select>
                   </label>
@@ -119,7 +120,7 @@ export function RelationshipForm() {
                       onChange={(e) => updateRelationship(rel.id, { to: e.target.value })}
                     >
                       {entities.map((e) => (
-                        <option key={e.id} value={e.id}>{e.icon} {e.name}</option>
+                        <option key={e.id} value={e.id}>{e.icon} {getDisplayName(e)}</option>
                       ))}
                     </select>
                   </label>

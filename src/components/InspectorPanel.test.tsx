@@ -50,4 +50,32 @@ describe('InspectorPanel quest progression', () => {
 
     expect(useAppStore.getState().currentStepIndex).toBe(2);
   });
+
+  it('renders localized names and descriptions while keeping property quest matching internal', () => {
+    const ontology = useAppStore.getState().currentOntology;
+    const localized = {
+      ...ontology,
+      entityTypes: ontology.entityTypes.map((entity) =>
+        entity.id === 'customer'
+          ? {
+              ...entity,
+              displayName: '顧客',
+              displayDescription: '商品を購入する人です。',
+              properties: entity.properties.map((property) =>
+                property.name === 'name' ? { ...property, displayName: '氏名' } : property,
+              ),
+            }
+          : entity,
+      ),
+    };
+    useAppStore.getState().loadOntology(localized);
+    useAppStore.getState().selectEntity('customer');
+
+    render(<InspectorPanel />);
+
+    expect(screen.getByText('顧客')).toBeTruthy();
+    expect(screen.getByText('商品を購入する人です。')).toBeTruthy();
+    expect(screen.getByText('氏名')).toBeTruthy();
+    expect(useAppStore.getState().selectedEntityId).toBe('customer');
+  });
 });

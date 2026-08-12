@@ -3,6 +3,7 @@ import { Plus, Trash2, ChevronDown, ChevronRight, GripVertical, Key } from 'luci
 import { useDesignerStore, ENTITY_COLORS, ENTITY_ICONS, fabricIQNameError } from '../../store/designerStore';
 import type { Property } from '../../data/ontology';
 import { jaFormatters, jaMessages } from '../../locales/ja';
+import { getDisplayName } from '../../lib/displayText';
 
 const PROPERTY_TYPES: Property['type'][] = [
   'string', 'integer', 'decimal', 'double', 'date', 'datetime', 'boolean', 'enum',
@@ -97,7 +98,7 @@ export function EntityForm() {
               >
                 {entity.icon}
               </span>
-              <span className="designer-entity-name">{entity.name || jaMessages.designer.entity.unnamed}</span>
+              <span className="designer-entity-name">{getDisplayName(entity, jaMessages.designer.entity.unnamed)}</span>
               <span className="designer-entity-badge">{jaFormatters.designerPropertyBadge(entity.properties.length)}</span>
               <button
                 className="designer-delete-btn"

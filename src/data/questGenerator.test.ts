@@ -80,6 +80,42 @@ describe('generateQuestsForOntology', () => {
     expect(traversalStep?.instruction).not.toContain('Show me all is supported by connections');
   });
 
+  it('uses display names in quest copy while retaining internal quest targets', () => {
+    const localizedOntology: Ontology = {
+      ...ontology,
+      displayName: 'インシデント管理',
+      entityTypes: ontology.entityTypes.map((entity) => ({
+        ...entity,
+        displayName: entity.id === 'service' ? 'サービス' : '構成アイテム',
+        properties: entity.properties.map((property) =>
+          property.name === 'serviceId' ? { ...property, displayName: 'サービス識別子' } : property,
+        ),
+      })),
+      relationships: ontology.relationships.map((relationship) => ({
+        ...relationship,
+        displayName: 'サポートされる',
+      })),
+    };
+
+    const generatedQuests = generateQuestsForOntology(localizedOntology);
+    const entityQuest = generatedQuests.find((quest) => quest.id === 'quest-1');
+    expect(entityQuest?.steps[0].instruction).toContain('サービス');
+    expect(entityQuest?.steps[0].targetId).toBe('service');
+    expect(entityQuest?.steps[1].instruction).toContain('構成アイテム');
+    expect(entityQuest?.steps[1].targetId).toBe('configurationitem');
+
+    const propertyQuest = generatedQuests.find((quest) => quest.id === 'quest-4');
+    const identifierStep = propertyQuest?.steps.find((step) => step.targetType === 'property');
+    expect(identifierStep?.instruction).toContain('サービス識別子');
+    expect(identifierStep?.targetId).toBe('serviceId');
+
+    const queryQuest = generatedQuests.find((quest) => quest.id === 'quest-5');
+    expect(queryQuest?.steps[0].instruction).toContain('サービス');
+    expect(queryQuest?.steps[1].instruction).toContain('構成アイテム');
+    expect(queryQuest?.steps[2].instruction).toContain('サポートされる');
+    expect(validateQueryQuestSteps(generatedQuests, localizedOntology)).toEqual([]);
+  });
+
   it('generates Japanese authored quest content while preserving ontology values', () => {
     const generatedQuests = generateQuestsForOntology(ontology);
     const values = generatedQuests.flatMap((quest) => [

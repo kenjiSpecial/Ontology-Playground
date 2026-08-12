@@ -164,6 +164,57 @@ describe('GalleryModal', () => {
     expect(screen.queryByText('Finance Ledger')).toBeNull();
   });
 
+  it('renders localized catalogue and ontology text while allowing internal-name search', async () => {
+    const localizedCatalogue: Catalogue = {
+      ...fakeCatalogue,
+      entries: fakeCatalogue.entries.map((entry, index) =>
+        index === 0
+          ? {
+              ...entry,
+              displayName: 'コーヒー業務モデル',
+              displayDescription: 'コーヒー業務を表すカタログ項目です。',
+              displayTags: ['コーヒー', '供給網'],
+              ontology: {
+                ...entry.ontology,
+                displayName: 'コーヒーオントロジー',
+                entityTypes: entry.ontology.entityTypes.map((entity, entityIndex) =>
+                  entityIndex === 0
+                    ? {
+                        ...entity,
+                        displayName: '顧客',
+                        displayDescription: '商品を購入する人です。',
+                        properties: entity.properties.map((property) => ({
+                          ...property,
+                          displayName: '識別子',
+                        })),
+                      }
+                    : entity,
+                ),
+                relationships: entry.ontology.relationships.map((relationship) => ({
+                  ...relationship,
+                  displayName: '注文する',
+                })),
+              },
+            }
+          : entry,
+      ),
+    };
+    mockFetchSuccess(localizedCatalogue);
+    const user = userEvent.setup();
+    render(<GalleryModal onClose={onClose} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('コーヒー業務モデル')).toBeTruthy();
+    });
+    expect(screen.getByText('コーヒー業務を表すカタログ項目です。')).toBeTruthy();
+    expect(screen.queryByText('Fourth Coffee')).toBeNull();
+
+    const searchInput = screen.getByPlaceholderText('名前、タグ、投稿者で検索…');
+    await user.clear(searchInput);
+    await user.type(searchInput, 'Fourth Coffee');
+    expect(screen.getByText('コーヒー業務モデル')).toBeTruthy();
+  });
+
   it('filters entries by search query (tag)', async () => {
     mockFetchSuccess();
     const user = userEvent.setup();

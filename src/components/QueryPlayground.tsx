@@ -4,6 +4,7 @@ import { useAppStore } from '../store/appStore';
 import { processQuery, generateQuerySuggestions } from '../data/queryEngine';
 import { Search, Sparkles, X, Lightbulb } from 'lucide-react';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayName } from '../lib/displayText';
 
 export function QueryPlayground() {
   const [input, setInput] = useState('');
@@ -103,7 +104,7 @@ export function QueryPlayground() {
         <input
           type="text"
           className="query-input"
-          placeholder={jaFormatters.queryPlaceholder(currentOntology.name)}
+          placeholder={jaFormatters.queryPlaceholder(getDisplayName(currentOntology))}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}

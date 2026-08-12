@@ -9,6 +9,7 @@ import { navigate, parseHash } from '../lib/router';
 import type { CatalogueEntry, Catalogue } from '../types/catalogue';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../types/catalogue';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayDescription, getDisplayName, matchesSearch } from '../lib/displayText';
 
 interface GalleryModalProps {
   onClose: () => void;
@@ -83,13 +84,30 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
       if (q) {
         const haystack = [
           entry.name,
+          entry.displayName,
           entry.description,
+          entry.displayDescription,
           entry.author,
           ...entry.tags,
+          ...(entry.displayTags ?? []),
+          entry.ontology.name,
+          entry.ontology.displayName,
+          ...entry.ontology.entityTypes.flatMap((entity) => [
+            entity.name,
+            entity.displayName,
+            entity.description,
+            entity.displayDescription,
+            ...entity.properties.flatMap((property) => [property.name, property.displayName]),
+          ]),
+          ...entry.ontology.relationships.flatMap((relationship) => [
+            relationship.name,
+            relationship.displayName,
+            relationship.description,
+            relationship.displayDescription,
+          ]),
         ]
-          .join(' ')
-          .toLowerCase();
-        if (!haystack.includes(q)) return false;
+          .filter((value): value is string => Boolean(value));
+        if (!haystack.some((value) => matchesSearch(q, value))) return false;
       }
       return true;
     });
@@ -268,6 +286,9 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
               const isActive = currentOntology.name === entry.ontology.name;
               const categoryColor = CATEGORY_COLORS[entry.category] ?? '#6B7280';
               const showRdf = rdfViewId === entry.id;
+              const displayName = getDisplayName(entry);
+              const displayDescription = getDisplayDescription(entry);
+              const displayTags = entry.displayTags ?? entry.tags;
 
               return (
                 <motion.div
@@ -305,7 +326,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                         {entry.icon || '📄'}
                       </div>
                       <div>
-                        <div style={{ fontSize: 16, fontWeight: 600 }}>{entry.name}</div>
+                        <div style={{ fontSize: 16, fontWeight: 600 }}>{displayName}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span
                             style={{
@@ -366,13 +387,13 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                   </div>
 
                   <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.5 }}>
-                    {entry.description}
+                    {displayDescription}
                   </p>
 
                   {/* Tags */}
-                  {entry.tags.length > 0 && (
+                  {displayTags.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
-                      {entry.tags.map((tag) => (
+                      {entry.tags.map((tag, index) => (
                         <span
                           key={tag}
                           style={{
@@ -383,7 +404,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                             color: 'var(--text-tertiary)',
                           }}
                         >
-                          {tag}
+                          {displayTags[index] ?? tag}
                         </span>
                       ))}
                     </div>
