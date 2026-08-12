@@ -215,65 +215,65 @@ export interface QueryResponse {
 
 export const nlQueryResponses: QueryResponse[] = [
   {
-    query: "show me all gold tier customers",
-    matches: ["gold tier", "gold customers", "customers gold"],
-    result: "Found 1 Gold tier customer:\n• Arif Ramadhan (CUST-001) - Gold tier since 2024",
+    query: "ゴールド会員の顧客を表示して",
+    matches: ["ゴールド会員", "ゴールドの顧客", "顧客 ゴールド", "gold tier", "gold customers", "customers gold"],
+    result: "ゴールド会員の顧客が1人見つかりました:\n• Arif Ramadhan (CUST-001) - 2024年からゴールド会員",
     highlightEntities: ["customer"],
     highlightRelationships: []
   },
   {
-    query: "which products come from ethiopia",
-    matches: ["products ethiopia", "ethiopian", "from ethiopia"],
-    result: "Found 1 product from Ethiopia:\n• Ethiopian Single Origin (☕ Brewed) - $4.50\n  Sourced from: Ethiopia Highlands Farm",
+    query: "エチオピア産の製品はどれですか",
+    matches: ["エチオピア産", "エチオピアの製品", "products ethiopia", "ethiopian", "from ethiopia"],
+    result: "エチオピア産の製品が1件見つかりました:\n• Ethiopian Single Origin (☕ Brewed) - $4.50\n  仕入先: Ethiopia Highlands Farm",
     highlightEntities: ["product", "supplier"],
     highlightRelationships: ["product_sourced_from_supplier"]
   },
   {
-    query: "what orders did arif ramadhan place",
-    matches: ["orders arif", "arif ramadhan orders", "arif placed"],
-    result: "Arif Ramadhan's orders:\n• ORD-2025-001 - $12.50 (Completed)\n  Items: Ethiopian Single Origin x2, Colombian Latte x1\n  Store: Downtown Seattle",
+    query: "Arif Ramadhanが行った注文は何ですか",
+    matches: ["arif ramadhanの注文", "arif ramadhan 注文", "what orders did arif ramadhan place", "orders arif", "arif ramadhan orders", "arif placed"],
+    result: "Arif Ramadhanの注文:\n• ORD-2025-001 - $12.50 (完了)\n  商品: Ethiopian Single Origin ×2、Colombian Latte ×1\n  店舗: Downtown Seattle",
     highlightEntities: ["customer", "order", "store"],
     highlightRelationships: ["customer_places_order", "order_processed_at_store"]
   },
   {
-    query: "how many stores are in seattle",
-    matches: ["stores seattle", "seattle stores", "how many stores"],
-    result: "Found 2 stores in Seattle:\n• Fourth Coffee - Downtown Seattle (45 seats)\n• Fourth Coffee - Capitol Hill (32 seats)",
+    query: "シアトルには店舗が何店ありますか",
+    matches: ["シアトルの店舗", "シアトル 店舗", "stores seattle", "seattle stores", "how many stores"],
+    result: "Seattleに2店舗見つかりました:\n• Fourth Coffee - Downtown Seattle (45席)\n• Fourth Coffee - Capitol Hill (32席)",
     highlightEntities: ["store"],
     highlightRelationships: []
   },
   {
-    query: "show supply chain for colombian latte",
-    matches: ["supply chain", "colombian latte", "where does colombian latte come from"],
-    result: "Supply chain for Colombian Latte:\n• Bean Origin: Colombia 🇨🇴\n• Supplier: Colombian Mountain Roasters\n• Certification: Rainforest Alliance 🌿\n• Latest Shipment: SHIP-001 (Delivered Jan 27)",
+    query: "Colombian Latteのサプライチェーンを表示して",
+    matches: ["サプライチェーン", "colombian latte", "supply chain", "where does colombian latte come from"],
+    result: "Colombian Latteのサプライチェーン:\n• 豆の原産地: Colombia 🇨🇴\n• サプライヤー: Colombian Mountain Roasters\n• 認証: Rainforest Alliance 🌿\n• 最新の出荷: SHIP-001 (1月27日配達済み)",
     highlightEntities: ["product", "supplier", "shipment"],
     highlightRelationships: ["product_sourced_from_supplier", "shipment_from_supplier"]
   },
   {
-    query: "what is an entity type",
-    matches: ["what is entity", "entity type", "define entity"],
-    result: "An Entity Type is a reusable logical model of a real-world concept (like Customer, Product, or Order). It standardizes the name, description, identifiers, and properties so every team means the same thing when using a term.",
+    query: "エンティティ型とは何ですか",
+    matches: ["エンティティ型とは", "エンティティとは", "what is entity", "entity type", "define entity"],
+    result: "エンティティ型は、Customer、Product、Orderなど、現実世界の概念を表す再利用可能な論理モデルです。名前、説明、識別子、プロパティを標準化し、すべてのチームが同じ用語を同じ意味で利用できるようにします。",
     highlightEntities: [],
     highlightRelationships: []
   },
   {
-    query: "what is a relationship",
-    matches: ["what is relationship", "define relationship", "relationships"],
-    result: "A Relationship is a typed, directional link between entity types. For example, 'Customer places Order' defines how customers connect to their orders. Relationships can have attributes like quantity or confidence.",
+    query: "リレーションシップとは何ですか",
+    matches: ["リレーションシップとは", "関係とは", "what is relationship", "define relationship", "relationships"],
+    result: "リレーションシップは、エンティティ型を結ぶ、型と方向を持つリンクです。たとえば「Customer places Order」は、顧客と注文のつながりを定義します。数量や信頼度などの属性を持たせることもできます。",
     highlightEntities: [],
     highlightRelationships: []
   },
   {
-    query: "show me platinum customers",
-    matches: ["platinum", "platinum customers", "customers platinum"],
-    result: "Found 1 Platinum tier customer:\n• Jaroslav Cerny (CUST-002) - Platinum tier\n  Total spend: $3,420.00\n  Member since: Jan 2023",
+    query: "プラチナ会員の顧客を表示して",
+    matches: ["プラチナ会員", "プラチナの顧客", "platinum", "platinum customers", "customers platinum"],
+    result: "プラチナ会員の顧客が1人見つかりました:\n• Jaroslav Cerny (CUST-002) - プラチナ会員\n  累計利用額: $3,420.00\n  登録時期: 2023年1月",
     highlightEntities: ["customer"],
     highlightRelationships: []
   },
   {
-    query: "list all organic products",
-    matches: ["organic", "organic products", "is organic"],
-    result: "Found 2 organic products:\n• Ethiopian Single Origin (Brewed) - $4.50 🌱\n• Nebula Cold Brew (Cold Brew) - $5.25 🌱",
+    query: "オーガニック製品をすべて表示して",
+    matches: ["オーガニック製品", "有機製品", "organic", "organic products", "is organic"],
+    result: "オーガニック製品が2件見つかりました:\n• Ethiopian Single Origin (Brewed) - $4.50 🌱\n• Nebula Cold Brew (Cold Brew) - $5.25 🌱",
     highlightEntities: ["product"],
     highlightRelationships: []
   }

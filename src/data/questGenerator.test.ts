@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { generateQuestsForOntology } from './questGenerator';
 import type { Ontology } from './ontology';
-import { validateQueryQuestSteps } from './questQueryValidator';
+import { extractQueryFromInstruction, validateQueryQuestSteps } from './questQueryValidator';
 import { cosmicCoffeeOntology } from './ontology';
 import { quests as defaultQuests } from './quests';
 
@@ -58,5 +58,30 @@ describe('generateQuestsForOntology', () => {
 
     expect(traversalStep?.instruction).toBe('Try a traversal query: "How does Service connect to ConfigurationItem?"');
     expect(traversalStep?.instruction).not.toContain('Show me all is supported by connections');
+  });
+
+  it('extracts queries enclosed in Japanese corner quotes', () => {
+    expect(extractQueryFromInstruction('「Problemとは何ですか？」と質問してください')).toBe('Problemとは何ですか？');
+  });
+
+  it('classifies Japanese fallback responses as query-step failures', () => {
+    const invalidQuest = [{
+      id: 'invalid-query-quest',
+      title: 'Temporary test quest',
+      description: 'Temporary test quest.',
+      difficulty: 'beginner' as const,
+      category: 'query' as const,
+      steps: [{
+        id: 'invalid-query-step',
+        instruction: '「まったく未知の質問」と質問してください',
+        targetType: 'query' as const,
+      }],
+      reward: { badge: 'Temporary', badgeIcon: '🧪', points: 0 },
+    }];
+
+    const issues = validateQueryQuestSteps(invalidQuest, ontology);
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0].reason).toBe('Query step falls back to the generic uninterpretable-query response.');
   });
 });
