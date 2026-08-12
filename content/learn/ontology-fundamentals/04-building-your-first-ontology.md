@@ -1,106 +1,106 @@
 ---
-title: Building Your First Ontology
+title: 初めてのオントロジーを構築する
 slug: building-your-first-ontology
-description: A step-by-step tutorial to create an ontology from scratch using the visual designer — add entities, define properties, connect with relationships, and export to RDF.
+description: ビジュアルデザイナーを使い、エンティティの追加、プロパティの定義、リレーションシップの接続、RDFへのエクスポートを通して、オントロジーをゼロから作成する手順を学びます。
 order: 4
 embed: official/cosmic-coffee
 ---
 
-## What we'll build
+## 構築するもの
 
-In this tutorial, you'll create a simple **Library** ontology with three entity types: `Book`, `Author`, and `Member` — connected by relationships. By the end, you'll have a valid RDF file ready for use with Microsoft Fabric IQ or any semantic tool.
+このチュートリアルでは、`Book`、`Author`、`Member`という3つのエンティティ型をリレーションシップで接続した、シンプルな**Library**オントロジーを作成します。最後には、Microsoft Fabric IQや任意のセマンティックツールで使える有効なRDFファイルが完成します。
 
-## Step 1: Open the designer
+## ステップ1：デザイナーを開く
 
-Click the **Designer** button in the top navigation bar, or go directly to [/#/designer](#/designer). You'll see a blank canvas: an entity form on the left, a live graph preview on the right.
+上部ナビゲーションバーの**デザイナー**ボタンをクリックするか、[/#/designer](#/designer)を直接開きます。左側にエンティティフォーム、右側にライブグラフプレビューがある、空のキャンバスが表示されます。
 
-## Step 2: Create entity types
+## ステップ2：エンティティ型を作成する
 
-Add three entities using the **+ Add Entity** button:
+**+ エンティティを追加**ボタンで、3つのエンティティを追加します。
 
 **Book**
-- Name: `Book`
-- Icon: `📚`
-- Color: pick a blue
-- Properties:
-  - `isbn` — string, **identifier** ✓
+- 名前：`Book`
+- アイコン：`📚`
+- 色：青を選択
+- プロパティ：
+  - `isbn` — string、**識別子** ✓
   - `title` — string
   - `publishedYear` — integer
 
 **Author**
-- Name: `Author`
-- Icon: `✍️`
-- Color: pick a green
-- Properties:
-  - `authorId` — string, **identifier** ✓
+- 名前：`Author`
+- アイコン：`✍️`
+- 色：緑を選択
+- プロパティ：
+  - `authorId` — string、**識別子** ✓
   - `name` — string
   - `nationality` — string
 
 **Member**
-- Name: `Member`
-- Icon: `👤`
-- Color: pick a purple
-- Properties:
-  - `memberId` — string, **identifier** ✓
+- 名前：`Member`
+- アイコン：`👤`
+- 色：紫を選択
+- プロパティ：
+  - `memberId` — string、**識別子** ✓
   - `name` — string
   - `joinDate` — date
 
-As you add each entity, watch the graph preview update in real-time.
+エンティティを追加するたびに、グラフプレビューがリアルタイムで更新されることを確認しましょう。
 
-## Step 3: Add relationships
+## ステップ3：リレーションシップを追加する
 
-Switch to the **Relationships** tab and add:
+**リレーションシップ**タブに切り替えて、次を追加します。
 
-| Relationship | From | To | Cardinality |
+| リレーションシップ | 始点 | 終点 | カーディナリティ |
 |-------------|------|-----|-------------|
-| `writtenBy` | Book | Author | Many-to-one |
-| `borrowedBy` | Book | Member | Many-to-many |
+| `writtenBy` | Book | Author | 多対一 |
+| `borrowedBy` | Book | Member | 多対多 |
 
-The `writtenBy` relationship is many-to-one because many books can share one author, but each book has one primary author. The `borrowedBy` relationship is many-to-many because a book can be borrowed by many members, and a member can borrow many books.
+`writtenBy`リレーションシップが多対一なのは、複数の本が1人の著者を共有できる一方で、各本には主著者が1人いるためです。`borrowedBy`リレーションシップが多対多なのは、1冊の本を複数のメンバーが借りられ、1人のメンバーも複数の本を借りられるためです。
 
-## Step 4: Validate
+## ステップ4：検証する
 
-Click the **Validate** button in the toolbar. If everything is correct, you'll see a green "No issues found" banner. Otherwise, fix any reported issues:
+ツールバーの**検証**ボタンをクリックします。すべて正しければ、緑色の「問題は見つかりません」というバナーが表示されます。問題が報告された場合は、次を確認して修正します。
 
-- Every entity must have at least one identifier property
-- Relationships must reference existing entity types
-- No duplicate IDs
+- すべてのエンティティに識別子プロパティが少なくとも1つある
+- リレーションシップが既存のエンティティ型を参照している
+- IDが重複していない
 
-## Step 5: Preview the RDF
+## ステップ5：RDFをプレビューする
 
-Click the **RDF** tab in the preview pane. You'll see the live RDF/OWL output with syntax highlighting. This is the exact file that tools like Fabric IQ consume.
+プレビューペインの**RDF**タブをクリックします。シンタックスハイライト付きのRDF/OWL出力が表示されます。これはFabric IQなどのツールが利用する実際のファイルです。
 
 <ontology-embed id="official/cosmic-coffee" height="400px"></ontology-embed>
 
-*The Fourth Coffee ontology was built using the same workflow. Your Library ontology will look similar — entities as colourful nodes, relationships as directed edges.*
+*Fourth Coffeeオントロジーも同じワークフローで構築されています。あなたのLibraryオントロジーも、色付きのノードでエンティティを、方向付きのエッジでリレーションシップを表す、似た見た目になります。*
 
-## Step 6: Export
+## ステップ6：エクスポートする
 
-You have three options:
+次の3つの方法があります。
 
-1. **Download RDF** — saves a `.rdf` file to your Downloads folder
-2. **Submit to Catalogue** — opens a one-click PR flow to contribute your ontology to the community catalogue (requires GitHub sign-in)
-3. **Copy JSON** — copies the JSON representation for use in apps
+1. **RDFをダウンロード** — `.rdf`ファイルをDownloadsフォルダーに保存します
+2. **カタログに送信** — オントロジーをコミュニティカタログに提供するワンクリックPRフローを開きます（GitHubへのサインインが必要です）
+3. **JSONをコピー** — アプリで使うJSON表現をコピーします
 
-## What's next?
+## 次のステップ
 
-- Explore the [Catalogue](#/catalogue) to see how other ontologies are structured
-- Read [Ontology Design Patterns](#/learn/ontology-design-patterns) for naming conventions and best practices
-- Try the **Query Playground** on the home page to ask natural-language questions against your ontology
+- [カタログ](#/catalogue)を見て、他のオントロジーがどのように構成されているか確認します
+- 命名規則とベストプラクティスについては、[オントロジー設計パターン](#/learn/ontology-design-patterns)を読みます
+- ホームページの**クエリ プレイグラウンド**で、オントロジーに対して自然言語の質問を試します
 
-## Key takeaways
+## 要点
 
-- The designer provides a visual, code-free workflow for building ontologies
-- Every entity needs a name, at least one property, and one identifier
-- Relationships connect entities with a name and cardinality
-- The live graph and RDF previews give instant feedback as you design
-- Export to RDF for Fabric IQ, or submit directly to the community catalogue
+- デザイナーは、コードを書かずにオントロジーを構築できる視覚的なワークフローを提供します
+- すべてのエンティティには、名前、少なくとも1つのプロパティ、1つの識別子が必要です
+- リレーションシップは、名前とカーディナリティを指定してエンティティを接続します
+- ライブグラフとRDFプレビューで、設計中にすぐ結果を確認できます
+- Fabric IQ向けにRDFへエクスポートするか、コミュニティカタログへ直接送信できます
 
 ```quiz
-Q: Why is the borrowedBy relationship between Book and Member set to many-to-many?
-- A book can only be borrowed once
-- Each member borrows exactly one book at a time
-- A book can be borrowed by many members over time, and a member can borrow many books [correct]
-- Many-to-many is the default cardinality for all relationships
-> A single book can be borrowed by different members at different times, and each member can borrow multiple books simultaneously — this bidirectional multiplicity is what makes it many-to-many.
+Q: BookとMemberの間のborrowedByリレーションシップが多対多なのはなぜですか？
+- 1冊の本は1回しか借りられないため
+- 各メンバーが一度にちょうど1冊の本を借りるため
+- 1冊の本を時間をおいて複数のメンバーが借りられ、1人のメンバーも複数の本を借りられるため [correct]
+- 多対多がすべてのリレーションシップのデフォルトのカーディナリティであるため
+> 1冊の本を異なる時間に異なるメンバーが借りられ、各メンバーは複数の本を同時に借りられます。この双方向の多重性が、多対多になる理由です。
 ```

@@ -1,100 +1,100 @@
 ---
-title: Ontology Design Patterns
+title: オントロジー設計パターン
 slug: ontology-design-patterns
-description: Practical naming conventions, modelling patterns, and common anti-patterns to avoid when designing ontologies for data platforms.
+description: データプラットフォーム向けのオントロジーを設計するときに役立つ命名規則、モデル化パターン、避けるべき一般的なアンチパターンを紹介します。
 order: 5
 embed: official/healthcare
 ---
 
-## Name things for humans
+## 人が理解できる名前を付ける
 
-The most important design decision is naming. Your entity types and properties will be read by both humans and machines — clear names make natural-language queries more accurate.
+最も重要な設計判断は命名です。エンティティ型とプロパティは人間にも機械にも読まれるため、明確な名前を付けると自然言語クエリの精度が上がります。
 
-**Do:**
-- Use singular nouns for entity types: `Customer`, `Product`, `Order`
-- Use camelCase for properties: `firstName`, `totalAmount`, `createdDate`
-- Use verb phrases for relationships: `placedBy`, `worksAt`, `contains`
+**推奨:**
+- エンティティ型には単数名詞を使う：`Customer`、`Product`、`Order`
+- プロパティにはcamelCaseを使う：`firstName`、`totalAmount`、`createdDate`
+- リレーションシップには動詞句を使う：`placedBy`、`worksAt`、`contains`
 
-**Don't:**
-- Use internal table names: `tbl_cust_v2`, `DIM_PRODUCT`
-- Abbreviate: `qty`, `amt`, `dt` — spell them out
-- Use generic names: `Item`, `Record`, `Thing`
+**避けること:**
+- 内部テーブル名を使う：`tbl_cust_v2`、`DIM_PRODUCT`
+- 省略する：`qty`、`amt`、`dt`ではなく、正式な名前を書く
+- 汎用的な名前を使う：`Item`、`Record`、`Thing`
 
-## One entity, one concept
+## 1つのエンティティに1つの概念
 
-Each entity type should represent a **single business concept**. If you find yourself adding unrelated properties, you probably need to split the entity.
+各エンティティ型は、**1つのビジネス概念**を表すべきです。無関係なプロパティを追加していると気付いたら、エンティティを分割する必要があるでしょう。
 
-**Anti-pattern:** A `Person` entity with `salary`, `patientId`, `courseGrade`, and `accountBalance` — this is four different concepts (Employee, Patient, Student, Customer) forced into one.
+**アンチパターン：** `Person`エンティティに`salary`、`patientId`、`courseGrade`、`accountBalance`を持たせること。これは4つの異なる概念（Employee、Patient、Student、Customer）を1つに押し込めています。
 
-**Better:** Create separate entity types and relate them if needed: a `Person` can be linked to an `Employee` record, a `Patient` record, etc.
+**より良い方法：** 別々のエンティティ型を作り、必要に応じて関連付けます。`Person`を`Employee`レコード、`Patient`レコードなどにリンクできます。
 
-## Choose identifiers carefully
+## 識別子は慎重に選ぶ
 
-The identifier property determines how instances are counted, grouped, and joined. A good identifier is:
+識別子プロパティによって、インスタンスの数え方、グループ化、結合方法が決まります。良い識別子には次の特徴があります。
 
-- **Unique** across all instances
-- **Stable** — doesn't change over time
-- **Meaningful** — preferably a business key, not an internal auto-increment
+- すべてのインスタンスで**一意**である
+- 時間が経っても変わらず**安定**している
+- **意味がある**。内部の自動インクリメントではなく、できればビジネスキーである
 
-Examples: `isbn` for books, `email` for users, `orderId` for orders.
+例：本には`isbn`、ユーザーには`email`、注文には`orderId`を使います。
 
-Avoid using compound identifiers (multiple fields that together form the key) — most ontology tools expect a single identifier per entity.
+複合識別子（複数のフィールドを組み合わせてキーにするもの）は避けてください。多くのオントロジーツールは、エンティティごとに1つの識別子を想定しています。
 
-## Model relationships, not foreign keys
+## 外部キーではなくリレーションシップをモデル化する
 
-In relational databases, you use foreign keys to link tables. In an ontology, you use **named relationships** with explicit semantics.
+リレーショナルデータベースでは、外部キーを使ってテーブルをリンクします。オントロジーでは、意味を明示した**名前付きリレーションシップ**を使います。
 
-| Relational | Ontology |
+| リレーショナル | オントロジー |
 |-----------|----------|
 | `orders.customer_id → customers.id` | `Order` → `placedBy` → `Customer` |
 | `order_items.product_id → products.id` | `OrderItem` → `contains` → `Product` |
 
-The relationship **name** is critical: it tells query engines (and humans) what the connection means. "placedBy" is infinitely clearer than a column called `fk_cust_id`.
+リレーションシップの**名前**は重要です。クエリエンジンと人間に、そのつながりが何を意味するかを伝えます。「placedBy」は`fk_cust_id`という列名より、はるかに明確です。
 
-## Get cardinality right
+## カーディナリティを正しく設定する
 
-Wrong cardinality leads to wrong aggregations. Ask yourself: "For one instance of A, how many instances of B can there be?"
+誤ったカーディナリティは、誤った集計につながります。「Aの1つのインスタンスに対して、Bのインスタンスはいくつ存在できますか？」と自問してください。
 
-- A customer can place **many** orders → one-to-many
-- An order is placed at **one** store → many-to-one
-- A student can take **many** courses, and a course has **many** students → many-to-many
+- 顧客は**複数の**注文を行える → 一対多
+- 注文は**1つの**店舗で行われる → 多対一
+- 学生は**複数の**コースを受講でき、1つのコースには**複数の**学生がいる → 多対多
 
 <ontology-embed id="official/healthcare" height="400px"></ontology-embed>
 
-*The Healthcare ontology is a good study in cardinality: a patient has many appointments, but each appointment has one provider. A diagnosis belongs to one patient but may be linked to many prescriptions.*
+*Healthcareオントロジーは、カーディナリティを学ぶ良い例です。患者には複数の予約がありますが、各予約には1人の医療提供者がいます。診断は1人の患者に属しますが、複数の処方箋にリンクされる場合があります。*
 
-## Avoid these common mistakes
+## よくある間違いを避ける
 
-| Mistake | Problem | Fix |
+| 間違い | 問題 | 解決策 |
 |---------|---------|-----|
-| **God entity** | One entity with 30+ properties | Split into focused entities |
-| **Missing identifiers** | Can't count or group instances | Add a unique identifier property |
-| **Vague relationship names** | `relatedTo`, `hasLink` | Use specific verbs: `prescribes`, `enrolledIn` |
-| **Circular one-to-ones** | A → B and B → A both 1:1 | Probably the same entity — merge them |
-| **Over-modelling** | Every internal table becomes an entity | Model what users will query, not your schema |
+| **ゴッドエンティティ** | 1つのエンティティに30以上のプロパティがある | 焦点を絞ったエンティティに分割する |
+| **識別子の欠落** | インスタンスを数えたりグループ化したりできない | 一意な識別子プロパティを追加する |
+| **曖昧なリレーションシップ名** | `relatedTo`、`hasLink` | 具体的な動詞を使う：`prescribes`、`enrolledIn` |
+| **循環する一対一** | A → BとB → Aがどちらも1:1 | おそらく同じエンティティなので統合する |
+| **過剰なモデル化** | すべての内部テーブルをエンティティにする | スキーマではなく、ユーザーがクエリするものをモデル化する |
 
-## When to use descriptions
+## 説明を使う場面
 
-Every entity type, property, and relationship can have an optional **description**. Use them when:
+すべてのエンティティ型、プロパティ、リレーションシップには、任意の**説明**を設定できます。次のような場合に使いましょう。
 
-- The name alone is ambiguous (`status` could mean many things)
-- The concept is domain-specific (`formulary`, `SKU`, `yield`)
-- You want to guide natural-language query interpretation
+- 名前だけでは曖昧な場合（`status`は複数の意味を持つ可能性があります）
+- 概念が特定のドメインに固有の場合（`formulary`、`SKU`、`yield`）
+- 自然言語クエリの解釈を導きたい場合
 
-## Key takeaways
+## 要点
 
-- Name for humans: singular nouns, camelCase, verb phrases
-- One entity, one concept — split over-loaded entities
-- Choose stable, unique, meaningful identifiers
-- Model relationships with names, not foreign key columns
-- Set cardinality correctly to enable proper aggregations
-- Add descriptions where names are ambiguous
+- 人のために命名する：単数名詞、camelCase、動詞句を使う
+- 1つのエンティティに1つの概念を割り当て、過負荷なエンティティを分割する
+- 安定して一意で意味のある識別子を選ぶ
+- 外部キー列ではなく、名前付きのリレーションシップをモデル化する
+- 正しい集計を可能にするため、カーディナリティを正しく設定する
+- 名前が曖昧な場合は説明を追加する
 
 ```quiz
-Q: A Person entity has properties salary, patientId, courseGrade, and accountBalance. What design pattern should you apply?
-- Add an identifier property
-- Merge all properties into a description field
-- Split into separate entity types (Employee, Patient, Student, Customer) and relate them [correct]
-- Remove all but one property to keep it simple
-> When an entity accumulates unrelated properties, it becomes a "god entity". The fix is to separate each concept into its own entity type and link them with relationships where needed.
+Q: Personエンティティにsalary、patientId、courseGrade、accountBalanceのプロパティがあります。どの設計パターンを適用すべきですか？
+- 識別子プロパティを追加する
+- すべてのプロパティを説明フィールドにまとめる
+- 別々のエンティティ型（Employee、Patient、Student、Customer）に分割し、関連付ける [correct]
+- シンプルに保つため、プロパティを1つだけ残して削除する
+> エンティティに無関係なプロパティが蓄積すると、「ゴッドエンティティ」になります。各概念を独自のエンティティ型に分け、必要に応じてリレーションシップでリンクするのが解決策です。
 ```

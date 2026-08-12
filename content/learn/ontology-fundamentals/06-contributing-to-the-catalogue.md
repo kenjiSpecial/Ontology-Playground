@@ -1,40 +1,40 @@
 ---
-title: Contributing to the Catalogue
+title: カタログに貢献する
 slug: contributing-to-the-catalogue
-description: How to share your ontology with the community — fork, add your RDF and metadata, submit a PR, and see it published in the catalogue.
+description: コミュニティとオントロジーを共有する方法を、フォーク、RDFとメタデータの追加、PRの送信、カタログへの公開まで順に説明します。
 order: 6
 embed: official/university
 ---
 
-## The community catalogue
+## コミュニティカタログ
 
-The Ontology Playground includes a [catalogue](#/catalogue) of ontologies — some maintained by the project team ("official") and others contributed by the community. Anyone can submit an ontology by opening a pull request.
+Ontology Playgroundにはオントロジーの[カタログ](#/catalogue)があります。プロジェクトチームが管理する「official」と、コミュニティから提供されたものが掲載されています。誰でもプルリクエストを作成してオントロジーを送信できます。
 
-## Two ways to contribute
+## 2つの貢献方法
 
-### Option A: One-click PR from the designer
+### 方法A：デザイナーからワンクリックでPRを作成
 
-The fastest way to contribute:
+最も速い方法は次のとおりです。
 
-1. Open the [Designer](#/designer) and build your ontology (or load an existing one)
-2. Click **Submit to Catalogue** in the toolbar
-3. Fill in the metadata: name, description, category, and tags
-4. Sign in with GitHub (device flow — no passwords stored)
-5. The tool automatically forks the repo, creates a branch, commits your RDF and metadata, and opens a pull request
+1. [デザイナー](#/designer)を開いてオントロジーを構築する（または既存のものを読み込む）
+2. ツールバーの**カタログに送信**をクリックする
+3. 名前、説明、カテゴリ、タグなどのメタデータを入力する
+4. GitHubでサインインする（デバイスフロー。パスワードは保存されません）
+5. ツールが自動的にリポジトリをフォークし、ブランチを作成してRDFとメタデータをコミットし、プルリクエストを開く
 
-That's it. The CI pipeline validates your RDF, checks the metadata schema, and runs tests. A maintainer reviews and merges.
+これで完了です。CIパイプラインがRDFを検証し、メタデータスキーマを確認してテストを実行します。その後、メンテナーがレビューしてマージします。
 
-### Option B: Manual PR
+### 方法B：手動でPRを作成
 
-If you prefer working with Git directly:
+Gitを直接操作したい場合は、次の手順で行います。
 
-1. **Fork** the repository on GitHub
-2. Create a directory under `catalogue/community/<your-github-username>/<ontology-slug>/`
-3. Add two files:
-   - `ontology.rdf` — your RDF/OWL file
-   - `metadata.json` — describes your ontology
+1. GitHubでリポジトリを**フォーク**する
+2. `catalogue/community/<your-github-username>/<ontology-slug>/`の下にディレクトリを作成する
+3. 次の2つのファイルを追加する：
+   - `ontology.rdf` — RDF/OWLファイル
+   - `metadata.json` — オントロジーを説明するファイル
 
-## The metadata format
+## メタデータの形式
 
 ```json
 {
@@ -47,56 +47,56 @@ If you prefer working with Git directly:
 }
 ```
 
-| Field | Required | Description |
+| フィールド | 必須 | 説明 |
 |-------|----------|-------------|
-| `name` | Yes | Display name for the catalogue |
-| `description` | Yes | One-sentence summary |
-| `category` | Yes | One of: `retail`, `healthcare`, `finance`, `manufacturing`, `education`, `technology`, `general` |
-| `icon` | No | Single emoji for the card |
-| `tags` | No | Array of lowercase keywords for search |
-| `author` | No | GitHub username (auto-filled by the one-click flow) |
+| `name` | はい | カタログに表示する名前 |
+| `description` | はい | 1文の概要 |
+| `category` | はい | `retail`、`healthcare`、`finance`、`manufacturing`、`education`、`technology`、`general`のいずれか |
+| `icon` | いいえ | カードに表示する1つの絵文字 |
+| `tags` | いいえ | 検索用の小文字キーワード配列 |
+| `author` | いいえ | GitHubユーザー名（ワンクリックフローで自動入力） |
 
-## Validation rules
+## 検証ルール
 
-Your PR will be automatically validated against these rules:
+PRは次のルールに基づいて自動検証されます。
 
-- **Valid RDF/OWL** — must parse without errors
-- **Round-trip fidelity** — `parse(serialize(ontology))` must produce equivalent output
-- **Metadata schema** — all required fields present, category is valid
-- **Directory naming** — lowercase alphanumeric, hyphens, and underscores only
-- **No symlinks** — for security, symbolic links in the catalogue are rejected
+- **有効なRDF/OWL** — エラーなく解析できること
+- **ラウンドトリップの忠実性** — `parse(serialize(ontology))`が同等の出力を生成すること
+- **メタデータスキーマ** — 必須フィールドがすべて存在し、カテゴリが有効であること
+- **ディレクトリ名** — 小文字の英数字、ハイフン、アンダースコアのみを使うこと
+- **シンボリックリンク禁止** — セキュリティのため、カタログ内のシンボリックリンクは拒否されます
 
-## What happens after merge?
+## マージ後の流れ
 
-Once merged, the build pipeline:
+マージされると、ビルドパイプラインが次を実行します。
 
-1. Runs `npm run catalogue:build` — compiles all RDF files into `catalogue.json`
-2. Deploys the updated site — your ontology appears in the [Gallery](#/catalogue)
-3. It's immediately available for embedding, deep-linking, and loading in the playground
+1. `npm run catalogue:build`を実行する — すべてのRDFファイルを`catalogue.json`にコンパイルします
+2. 更新されたサイトをデプロイする — オントロジーが[ギャラリー](#/catalogue)に表示されます
+3. Playgroundでの埋め込み、ディープリンク、読み込みがすぐに利用可能になります
 
 <ontology-embed id="official/university" height="400px"></ontology-embed>
 
-*The University System ontology is one of the official catalogue entries. Community contributions follow the same format — your ontology will look just like this in the gallery.*
+*University Systemオントロジーは、officialカタログエントリの1つです。コミュニティからの提供も同じ形式なので、ギャラリーではあなたのオントロジーもこのように表示されます。*
 
-## Tips for a smooth review
+## スムーズなレビューのためのヒント
 
-- **Write a good description** — explain what domain your ontology models and who it's for
-- **Add meaningful tags** — helps users find your ontology in search
-- **Test locally** — run `npm run validate -- catalogue/community/<you>/<slug>/ontology.rdf` before pushing
-- **Keep it focused** — a well-scoped ontology with 3-8 entity types is more useful than a sprawling one with 30+
+- **良い説明を書く** — オントロジーがモデル化する領域と対象ユーザーを説明します
+- **意味のあるタグを追加する** — ユーザーが検索でオントロジーを見つけやすくなります
+- **ローカルでテストする** — プッシュする前に`npm run validate -- catalogue/community/<you>/<slug>/ontology.rdf`を実行します
+- **焦点を絞る** — エンティティ型が3～8個の適切な範囲のオントロジーは、30個以上に広がったものより役立ちます
 
-## Key takeaways
+## 要点
 
-- Anyone can contribute an ontology via the one-click PR flow or a manual pull request
-- Each submission needs an RDF file and a `metadata.json`
-- CI validates your RDF automatically — fix any errors before the review
-- Merged ontologies appear in the live catalogue immediately after deployment
+- 誰でもワンクリックPRフローまたは手動のプルリクエストでオントロジーを提供できます
+- 各提出にはRDFファイルと`metadata.json`が必要です
+- CIがRDFを自動検証するため、レビュー前にエラーを修正します
+- マージされたオントロジーは、デプロイ後すぐにライブカタログへ表示されます
 
 ```quiz
-Q: What two files must every catalogue contribution include?
-- ontology.json and README.md
-- schema.rdf and config.yaml
-- ontology.rdf and metadata.json [correct]
-- index.html and style.css
-> Each catalogue entry requires an ontology.rdf file (the RDF/OWL ontology) and a metadata.json file (name, description, category, and tags for the catalogue listing).
+Q: すべてのカタログ提供に必要な2つのファイルは何ですか？
+- ontology.jsonとREADME.md
+- schema.rdfとconfig.yaml
+- ontology.rdfとmetadata.json [correct]
+- index.htmlとstyle.css
+> 各カタログエントリには、ontology.rdfファイル（RDF/OWLオントロジー）とmetadata.jsonファイル（カタログ掲載用の名前、説明、カテゴリ、タグ）が必要です。
 ```
