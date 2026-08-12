@@ -24,6 +24,16 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '06-contributing-to-the-catalogue.md',
     ],
   },
+  {
+    directory: 'cosmic-coffee-path',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-core-orders.md',
+      '03-adding-stores.md',
+      '04-complete-supply-chain.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {

@@ -1,49 +1,49 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Meet Fourth Coffee — a modern coffee chain that needs an ontology to unify data across stores, suppliers, and orders."
+description: "店舗、サプライヤー、注文にまたがるデータを統合するオントロジーを必要としている、現代的なコーヒーチェーンFourth Coffeeを紹介します。"
 order: 1
 ---
 
-## The scenario
+## シナリオ
 
-You are designing the data model for **Fourth Coffee**, a specialty coffee chain with stores across multiple cities. The company tracks:
+あなたは、複数の都市に店舗を展開するスペシャルティコーヒーチェーン **Fourth Coffee** のデータモデルを設計しています。同社は次を管理しています。
 
-- **Customers** who visit stores and place orders
-- **Orders** containing coffee products and food items
-- **Products** sourced from suppliers around the world
-- **Stores** in different cities with varying capacities
-- **Suppliers** providing beans and goods
-- **Shipments** moving products from suppliers to stores
+- 店舗を訪れ、注文する**顧客**
+- コーヒー商品やフードメニューを含む**注文**
+- 世界中のサプライヤーから調達する**商品**
+- さまざまな収容人数を持つ、異なる都市の**店舗**
+- 豆や商品を提供する**サプライヤー**
+- 商品をサプライヤーから店舗へ運ぶ**出荷**
 
-Data lives in multiple systems — a lakehouse for customer profiles, a real-time Eventhouse for order transactions, and a Power BI semantic model for product analytics.
+データは複数のシステムに分散しています。顧客プロファイル用のレイクハウス、注文取引用のリアルタイムEventhouse、商品分析用のPower BIセマンティックモデルです。
 
-## Why an ontology?
+## オントロジーが必要な理由
 
-Without an ontology, answering a question like **"Which suppliers provide organic beans to our highest-capacity stores?"** requires knowing which tables are in which system, how they join, and what the column names mean.
+オントロジーがなければ、**「最も収容人数の多い店舗にオーガニック豆を提供しているサプライヤーはどこか？」**という質問に答えるために、どのシステムにどのテーブルがあるか、どう結合するか、列名が何を意味するかを把握しなければなりません。
 
-With an ontology, the question maps directly to a graph traversal:
+オントロジーがあれば、この質問はグラフのたどり方に直接対応します。
 
-`Store → Shipment → Supplier` filtered by `Product.isOrganic = true` and `Store.capacity`.
+`Store → Shipment → Supplier` を `Product.isOrganic = true` と `Store.capacity` でフィルタリングします。
 
-## What we'll build
+## 構築するもの
 
-Over three steps, we'll progressively construct the complete Fourth Coffee ontology:
+3つのステップで、Fourth Coffeeの完全なオントロジーを段階的に構築します。
 
-| Step | Entities | What you'll learn |
+| ステップ | エンティティ | 学ぶこと |
 |---|---|---|
-| 1 | Customer, Order, Product | Core entity types, identifiers, cardinality |
-| 2 | + Store | Location modelling, many-to-one relationships |
-| 3 | + Supplier, Shipment | Supply chain connections, hub entities |
+| 1 | Customer, Order, Product | 中核となるエンティティ型、識別子、カーディナリティ |
+| 2 | + Store | 位置情報のモデリング、多対一のリレーションシップ |
+| 3 | + Supplier, Shipment | サプライチェーンの接続、ハブエンティティ |
 
-By the end, you'll have a 6-entity, 7-relationship ontology that can power graph queries, GQL, and natural-language Data Agent interactions.
+最終的に、グラフクエリ、GQL、自然言語によるData Agentとの対話を支えられる、6つのエンティティ型と7つのリレーションシップからなるオントロジーが完成します。
 
-## Key concepts
+## 主要概念
 
-- **Entity types** — the nouns of your domain (Customer, Order, Product…)
-- **Properties** — attributes that describe each entity (name, price, status…)
-- **Identifier properties** — unique keys for each entity instance
-- **Relationships** — directed connections with cardinality (one-to-many, many-to-many)
-- **Hub entities** — entities like Shipment that connect multiple domains
+- **エンティティ型** — ドメインの名詞（Customer、Order、Product…）
+- **プロパティ** — 各エンティティを説明する属性（name、price、status…）
+- **識別子プロパティ** — 各エンティティインスタンスの一意なキー
+- **リレーションシップ** — カーディナリティを持つ有向のつながり（一対多、多対多）
+- **ハブエンティティ** — 複数のドメインをつなぐShipmentのようなエンティティ
 
-Let's start with the three most fundamental entities in any commerce system.
+まずは、商取引システムの中核となる3つのエンティティから始めましょう。

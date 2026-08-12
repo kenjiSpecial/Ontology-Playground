@@ -1,7 +1,7 @@
 ---
-title: "Fourth Coffee"
+title: "Fourth Coffeeの学習パス"
 slug: cosmic-coffee-path
-description: "Build a coffee shop chain ontology from scratch — customers, orders, products, stores, suppliers, and shipments."
+description: "顧客、注文、商品、店舗、サプライヤー、出荷を含むコーヒーチェーンのオントロジーをゼロから構築します。"
 type: path
 icon: ☕
 ---
