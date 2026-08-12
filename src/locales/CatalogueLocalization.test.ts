@@ -93,7 +93,110 @@ function expectJapaneseDisplayText(value: string, path: string): void {
   expect(value, path).toMatch(JAPANESE_DISPLAY_TEXT_RE);
 }
 
-function expectLocalizedEntry(entry: CatalogueEntry, path: string): void {
+const STABLE_KEY_COLLECTIONS = [
+  'tags',
+  'entities',
+  'properties',
+  'relationships',
+  'relationshipAttributes',
+  'enumValues',
+] as const;
+type StableKeyCollection = (typeof STABLE_KEY_COLLECTIONS)[number];
+type StableKeyCollections = Record<StableKeyCollection, string[]>;
+
+function stableKeyForQa(parts: readonly string[]): string {
+  return parts.map((part) => `${part.length}:${part}`).join('|');
+}
+
+function expectExactStableKeyCoverage(
+  expected: readonly string[],
+  actual: readonly string[],
+  path: string,
+): void {
+  expect(new Set(expected).size, `${path}.sourceKeys`).toBe(expected.length);
+  expect(new Set(actual).size, `${path}.compiledKeys`).toBe(actual.length);
+  expect([...actual].sort(), `${path}.stableKeys`).toEqual([...expected].sort());
+}
+
+function stableKeysFromSource(entry: CatalogueEntry): StableKeyCollections {
+  return {
+    tags: entry.tags.map((tag) => stableKeyForQa([tag])),
+    entities: entry.ontology.entityTypes.map((entity) => stableKeyForQa([entity.id])),
+    properties: entry.ontology.entityTypes.flatMap((entity) =>
+      entity.properties.map((property) => stableKeyForQa([entity.id, property.name])),
+    ),
+    relationships: entry.ontology.relationships.map((relationship) =>
+      stableKeyForQa([relationship.id]),
+    ),
+    relationshipAttributes: entry.ontology.relationships.flatMap((relationship) =>
+      (relationship.attributes ?? []).map((attribute) =>
+        stableKeyForQa([relationship.id, attribute.name]),
+      ),
+    ),
+    enumValues: entry.ontology.entityTypes.flatMap((entity) =>
+      entity.properties.flatMap((property) =>
+        (property.values ?? []).map((value) =>
+          stableKeyForQa([entity.id, property.name, value]),
+        ),
+      ),
+    ),
+  };
+}
+
+function stableKeysFromCompiledEntry(entry: CatalogueEntry): StableKeyCollections {
+  return {
+    tags: entry.tags.flatMap((tag, index) =>
+      entry.displayTags?.[index] === undefined ? [] : [stableKeyForQa([tag])],
+    ),
+    entities: entry.ontology.entityTypes.flatMap((entity) =>
+      entity.displayName === undefined ? [] : [stableKeyForQa([entity.id])],
+    ),
+    properties: entry.ontology.entityTypes.flatMap((entity) =>
+      entity.properties.flatMap((property) =>
+        property.displayName === undefined
+          ? []
+          : [stableKeyForQa([entity.id, property.name])],
+      ),
+    ),
+    relationships: entry.ontology.relationships.flatMap((relationship) =>
+      relationship.displayName === undefined ? [] : [stableKeyForQa([relationship.id])],
+    ),
+    relationshipAttributes: entry.ontology.relationships.flatMap((relationship) =>
+      (relationship.attributes ?? []).flatMap((attribute) =>
+        attribute.displayName === undefined
+          ? []
+          : [stableKeyForQa([relationship.id, attribute.name])],
+      ),
+    ),
+    enumValues: entry.ontology.entityTypes.flatMap((entity) =>
+      entity.properties.flatMap((property) =>
+        (property.values ?? []).map((value) =>
+          Object.hasOwn(property.displayValues ?? {}, value)
+            ? stableKeyForQa([entity.id, property.name, value])
+            : '',
+        ),
+      ),
+    ).filter((key) => key.length > 0),
+  };
+}
+
+function expectStableKeyCoverage(
+  sourceEntry: CatalogueEntry,
+  compiledEntry: CatalogueEntry,
+  path: string,
+): void {
+  const expected = stableKeysFromSource(sourceEntry);
+  const actual = stableKeysFromCompiledEntry(compiledEntry);
+  for (const collection of STABLE_KEY_COLLECTIONS) {
+    expectExactStableKeyCoverage(expected[collection], actual[collection], `${path}.${collection}`);
+  }
+}
+
+function expectLocalizedEntry(
+  entry: CatalogueEntry,
+  sourceEntry: CatalogueEntry,
+  path: string,
+): void {
   expect(entry.displayName, `${path}.displayName`).toBeDefined();
   expect(entry.displayDescription, `${path}.displayDescription`).toBeDefined();
   expect(entry.displayTags, `${path}.displayTags`).toHaveLength(entry.tags.length);
@@ -104,39 +207,11 @@ function expectLocalizedEntry(entry: CatalogueEntry, path: string): void {
   });
 
   const ontology = entry.ontology;
-  const propertyCount = ontology.entityTypes.reduce(
-    (count, entity) => count + entity.properties.length,
-    0,
-  );
-  const relationshipAttributeCount = ontology.relationships.reduce(
-    (count, relationship) => count + (relationship.attributes?.length ?? 0),
-    0,
-  );
-  const enumValueCount = ontology.entityTypes.reduce(
-    (count, entity) =>
-      count +
-      entity.properties.reduce(
-        (propertyCountForEntity, property) =>
-          propertyCountForEntity + (property.values?.length ?? 0),
-        0,
-      ),
-    0,
-  );
 
   expect(ontology.displayName, `${path}.ontology.displayName`).toBeDefined();
   expect(ontology.displayDescription, `${path}.ontology.displayDescription`).toBeDefined();
   expect(ontology.entityTypes.every((entity) => entity.displayName !== undefined)).toBe(true);
-  expect(propertyCount).toBe(
-    ontology.entityTypes.flatMap((entity) => entity.properties).length,
-  );
-  expect(relationshipAttributeCount).toBe(
-    ontology.relationships.flatMap((relationship) => relationship.attributes ?? []).length,
-  );
-  expect(enumValueCount).toBe(
-    ontology.entityTypes.flatMap((entity) =>
-      entity.properties.flatMap((property) => property.values ?? []),
-    ).length,
-  );
+  expectStableKeyCoverage(sourceEntry, entry, path);
 
   expectJapaneseDisplayText(ontology.displayName!, `${path}.ontology.displayName`);
   expectJapaneseDisplayText(ontology.displayDescription!, `${path}.ontology.displayDescription`);
@@ -344,6 +419,34 @@ function compileFixture(
   return compileCatalogue({ rootDir: createFixture(mutateOverlay), logger: quietLogger });
 }
 
+function readSourceEntry(slug: string): CatalogueEntry {
+  const metadata = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, 'metadata.json'), 'utf8'),
+  ) as {
+    name: string;
+    description: string;
+    icon?: string;
+    category: string;
+    tags?: string[];
+    author?: string;
+  };
+  const { ontology, bindings } = parseRDF(
+    readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, `${slug}.rdf`), 'utf8'),
+  );
+  return {
+    id: `official/${slug}`,
+    name: metadata.name,
+    description: metadata.description,
+    icon: metadata.icon,
+    category: metadata.category,
+    tags: metadata.tags ?? [],
+    author: metadata.author ?? 'unknown',
+    source: 'official',
+    ontology,
+    bindings,
+  };
+}
+
 describe('catalogue localization integration', () => {
   beforeEach(() => {
     useAppStore.getState().resetToDefault();
@@ -370,33 +473,8 @@ describe('catalogue localization integration', () => {
     for (const slug of COSMIC_COFFEE_ENTRIES) {
       const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
       expect(entry, `official/${slug}`).toBeDefined();
-      expectLocalizedEntry(entry!, `official/${slug}`);
-
-      const metadata = JSON.parse(
-        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, 'metadata.json'), 'utf8'),
-      ) as {
-        name: string;
-        description: string;
-        icon?: string;
-        category: string;
-        tags?: string[];
-        author?: string;
-      };
-      const { ontology, bindings } = parseRDF(
-        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, `${slug}.rdf`), 'utf8'),
-      );
-      const sourceEntry = {
-        id: `official/${slug}`,
-        name: metadata.name,
-        description: metadata.description,
-        icon: metadata.icon,
-        category: metadata.category,
-        tags: metadata.tags ?? [],
-        author: metadata.author ?? 'unknown',
-        source: 'official' as const,
-        ontology,
-        bindings,
-      };
+      const sourceEntry = readSourceEntry(slug);
+      expectLocalizedEntry(entry!, sourceEntry, `official/${slug}`);
       expect(normalizedInternalValue(entry)).toEqual(normalizedInternalValue(sourceEntry));
     }
   });
@@ -407,33 +485,8 @@ describe('catalogue localization integration', () => {
     for (const slug of ECOMMERCE_ENTRIES) {
       const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
       expect(entry, `official/${slug}`).toBeDefined();
-      expectLocalizedEntry(entry!, `official/${slug}`);
-
-      const metadata = JSON.parse(
-        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, 'metadata.json'), 'utf8'),
-      ) as {
-        name: string;
-        description: string;
-        icon?: string;
-        category: string;
-        tags?: string[];
-        author?: string;
-      };
-      const { ontology, bindings } = parseRDF(
-        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, `${slug}.rdf`), 'utf8'),
-      );
-      const sourceEntry = {
-        id: `official/${slug}`,
-        name: metadata.name,
-        description: metadata.description,
-        icon: metadata.icon,
-        category: metadata.category,
-        tags: metadata.tags ?? [],
-        author: metadata.author ?? 'unknown',
-        source: 'official' as const,
-        ontology,
-        bindings,
-      };
+      const sourceEntry = readSourceEntry(slug);
+      expectLocalizedEntry(entry!, sourceEntry, `official/${slug}`);
       expect(normalizedInternalValue(entry)).toEqual(normalizedInternalValue(sourceEntry));
     }
   });
