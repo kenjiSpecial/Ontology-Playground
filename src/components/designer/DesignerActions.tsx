@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Download, AlertTriangle, CheckCircle, Upload, Github, FilePlus, Undo2, Redo2 } from 'lucide-react';
-import { useDesignerStore } from '../../store/designerStore';
+import { designerRdfFilename, useDesignerStore } from '../../store/designerStore';
 import type { ValidationError } from '../../store/designerStore';
 import { useAppStore } from '../../store/appStore';
-import { serializeToRDF } from '../../lib/rdf/serializer';
+import { serializeDesignerToRDF } from '../../lib/designerRdf';
 import { navigate } from '../../lib/router';
 import { SubmitCatalogueModal } from './SubmitCatalogueModal';
+import { jaFormatters, jaMessages } from '../../locales/ja';
 
 /**
  * Toolbar buttons — rendered in the designer topbar.
@@ -25,13 +26,12 @@ export function DesignerToolbar() {
     const errors = validate();
     // Allow download even with validation errors (user sees warnings in sidebar)
     try {
-      const rdf = serializeToRDF(ontology, []);
+      const rdf = serializeDesignerToRDF(ontology, []);
       const blob = new Blob([rdf], { type: 'application/rdf+xml' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const suffix = errors.length > 0 ? '-draft' : '';
-      a.download = `${ontology.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'ontology'}${suffix}.rdf`;
+      a.download = designerRdfFilename(ontology.name, errors.length > 0);
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -59,28 +59,28 @@ export function DesignerToolbar() {
   return (
     <>
       <div className="designer-toolbar">
-        <button className="designer-toolbar-btn" onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)">
+        <button className="designer-toolbar-btn" onClick={undo} disabled={!canUndo} title={jaMessages.designer.toolbar.undo}>
           <Undo2 size={14} />
         </button>
-        <button className="designer-toolbar-btn" onClick={redo} disabled={!canRedo} title="Redo (Ctrl+Shift+Z)">
+        <button className="designer-toolbar-btn" onClick={redo} disabled={!canRedo} title={jaMessages.designer.toolbar.redo}>
           <Redo2 size={14} />
         </button>
         <div className="designer-toolbar-sep" />
-        <button className="designer-toolbar-btn" onClick={handleNewOntology} title="New ontology">
-          <FilePlus size={14} /> New
+        <button className="designer-toolbar-btn" onClick={handleNewOntology} title={jaMessages.designer.toolbar.newOntology}>
+          <FilePlus size={14} /> {jaMessages.designer.toolbar.newOntology}
         </button>
-        <button className="designer-toolbar-btn" onClick={handleValidate} title="Validate ontology">
-          <CheckCircle size={14} /> Validate
+        <button className="designer-toolbar-btn" onClick={handleValidate} title={jaMessages.designer.toolbar.validate}>
+          <CheckCircle size={14} /> {jaMessages.designer.toolbar.validate}
         </button>
         <div className="designer-toolbar-sep" />
-        <button className="designer-toolbar-btn" onClick={handleExportRDF} title="Export RDF">
-          <Download size={14} /> Export RDF
+        <button className="designer-toolbar-btn" onClick={handleExportRDF} title={jaMessages.designer.toolbar.exportRdf}>
+          <Download size={14} /> {jaMessages.designer.toolbar.exportRdf}
         </button>
-        <button className="designer-toolbar-btn" onClick={handleLoadInPlayground} title="Load in Playground">
-          <Upload size={14} /> Load in Playground
+        <button className="designer-toolbar-btn" onClick={handleLoadInPlayground} title={jaMessages.designer.toolbar.loadInPlayground}>
+          <Upload size={14} /> {jaMessages.designer.toolbar.loadInPlayground}
         </button>
-        <button className="designer-toolbar-btn submit" onClick={handleSubmitToCatalogue} title="Submit to community catalogue">
-          <Github size={14} /> Submit to Catalogue
+        <button className="designer-toolbar-btn submit" onClick={handleSubmitToCatalogue} title={jaMessages.designer.toolbar.submitToCatalogue}>
+          <Github size={14} /> {jaMessages.designer.toolbar.submitToCatalogue}
         </button>
       </div>
 
@@ -114,7 +114,7 @@ export function DesignerValidation() {
     return (
       <div className="designer-validation-success">
         <div className="designer-validation-header" style={{ color: 'var(--ms-green, #16c60c)' }}>
-          <CheckCircle size={14} /> No issues found
+          <CheckCircle size={14} /> {jaMessages.designer.validation.noIssues}
         </div>
       </div>
     );
@@ -123,7 +123,7 @@ export function DesignerValidation() {
   return (
     <div className="designer-validation-errors">
       <div className="designer-validation-header">
-        <AlertTriangle size={14} /> {validationErrors.length} issue{validationErrors.length > 1 ? 's' : ''} to fix
+        <AlertTriangle size={14} /> {jaFormatters.designerValidationIssueCount(validationErrors.length)}
       </div>
       <ul>
         {validationErrors.map((err, i) => (

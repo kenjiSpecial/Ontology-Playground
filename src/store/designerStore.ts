@@ -7,6 +7,7 @@
  */
 import { create } from 'zustand';
 import type { Ontology, EntityType, Property, Relationship, RelationshipAttribute } from '../data/ontology';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 // ─── Validation ──────────────────────────────────────────────────────────────
 
@@ -21,6 +22,16 @@ export interface ValidationError {
 // an alphanumeric character.
 
 const FABRIC_IQ_NAME_RE = /^[A-Za-z0-9]([A-Za-z0-9_-]{0,24}[A-Za-z0-9])?$/;
+export const DEFAULT_DESIGNER_ONTOLOGY_NAME = jaMessages.designer.defaultOntologyName;
+
+export function designerRdfFilename(name: string, draft = false): string {
+  const asciiSlug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const slug = asciiSlug || (name === DEFAULT_DESIGNER_ONTOLOGY_NAME ? 'my-ontology' : 'ontology');
+  return `${slug}${draft ? '-draft' : ''}.rdf`;
+}
 
 export function isValidFabricIQName(name: string): boolean {
   return FABRIC_IQ_NAME_RE.test(name);
@@ -28,10 +39,10 @@ export function isValidFabricIQName(name: string): boolean {
 
 export function fabricIQNameError(kind: string, name: string): string | null {
   if (!name) return null; // empty names are caught separately
-  if (name.length > 26) return `${kind} name "${name}" exceeds 26 characters.`;
-  if (!/^[A-Za-z0-9]/.test(name)) return `${kind} name "${name}" must start with a letter or digit.`;
-  if (!/[A-Za-z0-9]$/.test(name)) return `${kind} name "${name}" must end with a letter or digit.`;
-  if (!FABRIC_IQ_NAME_RE.test(name)) return `${kind} name "${name}" may only contain letters, digits, hyphens, and underscores.`;
+  if (name.length > 26) return jaFormatters.designerNameTooLong(kind, name);
+  if (!/^[A-Za-z0-9]/.test(name)) return jaFormatters.designerNameInvalidStart(kind, name);
+  if (!/[A-Za-z0-9]$/.test(name)) return jaFormatters.designerNameInvalidEnd(kind, name);
+  if (!FABRIC_IQ_NAME_RE.test(name)) return jaFormatters.designerNameInvalidCharacters(kind, name);
   return null;
 }
 
@@ -39,7 +50,7 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
   const errors: ValidationError[] = [];
 
   if (ontology.entityTypes.length === 0) {
-    errors.push({ message: 'Add at least one entity type to your ontology.' });
+    errors.push({ message: jaMessages.designer.validation.addAtLeastOneEntity });
   }
 
   const entityIds = new Set<string>();
@@ -48,20 +59,20 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
   const propNameTypeMap = new Map<string, { type: string; entityName: string }>();
 
   for (const e of ontology.entityTypes) {
-    const label = e.name || 'Unnamed entity';
+    const label = e.name || jaMessages.designer.entity.unnamed;
     if (!e.id) {
-      errors.push({ message: `"${label}" is missing an internal ID.`, entityId: e.id });
+      errors.push({ message: jaFormatters.designerMissingInternalId(label), entityId: e.id });
     } else if (entityIds.has(e.id)) {
-      errors.push({ message: `Two entities share the same ID "${e.id}". Rename one of them.`, entityId: e.id });
+      errors.push({ message: jaFormatters.designerDuplicateEntityId(e.id), entityId: e.id });
     } else {
       entityIds.add(e.id);
     }
     if (!e.name) {
-      errors.push({ message: 'One of your entities has no name. Give it a name.', entityId: e.id });
+      errors.push({ message: jaMessages.designer.validation.entityMissingName, entityId: e.id });
     }
 
     // §7.1 — Entity type name validation
-    const nameErr = fabricIQNameError('Entity type', e.name);
+    const nameErr = fabricIQNameError('エンティティ型', e.name);
     if (nameErr) {
       errors.push({ message: nameErr, entityId: e.id });
     }
@@ -69,7 +80,7 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
     const hasIdentifier = e.properties.some((p) => p.isIdentifier);
     if (!hasIdentifier) {
       errors.push({
-        message: `"${label}" has no identifier property. Click the key icon (🔑) on one of its properties to mark it as the unique identifier.`,
+        message: jaFormatters.designerMissingIdentifier(label),
         entityId: e.id,
       });
     }
@@ -78,14 +89,14 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
     for (const p of e.properties) {
       if (p.isIdentifier && p.type !== 'string' && p.type !== 'integer') {
         errors.push({
-          message: `Identifier property "${p.name}" on "${label}" must be string or integer type for Fabric IQ compatibility.`,
+          message: jaFormatters.designerInvalidIdentifierType(p.name, label),
           entityId: e.id,
         });
       }
 
       // §7.2 — Property name validation
       if (p.name) {
-        const propNameErr = fabricIQNameError('Property', p.name);
+        const propNameErr = fabricIQNameError('プロパティ', p.name);
         if (propNameErr) {
           errors.push({ message: propNameErr, entityId: e.id });
         }
@@ -93,7 +104,7 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
         const existing = propNameTypeMap.get(p.name);
         if (existing && existing.type !== p.type) {
           errors.push({
-            message: `Property "${p.name}" is defined as "${p.type}" in "${label}" but as "${existing.type}" in "${existing.entityName}". Fabric IQ requires the same type when property names match across entity types.`,
+            message: jaFormatters.designerPropertyTypeConflict(p.name, p.type, label, existing.type, existing.entityName),
             entityId: e.id,
           });
         } else if (!existing) {
@@ -105,25 +116,25 @@ export function validateOntology(ontology: Ontology): ValidationError[] {
 
   const relIds = new Set<string>();
   for (const r of ontology.relationships) {
-    const label = r.name || 'Unnamed relationship';
+    const label = r.name || jaMessages.designer.relationship.unnamed;
     if (!r.id) {
-      errors.push({ message: `"${label}" is missing an internal ID.`, relationshipId: r.id });
+      errors.push({ message: jaFormatters.designerMissingInternalId(label), relationshipId: r.id });
     } else if (relIds.has(r.id)) {
-      errors.push({ message: `Two relationships share the same ID "${r.id}". Rename one of them.`, relationshipId: r.id });
+      errors.push({ message: jaFormatters.designerDuplicateRelationshipId(r.id), relationshipId: r.id });
     } else {
       relIds.add(r.id);
     }
     if (!entityIds.has(r.from)) {
-      const fromLabel = r.from || '(none)';
+      const fromLabel = r.from || jaMessages.designer.validation.noEndpoint;
       errors.push({
-        message: `"${label}" points from "${fromLabel}" which doesn't exist. Pick a valid source entity.`,
+        message: jaFormatters.designerMissingRelationshipEndpoint(label, jaMessages.designer.validation.sourceEndpoint, fromLabel),
         relationshipId: r.id,
       });
     }
     if (!entityIds.has(r.to)) {
-      const toLabel = r.to || '(none)';
+      const toLabel = r.to || jaMessages.designer.validation.noEndpoint;
       errors.push({
-        message: `"${label}" points to "${toLabel}" which doesn't exist. Pick a valid target entity.`,
+        message: jaFormatters.designerMissingRelationshipEndpoint(label, jaMessages.designer.validation.targetEndpoint, toLabel),
         relationshipId: r.id,
       });
     }
@@ -229,7 +240,7 @@ interface DesignerState {
 
 function emptyOntology(): Ontology {
   return {
-    name: 'My Ontology',
+    name: DEFAULT_DESIGNER_ONTOLOGY_NAME,
     description: '',
     entityTypes: [],
     relationships: [],
@@ -254,11 +265,11 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
 
   // ─ Entities ─────────────────────────────────────────────────────────────
   addEntity: () => {
-    const name = 'New Entity';
+    const name = '';
     const colorIdx = get().ontology.entityTypes.length % ENTITY_COLORS.length;
     const iconIdx = get().ontology.entityTypes.length % ENTITY_ICONS.length;
     const entity: EntityType = {
-      id: nextEntityId(name),
+      id: nextEntityId('New Entity'),
       name,
       description: '',
       icon: ENTITY_ICONS[iconIdx],

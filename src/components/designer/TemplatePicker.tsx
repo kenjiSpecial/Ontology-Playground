@@ -1,5 +1,6 @@
 import { designerTemplates } from '../../data/designerTemplates';
 import { useDesignerStore } from '../../store/designerStore';
+import { jaMessages } from '../../locales/ja';
 
 export function TemplatePicker() {
   const loadDraft = useDesignerStore((s) => s.loadDraft);
@@ -7,8 +8,8 @@ export function TemplatePicker() {
   return (
     <div className="template-picker">
       <div className="template-picker-header">
-        <h3>Start from a template</h3>
-        <p>Pick a domain to get started quickly, or add entities manually.</p>
+        <h3>{jaMessages.designer.templates.title}</h3>
+        <p>{jaMessages.designer.templates.description}</p>
       </div>
       <div className="template-picker-grid">
         {designerTemplates.map((t) => (

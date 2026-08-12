@@ -6,6 +6,7 @@ import { navigate } from '../lib/router';
 import { EntityForm, RelationshipForm, DesignerPreview, DesignerToolbar, DesignerValidation, TemplatePicker } from './designer';
 import type { Catalogue } from '../types/catalogue';
 import type { Route } from '../lib/router';
+import { jaMessages } from '../locales/ja';
 
 interface OntologyDesignerProps {
   route: Route & { page: 'designer' };
@@ -57,7 +58,7 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
       {/* Top bar */}
       <div className="designer-topbar">
         <button className="designer-back-btn" onClick={() => navigate({ page: 'home' })}>
-          <ArrowLeft size={16} /> Back
+          <ArrowLeft size={16} /> {jaMessages.designer.back}
         </button>
         <div className="designer-meta-fields">
           <input
@@ -65,14 +66,14 @@ export function OntologyDesigner({ route }: OntologyDesignerProps) {
             type="text"
             value={ontology.name}
             onChange={(e) => setOntologyName(e.target.value)}
-            placeholder="Ontology name"
+            placeholder={jaMessages.designer.ontologyName}
           />
           <input
             className="designer-meta-desc"
             type="text"
             value={ontology.description}
             onChange={(e) => setOntologyDescription(e.target.value)}
-            placeholder="Description"
+            placeholder={jaMessages.designer.description}
           />
         </div>
         <DesignerToolbar />
