@@ -305,7 +305,7 @@
     },
     {
       "id": "order-forvariety-fruitvariety",
-      "displayName": "品種向け注文",
+      "displayName": "品種別の注文",
       "displayDescription": "各注文は特定の果実品種向けです。"
     }
   ],

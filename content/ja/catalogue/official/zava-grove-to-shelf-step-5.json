@@ -386,12 +386,12 @@
     },
     {
       "id": "order-forvariety-fruitvariety",
-      "displayName": "品種向け注文"
+      "displayName": "品種別の注文"
     },
     {
       "id": "farm-participatesin-sustainabilityprogram",
       "displayName": "農園が参加するプログラム",
-      "displayDescription": "農園は0個以上のサステナビリティプログラムに参加できます（例：Zava Dreams）。"
+      "displayDescription": "農園は0件以上のサステナビリティプログラムに参加できます（例：Zava Dreams）。"
     }
   ],
   "relationshipAttributes": [],
