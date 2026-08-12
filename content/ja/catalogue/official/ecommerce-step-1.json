@@ -1,0 +1,66 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "Eコマース — ステップ1：購入者と商品",
+    "displayDescription": "購入者と商品を中心とした、マーケットプレイスの基盤です。",
+    "displayTags": [
+      { "tag": "ecommerce", "displayName": "Eコマース" },
+      { "tag": "retail", "displayName": "小売" },
+      { "tag": "school", "displayName": "学習" },
+      { "tag": "step-1", "displayName": "ステップ1" }
+    ]
+  },
+  "ontology": {
+    "displayName": "Eコマースプラットフォーム — ステップ1",
+    "displayDescription": "購入者、商品、注文と基本的な購入関係を表す基盤モデルです。"
+  },
+  "entities": [
+    {
+      "id": "buyer",
+      "displayName": "購入者",
+      "displayDescription": "プラットフォーム上で商品を購入する顧客を表します。"
+    },
+    {
+      "id": "product",
+      "displayName": "商品",
+      "displayDescription": "購入できる商品を表します。"
+    },
+    {
+      "id": "order",
+      "displayName": "注文",
+      "displayDescription": "購入者が行った注文を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "buyer", "propertyName": "buyerId", "displayName": "購入者ID" },
+    { "entityId": "buyer", "propertyName": "email", "displayName": "メールアドレス" },
+    { "entityId": "buyer", "propertyName": "memberSince", "displayName": "会員登録日" },
+    { "entityId": "buyer", "propertyName": "loyaltyTier", "displayName": "ロイヤルティランク" },
+    { "entityId": "buyer", "propertyName": "totalSpent", "displayName": "累計利用額" },
+    { "entityId": "product", "propertyName": "sku", "displayName": "商品コード（SKU）" },
+    { "entityId": "product", "propertyName": "name", "displayName": "商品名" },
+    { "entityId": "product", "propertyName": "category", "displayName": "商品カテゴリ" },
+    { "entityId": "product", "propertyName": "price", "displayName": "価格" },
+    { "entityId": "product", "propertyName": "stockQty", "displayName": "在庫数" },
+    { "entityId": "order", "propertyName": "orderId", "displayName": "注文ID" },
+    { "entityId": "order", "propertyName": "orderDate", "displayName": "注文日" },
+    { "entityId": "order", "propertyName": "status", "displayName": "注文状態" },
+    { "entityId": "order", "propertyName": "total", "displayName": "注文合計" },
+    { "entityId": "order", "propertyName": "shippingMethod", "displayName": "配送方法" }
+  ],
+  "relationships": [
+    {
+      "id": "places",
+      "displayName": "注文する",
+      "displayDescription": "購入者が注文を行うことを表します。"
+    },
+    {
+      "id": "includes",
+      "displayName": "商品を含む",
+      "displayDescription": "注文に商品が含まれることを表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}
