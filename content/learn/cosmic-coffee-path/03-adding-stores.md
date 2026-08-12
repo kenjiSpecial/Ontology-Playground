@@ -1,23 +1,23 @@
 ---
-title: "Adding Stores"
+title: "店舗を追加する"
 slug: adding-stores
-description: "Introduce Store locations into the ontology and connect orders to their processing stores."
+description: "Storeの所在地をオントロジーに追加し、注文を処理する店舗と接続します。"
 order: 3
 embed: official/cosmic-coffee-step-2
 ---
 
-## Where orders happen
+## 注文が行われる場所
 
-So far, we know *who* orders *what* — but not *where*. Fourth Coffee operates stores across multiple cities, and each order is processed at a specific store.
+ここまでで、*だれが* *何を*注文するかはわかりましたが、*どこで*注文するかはまだわかりません。Fourth Coffeeは複数の都市で店舗を運営しており、各注文は特定の店舗で処理されます。
 
-Adding the **Store** entity lets us answer location-based questions like:
-- "Which store has the most orders?"
-- "What's the average order value per city?"
-- "Which stores need more staff based on order volume?"
+**Store**エンティティを追加すると、次のような場所に関する質問に答えられます。
+- 「最も注文数が多い店舗はどこか？」
+- 「都市ごとの平均注文額はいくらか？」
+- 「注文量に基づいて、どの店舗にスタッフを増やす必要があるか？」
 
-## Store entity
+## Storeエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `storeId` | string | ✓ |
 | `name` | string | |
@@ -26,35 +26,35 @@ Adding the **Store** entity lets us answer location-based questions like:
 | `openDate` | date | |
 | `capacity` | integer | |
 
-The `capacity` property (seating capacity) is an **integer** — useful for operations planning. The `city` and `state` properties provide geographic context without the complexity of a full address hierarchy.
+`capacity`プロパティ（座席数）は**integer**で、運用計画に役立ちます。`city`と`state`プロパティは、複雑な住所階層を用意しなくても地理的な文脈を示します。
 
-## New relationship
+## 新しいリレーションシップ
 
-- **processedAt** — `Order` → `Store` (many-to-one)
-  Each order is processed at exactly one store, but a store processes many orders.
+- **processedAt** — `Order` → `Store`（多対一）
+  各注文は必ず1つの店舗で処理されますが、1つの店舗では多くの注文が処理されます。
 
-> **Design note:** This is a many-to-one relationship. Many orders map to one store. This is the most common cardinality pattern for "belongs to" or "happens at" relationships.
+> **設計メモ:** これは多対一のリレーションシップです。多くの注文が1つの店舗に対応します。「属する」や「発生する場所」を表すリレーションシップで、最も一般的なカーディナリティのパターンです。
 
-## The growing graph
+## 拡大するグラフ
 
 <ontology-embed id="official/cosmic-coffee-step-2" diff="official/cosmic-coffee-step-1" height="400px"></ontology-embed>
 
-*Store joins the graph via the processedAt relationship. The diff highlights what's new since Step 1.*
+*StoreがprocessedAtリレーションシップを通じてグラフに加わります。`diff` はステップ1から新しく追加された部分を強調表示します。*
 
-## What we learned
+## 学んだこと
 
-- **Many-to-one relationships** model "belongs to" or "located at" patterns
-- **Integer properties** work well for countable quantities (capacity, floors, seats)
-- Adding one entity opens up an entire category of location-based queries
-- The `diff` view shows exactly what changed — making it easy to track ontology evolution
+- **多対一のリレーションシップ**は、「属する」や「所在する」パターンをモデル化します
+- **integerプロパティ**は、数えられる量（capacity、階数、座席数）に適しています
+- 1つのエンティティを追加するだけで、場所に関するクエリのカテゴリー全体が開かれます
+- `diff` ビューは変更点を正確に示すため、オントロジーの進化を簡単に追跡できます
 
 ```quiz
-Q: What cardinality should the "processedAt" relationship between Order and Store have?
-- One-to-one — each store has exactly one order
-- One-to-many — each order is processed at many stores
-- Many-to-one — many orders are processed at one store [correct]
-- Many-to-many — orders can be processed at multiple stores simultaneously
-> Each order is processed at exactly one store location, but a store processes many orders throughout the day. From Order's perspective, this is many-to-one.
+Q: OrderとStoreの「processedAt」リレーションシップは、どのカーディナリティにすべきですか？
+- 一対一 — 各店舗には必ず1つの注文がある
+- 一対多 — 各注文は複数の店舗で処理される
+- 多対一 — 多くの注文が1つの店舗で処理される [correct]
+- 多対多 — 注文は同時に複数の店舗で処理される
+> 各注文は必ず1つの店舗で処理されますが、1つの店舗では1日を通して多くの注文が処理されます。Orderから見ると、これは多対一です。
 ```
 
-Next, we'll complete the supply chain with Supplier and Shipment.
+次はSupplierとShipmentを追加して、サプライチェーンを完成させます。

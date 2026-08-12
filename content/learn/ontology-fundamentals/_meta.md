@@ -1,7 +1,7 @@
 ---
-title: Ontology Fundamentals
+title: オントロジーの基礎
 slug: ontology-fundamentals
-description: From first principles to hands-on design — everything you need to understand and build ontologies for Microsoft Fabric IQ.
+description: 基本概念から実践的な設計まで、Microsoft Fabric IQ向けのオントロジーを理解し、構築するために必要なすべてを学びます。
 type: path
 icon: 📚
 ---

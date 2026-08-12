@@ -1,7 +1,7 @@
 ---
-title: "E-Commerce Platform"
+title: "Eコマースプラットフォーム"
 slug: ecommerce-path
-description: "Model an online marketplace — buyers, products, shopping carts, orders, and customer reviews."
+description: "購入者、商品、ショッピングカート、注文、カスタマーレビューをモデル化するオンラインマーケットプレイスです。"
 type: path
 icon: 🛒
 ---

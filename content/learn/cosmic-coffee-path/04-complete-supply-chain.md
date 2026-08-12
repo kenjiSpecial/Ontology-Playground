@@ -1,18 +1,18 @@
 ---
-title: "Complete Supply Chain"
+title: "サプライチェーンを完成させる"
 slug: complete-supply-chain
-description: "Add Supplier and Shipment to complete the Fourth Coffee ontology — connecting sourcing, logistics, and retail."
+description: "SupplierとShipmentを追加してFourth Coffeeのオントロジーを完成させ、調達、物流、小売をつなぎます。"
 order: 4
 embed: official/cosmic-coffee-step-3
 ---
 
-## Completing the picture
+## 全体像を完成させる
 
-Fourth Coffee doesn't just sell coffee — it sources beans from suppliers around the world, receives shipments at its stores, and tracks the entire supply chain. Adding **Supplier** and **Shipment** closes the loop.
+Fourth Coffeeはコーヒーを販売するだけではありません。世界中のサプライヤーから豆を調達し、店舗で出荷を受け取り、サプライチェーン全体を追跡します。**Supplier**と**Shipment**を追加して、この流れを完成させます。
 
-## Supplier
+## Supplierエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `supplierId` | string | ✓ |
 | `name` | string | |
@@ -20,11 +20,11 @@ Fourth Coffee doesn't just sell coffee — it sources beans from suppliers aroun
 | `certification` | enum (Fair Trade, Rainforest Alliance, Organic, Direct Trade, None) | |
 | `rating` | decimal | |
 
-The `certification` property is an enum that captures sustainability credentials. The `rating` is a decimal (1–5) for quality scoring.
+`certification`プロパティは、持続可能性に関する認証を表す enum です。`rating`は品質評価用のdecimal（1～5）です。
 
-## Shipment
+## Shipmentエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `shipmentId` | string | ✓ |
 | `dispatchDate` | date | |
@@ -32,44 +32,44 @@ The `certification` property is an enum that captures sustainability credentials
 | `status` | enum (In Transit, Delivered, Delayed) | |
 | `weight` | decimal (kg) | |
 
-Shipment acts as a **hub entity** — it connects Supplier to Store through Product, bridging the sourcing and retail sides of the business.
+Shipmentは**ハブエンティティ**として機能します。Productを介してSupplierとStoreをつなぎ、ビジネスの調達側と小売側を橋渡しします。
 
-## New relationships
+## 新しいリレーションシップ
 
-Four new relationships complete the supply chain:
+4つの新しいリレーションシップで、サプライチェーンが完成します。
 
-- **sourcedFrom** — `Product` → `Supplier` (many-to-one)
-  Each product's beans come from one supplier.
+- **sourcedFrom** — `Product` → `Supplier`（多対一）
+  各商品の豆は1つのサプライヤーから仕入れます。
 
-- **sentBy** — `Shipment` → `Supplier` (many-to-one)
-  Each shipment originates from one supplier.
+- **sentBy** — `Shipment` → `Supplier`（多対一）
+  各出荷は1つのサプライヤーから出発します。
 
-- **deliveredTo** — `Shipment` → `Store` (many-to-one)
-  Each shipment arrives at one store.
+- **deliveredTo** — `Shipment` → `Store`（多対一）
+  各出荷は1つの店舗に到着します。
 
-- **carries** — `Shipment` → `Product` (many-to-many)
-  A shipment can carry multiple products, and a product can be in multiple shipments.
+- **carries** — `Shipment` → `Product`（多対多）
+  1つの出荷には複数の商品を載せられ、1つの商品は複数の出荷に含められます。
 
-> **Hub entity pattern:** Shipment connects three different entities (Supplier, Store, Product). Hub entities are powerful because they bridge otherwise disconnected parts of the graph.
+> **ハブエンティティパターン:** Shipmentは3つの異なるエンティティ（Supplier、Store、Product）をつなぎます。ハブエンティティは、そうでなければ分断されるグラフの部分を橋渡しできるため強力です。
 
-## The complete graph
+## 完成したグラフ
 
 <ontology-embed id="official/cosmic-coffee-step-3" diff="official/cosmic-coffee-step-2" height="500px"></ontology-embed>
 
-*The complete Fourth Coffee ontology: 6 entity types, 7 relationships. Shipment acts as a hub connecting Supplier, Store, and Product.*
+*Fourth Coffeeの完全なオントロジーです。6つのエンティティ型と7つのリレーションシップで構成され、ShipmentがSupplier、Store、Productをつなぐハブとして機能します。*
 
-## What the complete model enables
+## 完成したモデルでできること
 
-| Question | Graph path |
+| 質問 | グラフパス |
 |---|---|
-| Which suppliers provide organic beans? | Product (isOrganic=true) → Supplier |
-| Which stores received delayed shipments? | Shipment (status=Delayed) → Store |
-| What's the rating of our top supplier? | Product → Supplier (sort by rating) |
-| Which certified suppliers ship to our largest stores? | Supplier → Shipment → Store (sort by capacity) |
+| オーガニック豆を提供するサプライヤーは？ | Product (isOrganic=true) → Supplier |
+| 遅延した出荷を受け取った店舗は？ | Shipment (status=Delayed) → Store |
+| 最上位のサプライヤーの評価は？ | Product → Supplier（ratingで並べ替え） |
+| 最大規模の店舗に出荷する認証済みサプライヤーは？ | Supplier → Shipment → Store（capacityで並べ替え） |
 
-## GQL query example
+## GQLクエリの例
 
-Find suppliers with Fair Trade certification that ship to stores in California:
+Fair Trade認証を取得し、カリフォルニア州の店舗へ出荷するサプライヤーを検索します。
 
 ```gql
 MATCH (sup:Supplier)<-[:sentBy]-(s:Shipment)-[:deliveredTo]->(st:Store)
@@ -77,29 +77,29 @@ WHERE sup.certification = 'Fair Trade' AND st.state = 'CA'
 RETURN sup.name, st.name, s.status
 ```
 
-## What we built
+## 構築したもの
 
-| Step | Entities added | Cumulative | Key concept |
+| ステップ | 追加したエンティティ | 累計 | 主要概念 |
 |---|---|---|---|
-| 1 | Customer, Order, Product | 3 | Entity types, identifiers, cardinality |
-| 2 | Store | 4 | Location modelling, many-to-one |
-| 3 | Supplier, Shipment | 6 | Supply chain, hub entities |
+| 1 | Customer, Order, Product | 3 | エンティティ型、識別子、カーディナリティ |
+| 2 | Store | 4 | 位置情報のモデリング、多対一 |
+| 3 | Supplier, Shipment | 6 | サプライチェーン、ハブエンティティ |
 
-## Key takeaways
+## 重要なポイント
 
-1. **Start small** — three entities are enough to create value
-2. **Hub entities** like Shipment bridge different business domains
-3. **Enum properties** enforce data quality at the model level
-4. **The graph grows incrementally** — each step adds new query capabilities
-5. **GQL queries** map directly to ontology structure — no impedance mismatch
+1. **小さく始める** — 価値を生み出すには3つのエンティティで十分です
+2. Shipmentのような**ハブエンティティ**は、異なるビジネスドメインを橋渡しします
+3. **enumプロパティ**は、モデルのレベルでデータ品質を守ります
+4. **グラフは段階的に拡張する** — 各ステップで新しいクエリ機能が加わります
+5. **GQLクエリ**はオントロジーの構造に直接対応するため、インピーダンスミスマッチがありません
 
 ```quiz
-Q: Why is Shipment considered a "hub entity" in this ontology?
-- It has the most properties of any entity
-- It connects three different entities: Supplier, Store, and Product [correct]
-- It is the most frequently queried entity
-- It was the last entity added to the model
-> Shipment is a hub because it has relationships to Supplier (sentBy), Store (deliveredTo), and Product (carries) — bridging the sourcing, logistics, and retail domains in a single entity.
+Q: このオントロジーでShipmentが「ハブエンティティ」と見なされるのはなぜですか？
+- どのエンティティよりも多くのプロパティを持つため
+- 3つの異なるエンティティ（Supplier、Store、Product）をつなぐため [correct]
+- 最も頻繁にクエリされるエンティティだから
+- モデルに最後に追加されたエンティティだから
+> ShipmentはSupplier（sentBy）、Store（deliveredTo）、Product（carries）とリレーションシップを持ち、1つのエンティティで調達、物流、小売の各ドメインを橋渡しするため、ハブとなります。
 ```
 
-You've completed the Fourth Coffee learning path! Load any step from the [catalogue](#/catalogue) to explore it interactively.
+Fourth Coffeeの学習パスを完了しました！[カタログ](#/catalogue)から任意のステップを読み込んで、インタラクティブに探索してみましょう。

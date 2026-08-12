@@ -1,106 +1,106 @@
 ---
-title: Microsoft Fabric IQ Ontology Concepts
+title: Microsoft Fabric IQのオントロジー概念
 slug: fabric-iq-ontology-concepts
-description: How Microsoft Fabric uses ontologies to power natural-language queries over structured data — entity types, identifier properties, relationships, and cardinality.
+description: Microsoft Fabricがオントロジーを使って構造化データへの自然言語クエリを実現する方法を、エンティティ型、識別子プロパティ、リレーションシップ、カーディナリティを通して学びます。
 order: 3
 embed: official/ecommerce
 ---
 
-## What is Fabric IQ?
+## Fabric IQとは？
 
-**Microsoft Fabric** is a unified analytics platform that brings together data engineering, data science, real-time analytics, and business intelligence. **IQ** is a Fabric capability that lets users ask questions in **natural language** and get answers from structured data — no SQL required.
+**Microsoft Fabric**は、データエンジニアリング、データサイエンス、リアルタイム分析、ビジネスインテリジェンスを統合する分析プラットフォームです。**IQ**はFabricの機能の1つで、ユーザーは**自然言語**で質問し、SQLを書かずに構造化データから回答を得られます。
 
-The key ingredient is an **ontology**: a formal description of entity types, their properties, and relationships. IQ reads the ontology, understands the shape of your data, and translates plain-English questions into the correct queries.
+その中核となるのが**オントロジー**です。オントロジーは、エンティティ型、そのプロパティ、リレーションシップを形式的に記述します。IQはオントロジーを読み取り、データの形を理解して、自然言語の質問を正しいクエリへ変換します。
 
-## How IQ uses ontologies
+## IQがオントロジーを使う方法
 
-When a user asks *"What were last month's total sales by region?"*, IQ needs to know:
+ユーザーが*「先月の地域別の総売上はいくらでしたか？」*と尋ねたとき、IQは次の情報を必要とします。
 
-1. **Entity types** — `Order`, `Store`, `Region`
-2. **Properties** — `Order.totalAmount`, `Order.date`, `Store.region`
-3. **Relationships** — `Order` → `placedAt` → `Store`, `Store` → `locatedIn` → `Region`
-4. **Identifier properties** — which fields uniquely identify each entity (e.g. `Order.orderId`)
+1. **エンティティ型** — `Order`、`Store`、`Region`
+2. **プロパティ** — `Order.totalAmount`、`Order.date`、`Store.region`
+3. **リレーションシップ** — `Order` → `placedAt` → `Store`、`Store` → `locatedIn` → `Region`
+4. **識別子プロパティ** — 各エンティティを一意に識別するフィールド（例：`Order.orderId`）
 
-The ontology provides all four. Without it, IQ can't distinguish a "store" from a "product" or know how to join them.
+オントロジーは、この4つすべてを提供します。オントロジーがなければ、IQは「店舗」と「商品」を区別したり、それらをどう結合するかを判断したりできません。
 
-## Entity types
+## エンティティ型
 
-An entity type is a category of business object. In Fabric IQ, each entity type:
+エンティティ型は、ビジネスオブジェクトの分類です。Fabric IQでは、各エンティティ型が次の特徴を持ちます。
 
-- Has a **name** and optional **description**
-- Contains one or more **properties** (typed columns)
-- Must have at least one **identifier property** that uniquely identifies instances
+- **名前**と任意の**説明**を持つ
+- 1つ以上の**プロパティ**（型付きの列）を含む
+- インスタンスを一意に識別する**識別子プロパティ**を少なくとも1つ持つ必要がある
 
-Think of it as a table definition: `Customer(customerId, name, email, tier)`.
+テーブル定義のようなものだと考えてください：`Customer(customerId, name, email, tier)`。
 
-## Properties and types
+## プロパティと型
 
-Each property has a data type:
+各プロパティにはデータ型があります。
 
-| Type | Description | Example |
+| 型 | 説明 | 例 |
 |------|-------------|---------|
-| `string` | Text value | Customer name, product SKU |
-| `integer` | Whole number | Quantity, year |
-| `decimal` | Fractional number | Price, rating |
-| `date` | Calendar date | Order date, birth date |
-| `datetime` | Date with time | Created timestamp |
-| `boolean` | True/false | Is active, is premium |
+| `string` | テキスト値 | 顧客名、商品SKU |
+| `integer` | 整数 | 数量、年 |
+| `decimal` | 小数 | 価格、評価 |
+| `date` | 暦日 | 注文日、生年月日 |
+| `datetime` | 時刻を含む日付 | 作成タイムスタンプ |
+| `boolean` | 真／偽 | 有効か、プレミアムか |
 
-The **identifier property** (marked with a key icon) is critical: it tells IQ how to count, group, and join entities correctly.
+**識別子プロパティ**（鍵アイコンで示されます）は重要です。IQに、エンティティを正しく数え、グループ化し、結合する方法を伝えます。
 
-## Relationships and cardinality
+## リレーションシップとカーディナリティ
 
-Relationships connect entity types. Each relationship specifies:
+リレーションシップはエンティティ型を接続します。各リレーションシップでは、次を指定します。
 
-- **Source and target** entity types
-- **Name** (the verb: "places", "contains", "worksAt")
-- **Cardinality** — how many instances can connect
+- **始点と終点**のエンティティ型
+- **名前**（「places」「contains」「worksAt」のような動詞）
+- **カーディナリティ** — 接続できるインスタンス数
 
-| Cardinality | Meaning | Example |
+| カーディナリティ | 意味 | 例 |
 |------------|---------|---------|
-| One-to-one | Each A maps to exactly one B | `Employee` → `Badge` |
-| One-to-many | Each A maps to many Bs | `Customer` → `Order` |
-| Many-to-one | Many As map to one B | `Order` → `Store` |
-| Many-to-many | Many As map to many Bs | `Student` → `Course` |
+| 一対一 | 各Aがちょうど1つのBに対応する | `Employee` → `Badge` |
+| 一対多 | 各Aが複数のBに対応する | `Customer` → `Order` |
+| 多対一 | 複数のAが1つのBに対応する | `Order` → `Store` |
+| 多対多 | 複数のAが複数のBに対応する | `Student` → `Course` |
 
-IQ uses cardinality to generate correct aggregations. A one-to-many relationship between `Customer` and `Order` means "count of orders per customer" is valid, while "count of customers per order" would typically be 1.
+IQはカーディナリティを使って正しい集計を生成します。`Customer`と`Order`の一対多のリレーションシップでは「顧客ごとの注文数」は有効ですが、「注文ごとの顧客数」は通常1になります。
 
 <ontology-embed id="official/ecommerce" height="400px"></ontology-embed>
 
-*The E-Commerce ontology demonstrates IQ-ready patterns: identifier properties on each entity, typed columns, and cardinality on every relationship.*
+*E-Commerceオントロジーは、各エンティティの識別子プロパティ、型付き列、すべてのリレーションシップのカーディナリティという、IQ対応のパターンを示しています。*
 
-## Designing for IQ
+## IQ向けに設計する
 
-When building an ontology for Fabric IQ, follow these guidelines:
+Fabric IQ向けのオントロジーを構築するときは、次のガイドラインに従ってください。
 
-1. **Name entities clearly** — use business terms your users would say ("Customer", not "tbl_cust")
-2. **Add descriptions** — IQ uses them to disambiguate similar concepts
-3. **Mark identifiers** — every entity MUST have at least one identifier property
-4. **Set cardinality** — helps IQ generate correct GROUP BY and JOIN logic
-5. **Keep it focused** — model the concepts users will query, not every internal table
+1. **エンティティに明確な名前を付ける** — ユーザーが使うビジネス用語を使う（"tbl_cust"ではなく"Customer"）
+2. **説明を追加する** — IQが似た概念を区別するために使います
+3. **識別子を付ける** — すべてのエンティティに識別子プロパティを少なくとも1つ設定する必要があります
+4. **カーディナリティを設定する** — IQが正しいGROUP BYとJOINのロジックを生成するのに役立ちます
+5. **焦点を絞る** — すべての内部テーブルではなく、ユーザーがクエリする概念をモデル化します
 
-## Key takeaways
+## 要点
 
-- Fabric IQ translates natural-language questions into SQL using an ontology
-- Entity types, properties, relationships, and cardinality are the four pillars
-- Every entity needs an identifier property for correct counting and joining
-- Good naming and descriptions improve IQ's question-answering accuracy
-- Use the [Ontology Designer](#/designer) to create IQ-ready ontologies visually
+- Fabric IQはオントロジーを使って自然言語の質問をSQLに変換します
+- エンティティ型、プロパティ、リレーションシップ、カーディナリティが4本の柱です
+- 正しく数えて結合するには、すべてのエンティティに識別子プロパティが必要です
+- 適切な名前と説明によって、IQの質問応答の精度が向上します
+- [オントロジー デザイナー](#/designer)を使ってIQ対応のオントロジーを視覚的に作成できます
 
 ```quiz
-Q: Why is an identifier property required on every entity type in Fabric IQ?
-- It makes the ontology look professional
-- It tells IQ how to count, group, and join entities correctly [correct]
-- It is used as the entity's display name
-- It sets the default sort order
-> The identifier property uniquely distinguishes instances of an entity type. Without it, IQ cannot correctly generate COUNT, GROUP BY, or JOIN operations in the translated SQL.
+Q: Fabric IQですべてのエンティティ型に識別子プロパティが必要なのはなぜですか？
+- オントロジーをプロフェッショナルに見せるため
+- IQにエンティティを正しく数え、グループ化し、結合する方法を伝えるため [correct]
+- エンティティの表示名として使うため
+- デフォルトの並べ替え順を設定するため
+> 識別子プロパティは、エンティティ型のインスタンスを一意に区別します。これがないと、IQは変換後のSQLでCOUNT、GROUP BY、JOINの処理を正しく生成できません。
 ```
 
 ```quiz
-Q: What does the cardinality of a relationship tell Fabric IQ?
-- The colour to use when drawing the relationship
-- How many instances can connect on each side of the relationship [correct]
-- Whether the relationship is optional or required
-- The order in which entities should be displayed
-> Cardinality (one-to-one, one-to-many, many-to-one, many-to-many) tells IQ how to generate correct aggregations and joins — for example, knowing that one customer has many orders.
+Q: リレーションシップのカーディナリティはFabric IQに何を伝えますか？
+- リレーションシップを描くときに使う色
+- リレーションシップの各側で接続できるインスタンス数 [correct]
+- リレーションシップが任意か必須か
+- エンティティを表示する順序
+> カーディナリティ（一対一、一対多、多対一、多対多）は、正しい集計と結合を生成する方法をIQに伝えます。たとえば、1人の顧客に複数の注文があることを表せます。
 ```

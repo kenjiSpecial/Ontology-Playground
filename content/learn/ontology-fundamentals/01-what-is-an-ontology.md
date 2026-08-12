@@ -1,66 +1,66 @@
 ---
-title: What is an Ontology?
+title: オントロジーとは？
 slug: what-is-an-ontology
-description: A beginner-friendly introduction to ontologies — what they are, why they matter, and how they help us model the real world as connected data.
+description: オントロジーとは何か、なぜ重要なのか、現実世界をつながったデータとしてモデル化する方法を、初心者にもわかりやすく紹介します。
 order: 1
 embed: official/cosmic-coffee
 ---
 
-## Thinking in graphs
+## グラフで考える
 
-Imagine you're describing a coffee shop. You'd talk about **things** — stores, products, customers, orders — and the **connections** between them: a customer *places* an order, an order *contains* products, a store *stocks* products.
+コーヒーショップを説明するとします。店舗、商品、顧客、注文といった**もの**と、それらの間の**つながり**について話すでしょう。顧客が注文を*する*、注文が商品を*含む*、店舗が商品を*扱う*といった関係です。
 
-An **ontology** is a formal way of describing exactly that: the types of things in a domain and how they relate to each other. It's a blueprint for your data — not the data itself, but the *shape* of the data.
+**オントロジー**は、まさにそれを形式的に記述する方法です。つまり、ある領域に存在するものの型と、それらがどのように関係するかを定義します。データそのものではなく、データの*形*を示す設計図です。
 
-## Entities, properties, and relationships
+## エンティティ型、プロパティ、リレーションシップ
 
-Every ontology is built from three building blocks:
+すべてのオントロジーは、次の3つの要素で構成されます。
 
-| Concept | What it means | Example |
+| 概念 | 意味 | 例 |
 |---------|--------------|---------|
-| **Entity type** | A category of thing | `Customer`, `Product`, `Store` |
-| **Property** | A fact about an entity | `Customer.name`, `Product.price` |
-| **Relationship** | A connection between entities | `Customer → places → Order` |
+| **エンティティ型** | ものの分類 | `Customer`、`Product`、`Store` |
+| **プロパティ** | エンティティに関する事実 | `Customer.name`、`Product.price` |
+| **リレーションシップ** | エンティティ間のつながり | `Customer → places → Order` |
 
-Properties have **types** — text, numbers, dates, booleans — and every entity needs at least one **identifier property** (like a customer ID) that uniquely distinguishes each instance.
+プロパティには、テキスト、数値、日付、真偽値などの**型**があります。また、すべてのエンティティには、各インスタンスを一意に区別する**識別子プロパティ**（顧客IDなど）が少なくとも1つ必要です。
 
-## Why ontologies matter
+## オントロジーが重要な理由
 
-Without an ontology, your data is just tables and columns. With one, a system can understand that "revenue" is the sum of `Order.totalAmount` grouped by `Store.city` — because the ontology tells it how those concepts connect.
+オントロジーがなければ、データは単なるテーブルと列にすぎません。オントロジーがあれば、システムは「売上」が `Order.totalAmount` を `Store.city` ごとに集計した合計だと理解できます。オントロジーが概念同士のつながりを示すからです。
 
-This is the foundation of **semantic data models**: instead of writing SQL by hand, you describe what you want in plain language and the system uses the ontology to generate the right query.
+これが**セマンティック データモデル**の基盤です。SQLを手作業で書く代わりに、欲しいものを自然言語で説明すると、システムがオントロジーを使って適切なクエリを生成します。
 
 <ontology-embed id="official/cosmic-coffee" height="400px"></ontology-embed>
 
-*The Fourth Coffee ontology above models a coffee shop chain. Click any node to inspect its properties, or click an edge to see the relationship details.*
+*上のFourth Coffeeオントロジーは、コーヒーショップチェーンをモデル化しています。ノードをクリックするとプロパティを確認でき、エッジをクリックするとリレーションシップの詳細を確認できます。*
 
-## From concept to code
+## 概念からコードへ
 
-Ontologies are typically represented in **RDF/OWL** — an XML-based standard for describing classes, properties, and relationships. You don't need to write XML by hand, though: tools like the [Ontology Designer](#/designer) let you build one visually and export valid RDF.
+オントロジーは通常、クラス、プロパティ、リレーションシップを記述するXMLベースの標準である**RDF/OWL**で表現します。ただし、XMLを手作業で書く必要はありません。[オントロジー デザイナー](#/designer)のようなツールを使えば、視覚的に構築して有効なRDFとしてエクスポートできます。
 
-## Key takeaways
+## 要点
 
-- An ontology defines the **types of things** in a domain and **how they relate**
-- It's a schema, not data — it describes the shape, not the content
-- It enables semantic querying: ask questions in natural language, get structured answers
-- The standard format is **RDF/OWL**, but you can also work with JSON representations
+- オントロジーは、ある領域の**ものの型**と**それらの関係**を定義します
+- オントロジーはデータではなくスキーマです。内容ではなく形を記述します
+- セマンティック クエリを可能にし、自然言語で質問して構造化された回答を得られます
+- 標準形式は**RDF/OWL**ですが、JSON表現も利用できます
 
 ```quiz
-Q: Which of the following is NOT a building block of an ontology?
-- Entity type
-- Property
-- SQL query [correct]
-- Relationship
-> Ontologies are built from entity types, properties, and relationships. SQL queries are how you retrieve data — they are not part of the ontology definition itself.
+Q: 次のうち、オントロジーの構成要素ではないものはどれですか？
+- エンティティ型
+- プロパティ
+- SQLクエリ [correct]
+- リレーションシップ
+> オントロジーは、エンティティ型、プロパティ、リレーションシップから構成されます。SQLクエリはデータを取得する方法であり、オントロジーの定義そのものには含まれません。
 ```
 
 ```quiz
-Q: What is the purpose of an identifier property?
-- To store the entity's colour
-- To uniquely distinguish each instance of an entity [correct]
-- To connect two entities together
-- To define the data format
-> An identifier property (like a customer ID) uniquely identifies each instance within an entity type, allowing the system to count, group, and join correctly.
+Q: 識別子プロパティの目的は何ですか？
+- エンティティの色を保存するため
+- エンティティの各インスタンスを一意に区別するため [correct]
+- 2つのエンティティを接続するため
+- データ形式を定義するため
+> 識別子プロパティ（顧客IDなど）は、エンティティ型内の各インスタンスを一意に識別します。そのため、システムは正しく数え、グループ化し、結合できます。
 ```
 
-Ready to see how RDF works under the hood? Continue to the next article.
+RDFが内部でどのように機能するか見てみませんか？次の記事へ進みましょう。

@@ -1,61 +1,61 @@
 ---
-title: "Shopping Carts"
+title: "ショッピングカート"
 slug: shopping-carts
-description: "Add Shopping-Cart to model active shopping sessions and introduce the one-to-one relationship pattern."
+description: "Shopping-Cartを追加してアクティブなショッピングセッションをモデル化し、一対一のリレーションシップパターンを導入します。"
 order: 3
 embed: official/ecommerce-step-2
 ---
 
-## Before the purchase
+## 購入前の状態
 
-Not every browsing session leads to a purchase. The **Shopping Cart** captures what a buyer is considering before checking out. It's a session entity — temporary and mutable.
+すべての閲覧セッションが購入につながるわけではありません。**Shopping Cart**は、購入者がチェックアウト前に検討している商品を捉えます。これは一時的で変更可能なセッションエンティティです。
 
-Adding the cart lets us answer questions like:
-- "How many carts were abandoned this week?"
-- "What's the average cart value vs. average order value?"
-- "Which products are most often added to carts but not purchased?"
+カートを追加すると、次のような質問に答えられます。
+- 「今週は何個のカートが放棄されたか？」
+- 「カートの平均金額と注文の平均金額はそれぞれいくらか？」
+- 「カートには追加されたものの、購入されないことが最も多い商品はどれか？」
 
-## Shopping-Cart entity
+## Shopping-Cartエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `cartId` | string | ✓ |
 | `createdAt` | datetime | |
 | `itemCount` | integer | |
 | `subtotal` | decimal (USD) | |
 
-The `itemCount` and `subtotal` are denormalized summary properties — they could be computed from cart contents, but storing them directly makes queries faster.
+`itemCount` と `subtotal` は非正規化された集計プロパティです。カートの内容から計算することもできますが、直接保存することでクエリを高速化できます。
 
-## New relationships
+## 新しいリレーションシップ
 
-- **has_cart** — `Buyer` → `Shopping-Cart` (one-to-one)
-  Each buyer has exactly one active cart, and each cart belongs to exactly one buyer.
+- **has_cart** — `Buyer` → `Shopping-Cart`（一対一）
+  各購入者にはアクティブなカートが1つだけあり、各カートは1人の購入者だけに属します。
 
-- **contains** — `Shopping-Cart` → `Product` (many-to-many)
-  A cart can contain multiple products, and a product can be in many carts.
+- **contains** — `Shopping-Cart` → `Product`（多対多）
+  1つのカートには複数の商品を含められ、1つの商品は複数のカートに入れられます。
 
-> **One-to-one pattern:** The `has_cart` relationship is one-to-one because each buyer has a single active shopping session. This is different from orders (one-to-many) because a buyer accumulates orders over time but only has one cart at any moment.
+> **一対一パターン:** `has_cart` リレーションシップが一対一なのは、各購入者にアクティブなショッピングセッションが1つだけあるためです。これは注文（一対多）とは異なります。購入者は時間の経過とともに注文を蓄積しますが、どの時点でも持つカートは1つだけだからです。
 
-## The growing graph
+## 成長するグラフ
 
 <ontology-embed id="official/ecommerce-step-2" diff="official/ecommerce-step-1" height="400px"></ontology-embed>
 
-*Shopping-Cart connects Buyer to Product through two new relationships. The diff highlights what changed since Step 1.*
+*Shopping-Cartは、2つの新しいリレーションシップを通じてBuyerとProductをつなぎます。diffはステップ1からの変更点を強調表示します。*
 
-## What we learned
+## 学んだこと
 
-- **Session entities** model temporary or in-progress states (carts, drafts, sessions)
-- **One-to-one relationships** enforce a strict pairing (one buyer ↔ one cart)
-- **Denormalized properties** (itemCount, subtotal) trade storage for query speed
-- Cart analysis enables **conversion funnel** insights (cart → order ratio)
+- **セッションエンティティ**は一時的または進行中の状態（カート、下書き、セッション）をモデル化します
+- **一対一のリレーションシップ**は厳密な対応関係（1人の購入者 ↔ 1つのカート）を強制します
+- **非正規化プロパティ**（itemCount、subtotal）は、ストレージ容量と引き換えにクエリを高速化します
+- カート分析によって、**コンバージョンファネル**（カートから注文への比率）を把握できます
 
 ```quiz
-Q: Why is the has_cart relationship between Buyer and Shopping-Cart set to one-to-one instead of one-to-many?
-- Because shopping carts don't need unique identifiers
-- Because each buyer has exactly one active cart at any given time [correct]
-- Because one-to-one is simpler to implement
-- Because carts are deleted after purchase
-> A buyer maintains a single active shopping session (cart) at a time. Unlike orders which accumulate over a buyer's lifetime, the cart is a current-state entity — one buyer, one active cart.
+Q: BuyerとShopping-Cartの間のhas_cartリレーションシップが一対多ではなく一対一に設定されているのはなぜですか？
+- ショッピングカートには一意な識別子が不要だから
+- 各購入者が任意の時点で持つアクティブなカートは1つだけだから [correct]
+- 一対一のほうが実装しやすいから
+- 購入後にカートが削除されるから
+> 購入者が一度に維持するアクティブなショッピングセッション（カート）は1つだけです。購入者の生涯にわたって蓄積される注文とは異なり、カートは現在の状態を表すエンティティです。つまり、1人の購入者に1つのアクティブなカートです。
 ```
 
-Next, we'll complete the platform with customer reviews.
+次はカスタマーレビューを追加して、プラットフォームを完成させます。

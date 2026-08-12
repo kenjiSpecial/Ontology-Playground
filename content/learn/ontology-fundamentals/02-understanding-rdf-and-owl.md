@@ -1,14 +1,14 @@
 ---
-title: Understanding RDF and OWL
+title: RDFとOWLを理解する
 slug: understanding-rdf-and-owl
-description: Learn how ontologies are represented in RDF/OWL — the standard language for describing classes, properties, and relationships on the semantic web.
+description: セマンティックウェブでクラス、プロパティ、リレーションシップを記述する標準言語RDF/OWLで、オントロジーを表現する方法を学びます。
 order: 2
 embed: official/ecommerce
 ---
 
-## What is RDF?
+## RDFとは？
 
-**RDF** (Resource Description Framework) is a W3C standard for describing information as a graph of connected resources. Everything in RDF is expressed as **triples**: subject → predicate → object.
+**RDF**（Resource Description Framework）は、つながったリソースのグラフとして情報を記述するW3C標準です。RDFでは、すべての情報を**トリプル**（主語 → 述語 → 目的語）で表します。
 
 ```
 :Customer  rdf:type       owl:Class .
@@ -17,22 +17,22 @@ embed: official/ecommerce
 :name      rdfs:range     xsd:string .
 ```
 
-The triple above says: "There is a class called Customer, and it has a property called name, which is a string."
+上のトリプルは、「Customerというクラスがあり、nameという文字列型のプロパティを持つ」と述べています。
 
-## OWL builds on RDF
+## OWLはRDFを拡張する
 
-**OWL** (Web Ontology Language) extends RDF with richer modelling — cardinality constraints, class hierarchies, and logical axioms. For ontology design, the key OWL constructs are:
+**OWL**（Web Ontology Language）は、カーディナリティ制約、クラス階層、論理公理など、より豊かなモデル化機能でRDFを拡張します。オントロジー設計で重要なOWL構成要素は次のとおりです。
 
-| OWL concept | Maps to | Example |
+| OWLの概念 | 対応するもの | 例 |
 |-------------|---------|---------|
-| `owl:Class` | Entity type | `Customer`, `Product` |
-| `owl:DatatypeProperty` | Property with a primitive value | `name` (string), `price` (decimal) |
-| `owl:ObjectProperty` | Relationship between entities | `placedBy` (Order → Customer) |
-| `rdfs:domain` / `rdfs:range` | Which entity a property belongs to / its type | `price` belongs to `Product`, type `xsd:decimal` |
+| `owl:Class` | エンティティ型 | `Customer`、`Product` |
+| `owl:DatatypeProperty` | プリミティブ値を持つプロパティ | `name`（string）、`price`（decimal） |
+| `owl:ObjectProperty` | エンティティ間のリレーションシップ | `placedBy`（Order → Customer） |
+| `rdfs:domain` / `rdfs:range` | プロパティが属するエンティティ／その型 | `price` は `Product` に属し、型は `xsd:decimal` |
 
-## Namespaces keep things unambiguous
+## 名前空間で曖昧さをなくす
 
-Every resource in RDF has a globally unique **URI**. To avoid writing long URIs everywhere, RDF/XML uses **namespace prefixes**:
+RDFのすべてのリソースには、グローバルに一意な**URI**があります。長いURIを毎回書かずに済むよう、RDF/XMLでは**名前空間プレフィックス**を使います。
 
 ```xml
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -40,11 +40,11 @@ Every resource in RDF has a globally unique **URI**. To avoid writing long URIs 
          xmlns="https://mycompany.com/ontology/">
 ```
 
-The `xmlns=` default namespace means that `<owl:Class rdf:about="Customer">` is really `https://mycompany.com/ontology/Customer`.
+`xmlns=`のデフォルト名前空間により、`<owl:Class rdf:about="Customer">`は実際には`https://mycompany.com/ontology/Customer`を意味します。
 
-## Reading an RDF/OWL file
+## RDF/OWLファイルを読む
 
-Here's a minimal ontology with one entity type and one property:
+次は、1つのエンティティ型と1つのプロパティを持つ最小限のオントロジーです。
 
 ```xml
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -67,44 +67,44 @@ Here's a minimal ontology with one entity type and one property:
 </rdf:RDF>
 ```
 
-The Ontology Playground can import files like this directly — or you can design visually and export to RDF.
+Ontology Playgroundでは、このようなファイルを直接インポートできます。また、視覚的に設計してRDFへエクスポートすることもできます。
 
 <ontology-embed id="official/ecommerce" height="400px"></ontology-embed>
 
-*The E-Commerce ontology shows a richer example with multiple entity types and object properties connecting them.*
+*E-Commerceオントロジーは、複数のエンティティ型と、それらを接続するオブジェクトプロパティを含む、より豊かな例です。*
 
-## JSON vs RDF — when to use which
+## JSONとRDF――どちらをいつ使うか
 
 | | JSON | RDF/OWL |
 |---|------|---------|
-| **Human readability** | Easy to read and edit | Verbose but precise |
-| **Tooling** | Any text editor | Semantic web tools, SPARQL endpoints |
-| **Interoperability** | Application-specific | W3C standard, universally understood |
-| **Best for** | Quick prototyping, app configs | Formal data models, cross-system integration |
+| **人間による読みやすさ** | 読み書きしやすい | 冗長だが正確 |
+| **ツール** | 任意のテキストエディター | セマンティックウェブツール、SPARQLエンドポイント |
+| **相互運用性** | アプリケーション固有 | W3C標準で、広く理解されている |
+| **適した用途** | 迅速なプロトタイピング、アプリ設定 | 形式的なデータモデル、システム間連携 |
 
-The Ontology Playground supports both formats: design in the visual editor, export as JSON for quick use or RDF/OWL for formal publication.
+Ontology Playgroundは両方の形式をサポートしています。ビジュアルエディターで設計し、手早く使うならJSON、正式に公開するならRDF/OWLとしてエクスポートできます。
 
-## Key takeaways
+## 要点
 
-- RDF represents knowledge as **subject → predicate → object** triples
-- OWL adds classes, data properties, and object properties on top of RDF
-- Namespaces keep URIs short and unambiguous
-- The Playground imports and exports standard RDF/OWL — no hand-coding required
+- RDFは知識を**主語 → 述語 → 目的語**のトリプルとして表現します
+- OWLはRDFにクラス、データプロパティ、オブジェクトプロパティを追加します
+- 名前空間によってURIを短く保ち、曖昧さをなくせます
+- Playgroundは標準RDF/OWLをインポート・エクスポートできるため、手作業でのコーディングは不要です
 
 ```quiz
-Q: In RDF, information is expressed as:
-- Tables with rows and columns
-- JSON key-value pairs
-- Subject → predicate → object triples [correct]
-- Binary data streams
-> RDF uses triples — three-part statements where a subject is connected to an object through a predicate — to describe information as a graph of connected resources.
+Q: RDFでは、情報はどのように表現されますか？
+- 行と列を持つテーブル
+- JSONのキーと値の組
+- 主語 → 述語 → 目的語のトリプル [correct]
+- バイナリデータストリーム
+> RDFは、主語と目的語を述語でつなぐ3つ組の文であるトリプルを使い、つながったリソースのグラフとして情報を記述します。
 ```
 
 ```quiz
-Q: What does owl:ObjectProperty represent?
-- A property with a primitive value like a string
-- A relationship between two entity types [correct]
-- The namespace of an ontology
-- A constraint on data types
-> In OWL, an ObjectProperty defines a relationship between two classes (entity types), such as "placedBy" connecting Order to Customer. DatatypeProperty is used for primitive values.
+Q: owl:ObjectPropertyは何を表しますか？
+- stringのようなプリミティブ値を持つプロパティ
+- 2つのエンティティ型の間のリレーションシップ [correct]
+- オントロジーの名前空間
+- データ型に対する制約
+> OWLでは、ObjectPropertyが2つのクラス（エンティティ型）の間のリレーションシップを定義します。たとえば、OrderとCustomerをつなぐ「placedBy」です。プリミティブ値にはDatatypePropertyを使います。
 ```

@@ -1,43 +1,43 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Meet the E-Commerce Platform — a marketplace that needs an ontology to connect buyers, products, carts, orders, and reviews."
+description: "購入者、商品、カート、注文、レビューをつなぐオントロジーを必要としているマーケットプレイス、Eコマースプラットフォームを紹介します。"
 order: 1
 ---
 
-## The scenario
+## シナリオ
 
-You are building the data model for a **general-purpose e-commerce marketplace**. The platform handles:
+あなたは、**汎用的なEコマースマーケットプレイス**のデータモデルを構築しています。このプラットフォームは次を扱います。
 
-- **Buyers** who browse and purchase products
-- **Products** with inventory tracking
-- **Shopping Carts** as active sessions before checkout
-- **Orders** as completed purchase transactions
-- **Reviews** where buyers rate and comment on products
+- 商品を閲覧して購入する**Buyers**
+- 在庫を追跡する**Products**
+- チェックアウト前のアクティブなセッションである**Shopping Carts**
+- 完了した購入取引である**Orders**
+- 購入者が商品を評価してコメントする**Reviews**
 
-Data flows through multiple systems — a transactional database for orders, a search engine for product discovery, and an analytics warehouse for buyer behavior.
+データは複数のシステムを通じて流れます。注文用のトランザクションデータベース、商品検索用の検索エンジン、購入者の行動分析用の分析ウェアハウスなどです。
 
-## Why an ontology?
+## オントロジーが必要な理由
 
-A question like **"Which verified reviewers rated products they didn't purchase?"** requires joining across buyers, reviews, orders, and products — touching multiple systems.
+**「購入していない商品を評価した、認証済みレビュアーは誰か？」**のような質問には、購入者、レビュー、注文、商品をまたいだ結合が必要です。つまり、複数のシステムにまたがって調べなければなりません。
 
-With an ontology, this becomes a graph pattern: find `Buyer` nodes that have a `writes → Review → reviews → Product` path but no `places → Order → includes → Product` path for the same product.
+オントロジーを使うと、これはグラフパターンになります。同じ商品について、`Buyer` ノードに `writes → Review → reviews → Product` のパスがあり、`places → Order → includes → Product` のパスがないものを探せます。
 
-## What we'll build
+## 構築するもの
 
-| Step | Entities | What you'll learn |
+| ステップ | エンティティ | 学ぶこと |
 |---|---|---|
-| 1 | Buyer, Product, Order | Core marketplace entities and purchase flow |
-| 2 | + Shopping-Cart | Pre-purchase sessions, one-to-one relationships |
-| 3 | + Review | Customer feedback loop, closing the cycle |
+| 1 | Buyer, Product, Order | マーケットプレイスの中核エンティティと購入フロー |
+| 2 | + Shopping-Cart | 購入前のセッション、一対一のリレーションシップ |
+| 3 | + Review | 顧客フィードバックのループ、循環の完成 |
 
-By the end, you'll have a 5-entity, 6-relationship ontology covering the complete buyer journey from browsing to reviewing.
+最後には、閲覧からレビューまでの購入者の行程全体を扱う、5つのエンティティと6つのリレーションシップからなるオントロジーが完成します。
 
-## Key concepts
+## 主要概念
 
-- **Purchase flow** — the journey from browsing to buying
-- **One-to-one relationships** — when each side has exactly one partner (Buyer ↔ Cart)
-- **Feedback loops** — how reviews connect buyers back to products
-- **Session entities** — temporary objects like shopping carts
+- **購入フロー** — 閲覧から購入までの流れ
+- **一対一のリレーションシップ** — 両側にそれぞれ1つの相手だけがある関係（Buyer ↔ Cart）
+- **フィードバックループ** — レビューによって購入者と商品が再びつながる仕組み
+- **セッションエンティティ** — ショッピングカートのような一時的なオブジェクト
 
-Let's start with the core marketplace entities.
+まずは、マーケットプレイスの中核エンティティから始めましょう。

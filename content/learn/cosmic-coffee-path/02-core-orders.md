@@ -1,26 +1,26 @@
 ---
-title: "Core Orders"
+title: "注文の基本"
 slug: core-orders
-description: "Define Customer, Order, and Product — the foundational entities of the coffee business — and connect them with relationships."
+description: "コーヒービジネスの基盤となるCustomer、Order、Productを定義し、リレーションシップで接続します。"
 order: 2
 embed: official/cosmic-coffee-step-1
 ---
 
-## The foundation
+## 基盤
 
-Every commerce system starts with three core concepts:
+すべての商取引システムは、3つの基本概念から始まります。
 
-- **Customer** — who is buying?
-- **Order** — what transaction happened?
-- **Product** — what was purchased?
+- **Customer** — だれが購入するのか？
+- **Order** — どの取引が発生したのか？
+- **Product** — 何が購入されたのか？
 
-These three entity types form the heart of the Fourth Coffee ontology. Everything we add later connects back to them.
+これら3つのエンティティ型が、Fourth Coffeeオントロジーの中心です。後から追加するものはすべて、ここにつながります。
 
-## Defining the entities
+## エンティティを定義する
 
-### Customer
+### Customerエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `customerId` | string | ✓ |
 | `name` | string | |
@@ -29,11 +29,11 @@ These three entity types form the heart of the Fourth Coffee ontology. Everythin
 | `joinDate` | date | |
 | `totalSpend` | decimal (USD) | |
 
-The `customerId` uniquely identifies each customer. The `loyaltyTier` uses an enum to restrict values to valid tiers — this prevents data quality issues in downstream analytics.
+`customerId` は各顧客を一意に識別します。`loyaltyTier` は enum を使って有効なティアだけに値を制限するため、後続の分析でデータ品質の問題を防げます。
 
-### Order
+### Orderエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `orderId` | string | ✓ |
 | `timestamp` | datetime | |
@@ -41,9 +41,9 @@ The `customerId` uniquely identifies each customer. The `loyaltyTier` uses an en
 | `status` | enum (Pending, Preparing, Ready, Completed, Cancelled) | |
 | `paymentMethod` | enum (Card, Cash, Mobile, Gift Card) | |
 
-### Product
+### Productエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `productId` | string | ✓ |
 | `name` | string | |
@@ -52,38 +52,38 @@ The `customerId` uniquely identifies each customer. The `loyaltyTier` uses an en
 | `origin` | string | |
 | `isOrganic` | boolean | |
 
-The `isOrganic` flag is a boolean — useful for filtering and compliance queries later.
+`isOrganic` フラグは boolean です。後でフィルタリングやコンプライアンスに関するクエリを行うときに役立ちます。
 
-## Connecting with relationships
+## リレーションシップで接続する
 
-Entities alone are just isolated tables. **Relationships** turn them into a graph:
+エンティティだけでは、孤立したテーブルにすぎません。**リレーションシップ**によって、エンティティがグラフになります。
 
-- **places** — `Customer` → `Order` (one-to-many)
-  Each customer can place many orders, but each order belongs to one customer.
+- **places** — `Customer` → `Order`（一対多）
+  各顧客は複数の注文を行えますが、各注文は1人の顧客に属します。
 
-- **contains** — `Order` → `Product` (many-to-many)
-  An order can contain multiple products, and a product can appear in many orders.
+- **contains** — `Order` → `Product`（多対多）
+  1つの注文には複数の商品を含められ、1つの商品は複数の注文に登場できます。
 
-## The graph so far
+## ここまでのグラフ
 
 <ontology-embed id="official/cosmic-coffee-step-1" height="350px"></ontology-embed>
 
-*Three entities, two relationships. This is the foundation everything else builds on.*
+*3つのエンティティと2つのリレーションシップ。これが、以降のすべてを支える基盤です。*
 
-## What we learned
+## 学んだこと
 
-- Every entity needs an **identifier property** — a unique key
-- **Enum properties** constrain values to valid options
-- **Boolean properties** enable simple filtering
-- **Cardinality** (one-to-many vs many-to-many) determines how entities relate
+- すべてのエンティティには、**識別子プロパティ**（一意なキー）が必要です
+- **enumプロパティ**は、値を有効な選択肢に制限します
+- **booleanプロパティ**によって、簡単なフィルタリングができます
+- **カーディナリティ**（一対多と多対多）によって、エンティティ同士の関係が決まります
 
 ```quiz
-Q: Why is the "contains" relationship between Order and Product set to many-to-many instead of one-to-many?
-- Each order can only have one product
-- Products can only appear in one order at a time
-- An order can contain multiple products AND a product can appear in multiple orders [correct]
-- Many-to-many is always the default relationship type
-> An order typically includes several products (a latte, a muffin, a bag of beans), and each product appears across many different orders — this bidirectional multiplicity requires many-to-many.
+Q: OrderとProductの「contains」リレーションシップが一対多ではなく多対多に設定されているのはなぜですか？
+- 各注文には1つの商品しか含められないため
+- 商品は一度に1つの注文にしか登場できないため
+- 1つの注文に複数の商品を含められ、1つの商品が複数の注文に登場できるため [correct]
+- 多対多が常にデフォルトのリレーションシップ型だから
+> 1つの注文には通常、ラテ、マフィン、豆の袋など複数の商品が含まれ、各商品はさまざまな注文に登場します。この双方向の多重性には多対多が必要です。
 ```
 
-Next, we'll add Store to track where orders are processed.
+次はStoreを追加して、注文が処理される場所を追跡します。

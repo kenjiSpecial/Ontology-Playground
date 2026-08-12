@@ -1,26 +1,26 @@
 ---
-title: "Core Marketplace"
+title: "マーケットプレイスの基本"
 slug: core-marketplace
-description: "Define Buyer, Product, and Order — the foundational entities that power any e-commerce platform."
+description: "あらゆるEコマースプラットフォームの基盤となるBuyer、Product、Orderを定義します。"
 order: 2
 embed: official/ecommerce-step-1
 ---
 
-## The purchase flow
+## 購入フロー
 
-Every marketplace revolves around three concepts:
+すべてのマーケットプレイスは、次の3つの概念を中心に成り立ちます。
 
-- **Buyer** — who is purchasing?
-- **Product** — what is being sold?
-- **Order** — what was the completed transaction?
+- **Buyer** — 購入者は誰か？
+- **Product** — 何が販売されるのか？
+- **Order** — 完了した取引は何か？
 
-These three entities capture the essential purchase flow. Everything else we add enriches this foundation.
+この3つのエンティティが、購入フローの本質を捉えます。後から追加するものはすべて、この基盤を豊かにします。
 
-## Defining the entities
+## エンティティを定義する
 
-### Buyer
+### Buyerエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `buyerId` | string | ✓ |
 | `email` | string | |
@@ -28,11 +28,11 @@ These three entities capture the essential purchase flow. Everything else we add
 | `loyaltyTier` | string | |
 | `totalSpent` | decimal (USD) | |
 
-Unlike a physical retail customer, an e-commerce buyer always has an `email` as a primary contact method. The `totalSpent` property enables lifetime-value segmentation.
+実店舗の顧客とは異なり、Eコマースの購入者には主要な連絡手段として必ず `email` があります。`totalSpent` プロパティによって、顧客生涯価値に基づくセグメント分けができます。
 
-### Product
+### Productエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `sku` | string | ✓ |
 | `name` | string | |
@@ -40,11 +40,11 @@ Unlike a physical retail customer, an e-commerce buyer always has an `email` as 
 | `price` | decimal (USD) | |
 | `stockQty` | integer | |
 
-The identifier here is `sku` (Stock Keeping Unit) — the standard product identifier in e-commerce. The `stockQty` property tracks real-time inventory.
+ここでの識別子は `sku`（Stock Keeping Unit）です。Eコマースで標準的に使われる商品識別子であり、`stockQty` プロパティはリアルタイムの在庫数を追跡します。
 
-### Order
+### Orderエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `orderId` | string | ✓ |
 | `orderDate` | datetime | |
@@ -52,33 +52,33 @@ The identifier here is `sku` (Stock Keeping Unit) — the standard product ident
 | `total` | decimal (USD) | |
 | `shippingMethod` | string | |
 
-## Relationships
+## リレーションシップ
 
-- **places** — `Buyer` → `Order` (one-to-many)
-  A buyer can place many orders over time.
+- **places** — `Buyer` → `Order`（一対多）
+  購入者は時間の経過とともに複数の注文を行えます。
 
-- **includes** — `Order` → `Product` (many-to-many)
-  An order can include multiple products, and each product appears across many orders.
+- **includes** — `Order` → `Product`（多対多）
+  1つの注文には複数の商品を含められ、各商品は複数の注文に登場します。
 
-## The graph so far
+## ここまでのグラフ
 
 <ontology-embed id="official/ecommerce-step-1" height="350px"></ontology-embed>
 
-*Buyer, Product, and Order connected by the purchase flow relationships.*
+*購入フローのリレーションシップでBuyer、Product、Orderがつながっています。*
 
-## What we learned
+## 学んだこと
 
-- **SKU** is the standard identifier for e-commerce products
-- The `stockQty` integer property enables inventory queries
-- The basic purchase flow (Buyer → Order → Product) is the backbone of any marketplace
+- **SKU** はEコマース商品の標準的な識別子です
+- `stockQty` の整数プロパティによって、在庫をクエリできます
+- 基本的な購入フロー（Buyer → Order → Product）は、あらゆるマーケットプレイスの背骨です
 
 ```quiz
-Q: Why is "sku" used as the identifier for Product instead of "productId"?
-- SKU is shorter to type
-- SKU (Stock Keeping Unit) is the standard product identifier in e-commerce and retail systems [correct]
-- productId would cause naming conflicts
-- SKU is always a numeric value
-> SKU stands for Stock Keeping Unit — it's the industry-standard identifier used across inventory management, warehousing, and e-commerce systems to uniquely identify each item.
+Q: Productの識別子として「productId」ではなく「sku」が使われるのはなぜですか？
+- SKUのほうが短く入力できるため
+- SKU（Stock Keeping Unit）はEコマースや小売システムで標準的な商品識別子だから [correct]
+- productIdでは命名が衝突するため
+- SKUは常に数値だから
+> SKUはStock Keeping Unitの略です。在庫管理、倉庫管理、Eコマースシステムで広く使われ、各商品を一意に識別する業界標準の識別子です。
 ```
 
-Next, we'll add Shopping Cart to model the pre-purchase experience.
+次はShopping Cartを追加して、購入前の体験をモデル化します。
