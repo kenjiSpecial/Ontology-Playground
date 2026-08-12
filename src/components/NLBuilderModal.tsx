@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3, Mic, MicOff } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import type { Ontology } from '../data/ontology';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 // Web Speech API types
 interface SpeechRecognitionEvent extends Event {
@@ -53,6 +54,8 @@ interface NLBuilderModalProps {
 
 type Step = 'input' | 'loading' | 'preview' | 'error';
 
+class AiGenerationError extends Error {}
+
 export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
   const [description, setDescription] = useState('');
   const [step, setStep] = useState<Step>('input');
@@ -89,7 +92,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       const recognition = new SpeechRecognitionAPI();
       recognition.continuous = false; // Use non-continuous mode and restart manually
       recognition.interimResults = false; // Only get final results
-      recognition.lang = 'en-US';
+      recognition.lang = 'ja-JP';
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
@@ -104,14 +107,14 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         
         // Handle specific errors
         if (errorEvent.error === 'network') {
-          setVoiceError('Network error - try Chrome or Safari');
+          setVoiceError(jaMessages.aiBuilder.voiceNetworkError);
           shouldKeepListeningRef.current = false;
           setIsRecording(false);
           return;
         }
         
         if (errorEvent.error === 'service-not-allowed' || errorEvent.error === 'not-allowed') {
-          setVoiceError('Microphone access denied');
+          setVoiceError(jaMessages.aiBuilder.microphoneDenied);
           shouldKeepListeningRef.current = false;
           setIsRecording(false);
           return;
@@ -152,7 +155,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         console.log('Recognition started');
       } catch (e) {
         console.error('Start failed:', e);
-        setVoiceError('Failed to start - try Chrome or Safari');
+        setVoiceError(jaMessages.aiBuilder.voiceStartFailed);
         shouldKeepListeningRef.current = false;
         setIsRecording(false);
       }
@@ -201,7 +204,11 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to generate ontology');
+        throw new AiGenerationError(
+          data.error
+            ? jaFormatters.aiBuilderGenerationError(data.error)
+            : jaMessages.aiBuilder.genericGenerationFailed,
+        );
       }
       
       const { ontology } = await response.json();
@@ -217,7 +224,13 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       setEditedJson(JSON.stringify(ontology, null, 2));
       setStep('preview');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      setError(
+        err instanceof AiGenerationError
+          ? err.message
+          : err instanceof Error
+            ? jaFormatters.aiBuilderGenerationError(err.message)
+            : jaMessages.aiBuilder.unknownError,
+      );
       setStep('error');
     }
   };
@@ -230,7 +243,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
       loadOntology(ontologyToApply);
       handleClose();
     } catch {
-      setError('Invalid JSON in editor');
+      setError(jaMessages.aiBuilder.invalidJson);
     }
   };
 
@@ -245,12 +258,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
     onClose();
   };
 
-  const examplePrompts = [
-    "I run a hospital with doctors, patients, and departments. Patients visit doctors for appointments.",
-    "An e-commerce platform with products, customers, orders, and reviews. Customers can return items.",
-    "A university with students, professors, courses, and departments. Students enroll in courses.",
-    "A restaurant chain with locations, employees, menu items, and customer orders with reservations.",
-  ];
+  const examplePrompts = Object.values(jaMessages.aiBuilder.examples);
 
   return (
     <motion.div
@@ -270,9 +278,9 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={20} style={{ color: 'var(--accent)' }} />
-            <h2>Describe Your Ontology</h2>
+            <h2>{jaMessages.aiBuilder.title}</h2>
           </div>
-          <button className="modal-close" onClick={handleClose}>
+          <button className="modal-close" onClick={handleClose} aria-label={jaMessages.common.close}>
             <X size={20} />
           </button>
         </div>
@@ -280,14 +288,13 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
             {step === 'input' && (
               <div className="nl-builder-content">
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                  Describe your business scenario in natural language or use voice input. 
-                  AI will extract entities, relationships, and properties to create an ontology.
+                  {jaMessages.aiBuilder.introduction}
                 </p>
                 
                 <div className="nl-input-wrapper">
                   <textarea
                     className="nl-input-textarea"
-                    placeholder="Describe your business scenario..."
+                    placeholder={jaMessages.aiBuilder.placeholder}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={5}
@@ -296,7 +303,8 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                     <button
                       className={`voice-btn ${isRecording ? 'recording' : ''}`}
                       onClick={toggleRecording}
-                      title={isRecording ? 'Stop recording' : 'Start voice input'}
+                      title={isRecording ? jaMessages.aiBuilder.stopVoice : jaMessages.aiBuilder.startVoice}
+                      aria-label={isRecording ? jaMessages.aiBuilder.stopVoice : jaMessages.aiBuilder.startVoice}
                       type="button"
                     >
                       {isRecording ? <MicOff size={20} /> : <Mic size={20} />}
@@ -307,7 +315,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 {isRecording && (
                   <div className="recording-indicator">
                     <span className="recording-dot" />
-                    Listening... Speak your ontology description
+                    {jaMessages.aiBuilder.listening}
                   </div>
                 )}
                 
@@ -318,7 +326,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 )}
 
                 <div className="example-prompts">
-                  <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>Try an example:</span>
+                  <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>{jaMessages.aiBuilder.tryExample}</span>
                   <div className="example-chips">
                     {examplePrompts.map((prompt, i) => (
                       <button
@@ -338,7 +346,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                   disabled={!description.trim()}
                 >
                   <Sparkles size={16} />
-                  Generate Ontology
+                  {jaMessages.aiBuilder.generate}
                   <Send size={16} />
                 </button>
               </div>
@@ -347,9 +355,9 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
             {step === 'loading' && (
               <div className="nl-builder-content nl-loading">
                 <Loader2 size={48} className="spin" style={{ color: 'var(--accent)' }} />
-                <p>Analyzing your description...</p>
+                <p>{jaMessages.aiBuilder.analyzing}</p>
                 <p style={{ color: 'var(--text-tertiary)', fontSize: '14px' }}>
-                  Extracting entities, relationships, and properties
+                  {jaMessages.aiBuilder.extracting}
                 </p>
               </div>
             )}
@@ -363,7 +371,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                     onClick={() => setEditMode(!editMode)}
                   >
                     <Edit3 size={14} />
-                    {editMode ? 'Preview' : 'Edit JSON'}
+                    {editMode ? jaMessages.aiBuilder.preview : jaMessages.aiBuilder.editJson}
                   </button>
                 </div>
 
@@ -377,20 +385,20 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                 ) : (
                   <div className="preview-summary">
                     <div className="preview-section">
-                      <h4>Entities ({generatedOntology.entityTypes.length})</h4>
+                      <h4>{jaFormatters.entities(generatedOntology.entityTypes.length)}</h4>
                       <div className="preview-items">
                         {generatedOntology.entityTypes.map((entity) => (
                           <div key={entity.id} className="preview-item entity">
                             <span className="entity-icon">{entity.icon}</span>
                             <span className="entity-name">{entity.name}</span>
-                            <span className="entity-props">{entity.properties.length} props</span>
+                            <span className="entity-props">{jaFormatters.properties(entity.properties.length)}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     <div className="preview-section">
-                      <h4>Relationships ({generatedOntology.relationships.length})</h4>
+                      <h4>{jaFormatters.relationships(generatedOntology.relationships.length)}</h4>
                       <div className="preview-items">
                         {generatedOntology.relationships.map((rel) => (
                           <div key={rel.id} className="preview-item relationship">
@@ -413,11 +421,11 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
 
                 <div className="preview-actions">
                   <button className="btn-secondary" onClick={() => setStep('input')}>
-                    ← Back
+                    ← {jaMessages.aiBuilder.back}
                   </button>
                   <button className="btn-primary" onClick={handleApply}>
                     <Check size={16} />
-                    Apply Ontology
+                    {jaMessages.aiBuilder.apply}
                   </button>
                 </div>
               </div>
@@ -426,12 +434,12 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
         {step === 'error' && (
           <div className="nl-builder-content nl-error">
             <AlertCircle size={48} style={{ color: '#FF6B6B' }} />
-            <p style={{ color: '#FF6B6B' }}>Generation Failed</p>
+            <p style={{ color: '#FF6B6B' }}>{jaMessages.aiBuilder.generationFailed}</p>
             <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-              {error || 'An unknown error occurred'}
+              {error || jaMessages.aiBuilder.unknownError}
             </p>
             <button className="btn-secondary" onClick={() => setStep('input')}>
-              Try Again
+              {jaMessages.aiBuilder.tryAgain}
             </button>
           </div>
         )}

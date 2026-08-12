@@ -92,7 +92,7 @@ describe('EmbedWidget', () => {
     const config: EmbedConfig = { catalogueId: 'official/test', theme: 'dark', height: '400px' };
     render(<EmbedWidget config={config} />);
 
-    expect(screen.getByText('Loading ontology…')).toBeTruthy();
+    expect(screen.getByText('オントロジーを読み込み中…')).toBeTruthy();
 
     await waitFor(() => {
       expect(screen.getByText('Test Ontology')).toBeTruthy();
@@ -107,8 +107,7 @@ describe('EmbedWidget', () => {
     await waitFor(() => {
       expect(screen.getByText('Test Ontology')).toBeTruthy();
     });
-    expect(screen.getByText(/2 entities/)).toBeTruthy();
-    expect(screen.getByText(/1 relationship/)).toBeTruthy();
+    expect(screen.getByText('2個のエンティティ型・1個のリレーションシップ')).toBeTruthy();
   });
 
   it('shows error when no source specified', async () => {
@@ -116,7 +115,7 @@ describe('EmbedWidget', () => {
     render(<EmbedWidget config={config} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/No ontology source specified/)).toBeTruthy();
+      expect(screen.getByText('オントロジーの読込元が指定されていません。')).toBeTruthy();
     });
   });
 
@@ -126,7 +125,7 @@ describe('EmbedWidget', () => {
     render(<EmbedWidget config={config} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Failed to fetch ontology/)).toBeTruthy();
+      expect(screen.getByText('オントロジーの取得に失敗しました（404）')).toBeTruthy();
     });
   });
 
@@ -136,14 +135,15 @@ describe('EmbedWidget', () => {
     render(<EmbedWidget config={config} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/not found in catalogue/)).toBeTruthy();
+      expect(screen.getByText('カタログにオントロジー「nonexistent」が見つかりません。')).toBeTruthy();
     });
   });
 
-  it('switches between Graph and RDF Source tabs', async () => {
+  it('switches between Japanese graph and RDF source tabs', async () => {
     const inline = btoa(JSON.stringify(testOntology));
     const config: EmbedConfig = { ontologyInline: inline, theme: 'dark', height: '400px' };
     const user = userEvent.setup();
+    const clipboardWriteText = vi.spyOn(navigator.clipboard, 'writeText');
     render(<EmbedWidget config={config} />);
 
     await waitFor(() => {
@@ -151,11 +151,11 @@ describe('EmbedWidget', () => {
     });
 
     // Initially on Graph tab — no RDF source visible
-    expect(screen.getByText('Graph')).toBeTruthy();
-    expect(screen.getByText('RDF Source')).toBeTruthy();
+    expect(screen.getByText('グラフ')).toBeTruthy();
+    expect(screen.getByText('RDFソース')).toBeTruthy();
 
     // Switch to RDF tab
-    await user.click(screen.getByText('RDF Source'));
+    await user.click(screen.getByText('RDFソース'));
 
     // Should show RDF serialization (text is split across syntax-highlighted spans)
     await waitFor(() => {
@@ -164,7 +164,10 @@ describe('EmbedWidget', () => {
     });
 
     // Copy RDF button should appear
-    expect(screen.getByText('Copy RDF')).toBeTruthy();
+    await user.click(screen.getByText('RDFをコピー'));
+    await waitFor(() => expect(clipboardWriteText).toHaveBeenCalled());
+    expect(clipboardWriteText.mock.calls[0][0]).toContain('<rdf:RDF');
+    expect(screen.getByText('コピーしました！')).toBeTruthy();
   });
 
   it('renders with light theme', async () => {
@@ -184,7 +187,7 @@ describe('EmbedWidget', () => {
     render(<EmbedWidget config={config} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/2 entities · 1 relationship/)).toBeTruthy();
+      expect(screen.getByText('2個のエンティティ型・1個のリレーションシップ')).toBeTruthy();
     });
   });
 });

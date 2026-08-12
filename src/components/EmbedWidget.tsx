@@ -18,6 +18,7 @@ import { serializeToRDF } from '../lib/rdf/serializer';
 import { parseRDF } from '../lib/rdf/parser';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
 import type { Catalogue } from '../types/catalogue';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 cytoscape.use(fcose);
 
@@ -58,6 +59,8 @@ const THEMES: Record<string, ThemeTokens> = {
 
 type Tab = 'graph' | 'rdf';
 
+class EmbedLoadError extends Error {}
+
 interface SelectedItem {
   type: 'entity' | 'relationship';
   entity?: EntityType;
@@ -93,15 +96,15 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
             || window.location.origin + '/';
           const catalogueUrl = base.endsWith('/') ? `${base}catalogue.json` : `${base}/catalogue.json`;
           const res = await fetch(catalogueUrl);
-          if (!res.ok) throw new Error(`Failed to load catalogue (${res.status})`);
+          if (!res.ok) throw new EmbedLoadError(jaFormatters.embedCatalogueLoadFailed(res.status));
           const cat = (await res.json()) as Catalogue;
           const entry = cat.entries.find((e) => e.id === config.catalogueId);
-          if (!entry) throw new Error(`Ontology "${config.catalogueId}" not found in catalogue`);
+          if (!entry) throw new EmbedLoadError(jaFormatters.embedOntologyNotFound(config.catalogueId));
           ont = entry.ontology;
         } else if (config.ontologyUrl) {
           // Fetch from URL
           const res = await fetch(config.ontologyUrl);
-          if (!res.ok) throw new Error(`Failed to fetch ontology (${res.status})`);
+          if (!res.ok) throw new EmbedLoadError(jaFormatters.embedOntologyFetchFailed(res.status));
           const text = await res.text();
           // Detect format: RDF/XML starts with < or has xml prologue
           if (text.trimStart().startsWith('<')) {
@@ -111,7 +114,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
             ont = JSON.parse(text) as Ontology;
           }
         } else {
-          throw new Error('No ontology source specified. Use data-catalogue-id, data-ontology-url, or data-ontology-inline.');
+          throw new EmbedLoadError(jaMessages.embed.missingSource);
         }
 
         if (!cancelled) {
@@ -120,7 +123,8 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : String(err));
+          const detail = err instanceof Error ? err.message : String(err);
+          setError(err instanceof EmbedLoadError ? detail : jaFormatters.embedLoadError(detail));
           setLoading(false);
         }
       }
@@ -148,7 +152,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
     return (
       <div style={containerStyle}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: theme.textSecondary, fontSize: 14 }}>
-          Loading ontology…
+          {jaMessages.embed.loading}
         </div>
       </div>
     );
@@ -158,7 +162,7 @@ export function EmbedWidget({ config }: { config: EmbedConfig }) {
     return (
       <div style={containerStyle}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: '#E81123', fontSize: 13, padding: 20, textAlign: 'center' }}>
-          {error || 'Unknown error'}
+          {error || jaMessages.embed.unknownError}
         </div>
       </div>
     );
@@ -230,12 +234,12 @@ function EmbedHeader({ ontology, tab, setTab, theme, copied, onCopyRdf }: EmbedH
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontWeight: 600, fontSize: 14 }}>{ontology.name}</span>
         <span style={{ fontSize: 11, color: theme.textTertiary }}>
-          {ontology.entityTypes.length} entities · {ontology.relationships.length} relationships
+          {jaFormatters.embedOntologyCounts(ontology.entityTypes.length, ontology.relationships.length)}
         </span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <button style={tabStyle(tab === 'graph')} onClick={() => setTab('graph')}>Graph</button>
-        <button style={tabStyle(tab === 'rdf')} onClick={() => setTab('rdf')}>RDF Source</button>
+        <button style={tabStyle(tab === 'graph')} onClick={() => setTab('graph')} aria-pressed={tab === 'graph'}>{jaMessages.embed.graph}</button>
+        <button style={tabStyle(tab === 'rdf')} onClick={() => setTab('rdf')} aria-pressed={tab === 'rdf'}>{jaMessages.embed.rdfSource}</button>
         {tab === 'rdf' && (
           <button
             onClick={onCopyRdf}
@@ -245,7 +249,7 @@ function EmbedHeader({ ontology, tab, setTab, theme, copied, onCopyRdf }: EmbedH
               border: `1px solid ${theme.border}`, borderRadius: 4, cursor: 'pointer',
             }}
           >
-            {copied ? 'Copied!' : 'Copy RDF'}
+            {copied ? jaMessages.embed.copied : jaMessages.embed.copyRdf}
           </button>
         )}
       </div>
@@ -358,7 +362,7 @@ function EmbedRdfSource({ ontology, theme }: { ontology: Ontology; theme: ThemeT
   const highlighted = useMemo(() => highlightRdf(rdf, hlTheme), [rdf, hlTheme]);
 
   return (
-    <pre style={{
+    <pre aria-label={jaMessages.embed.rdfSource} style={{
       margin: 0, padding: 16, height: '100%', overflow: 'auto',
       background: theme.bg, color: theme.textSecondary,
       fontSize: 12, lineHeight: 1.6, fontFamily: "'Cascadia Code', 'Fira Code', monospace",
@@ -393,7 +397,7 @@ function EmbedInspector({ selected, theme, ontology, onClose }: InspectorProps) 
       <div style={panelStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ fontWeight: 600, fontSize: 14 }}>{e.icon} {e.name}</span>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: theme.textTertiary, cursor: 'pointer', fontSize: 16 }}>✕</button>
+          <button onClick={onClose} aria-label={jaMessages.embed.closeInspector} style={{ background: 'none', border: 'none', color: theme.textTertiary, cursor: 'pointer', fontSize: 16 }}>✕</button>
         </div>
         {e.description && <p style={{ color: theme.textSecondary, margin: '0 0 8px' }}>{e.description}</p>}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -419,7 +423,7 @@ function EmbedInspector({ selected, theme, ontology, onClose }: InspectorProps) 
       <div style={panelStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ fontWeight: 600, fontSize: 14 }}>{r.name}</span>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: theme.textTertiary, cursor: 'pointer', fontSize: 16 }}>✕</button>
+          <button onClick={onClose} aria-label={jaMessages.embed.closeInspector} style={{ background: 'none', border: 'none', color: theme.textTertiary, cursor: 'pointer', fontSize: 16 }}>✕</button>
         </div>
         <p style={{ color: theme.textSecondary, margin: '0 0 6px' }}>
           {fromEntity?.icon} {fromEntity?.name || r.from} → {toEntity?.icon} {toEntity?.name || r.to}
