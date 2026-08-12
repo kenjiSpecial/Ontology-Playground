@@ -1,0 +1,101 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "医療システム",
+    "displayDescription": "医療提供者、予約、診断、処方箋を含む患者診療のモデルです。",
+    "displayTags": []
+  },
+  "ontology": {
+    "displayName": "医療システム",
+    "displayDescription": "医療提供者、予約、診断、治療を含む患者診療管理のモデルです。"
+  },
+  "entities": [
+    {
+      "id": "patient",
+      "displayName": "患者",
+      "displayDescription": "医療を受ける個人を表します。"
+    },
+    {
+      "id": "provider",
+      "displayName": "医療提供者",
+      "displayDescription": "医療専門職を表します。"
+    },
+    {
+      "id": "appointment",
+      "displayName": "予約",
+      "displayDescription": "予定された患者の受診を表します。"
+    },
+    {
+      "id": "diagnosis",
+      "displayName": "診断",
+      "displayDescription": "特定された医学的な病状を表します。"
+    },
+    {
+      "id": "prescription",
+      "displayName": "処方箋",
+      "displayDescription": "薬剤の処方を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "patient", "propertyName": "patientId", "displayName": "患者ID" },
+    { "entityId": "patient", "propertyName": "mrn", "displayName": "診療録番号" },
+    { "entityId": "patient", "propertyName": "dateOfBirth", "displayName": "生年月日" },
+    { "entityId": "patient", "propertyName": "bloodType", "displayName": "血液型" },
+    { "entityId": "patient", "propertyName": "allergies", "displayName": "アレルギー" },
+    { "entityId": "provider", "propertyName": "providerId", "displayName": "医療提供者ID" },
+    { "entityId": "provider", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "provider", "propertyName": "specialty", "displayName": "専門分野" },
+    { "entityId": "provider", "propertyName": "licenseNumber", "displayName": "免許番号" },
+    { "entityId": "provider", "propertyName": "department", "displayName": "診療科" },
+    { "entityId": "appointment", "propertyName": "appointmentId", "displayName": "予約ID" },
+    { "entityId": "appointment", "propertyName": "scheduledTime", "displayName": "予約日時" },
+    { "entityId": "appointment", "propertyName": "duration", "displayName": "所要時間" },
+    { "entityId": "appointment", "propertyName": "type", "displayName": "種類" },
+    { "entityId": "appointment", "propertyName": "status", "displayName": "状態" },
+    { "entityId": "diagnosis", "propertyName": "diagnosisId", "displayName": "診断ID" },
+    { "entityId": "diagnosis", "propertyName": "icdCode", "displayName": "ICDコード" },
+    { "entityId": "diagnosis", "propertyName": "description", "displayName": "説明" },
+    { "entityId": "diagnosis", "propertyName": "severity", "displayName": "重症度" },
+    { "entityId": "diagnosis", "propertyName": "diagnosedDate", "displayName": "診断日" },
+    { "entityId": "prescription", "propertyName": "rxNumber", "displayName": "処方箋番号" },
+    { "entityId": "prescription", "propertyName": "medication", "displayName": "薬剤" },
+    { "entityId": "prescription", "propertyName": "dosage", "displayName": "用量" },
+    { "entityId": "prescription", "propertyName": "frequency", "displayName": "服用頻度" },
+    { "entityId": "prescription", "propertyName": "refillsRemaining", "displayName": "再調剤残回数" }
+  ],
+  "relationships": [
+    {
+      "id": "patient_has_appt",
+      "displayName": "予約を持つ",
+      "displayDescription": "患者の予定された受診を表します。"
+    },
+    {
+      "id": "provider_sees",
+      "displayName": "診療する",
+      "displayDescription": "医療提供者の担当する予約を表します。"
+    },
+    {
+      "id": "patient_diagnosed",
+      "displayName": "診断を受ける",
+      "displayDescription": "患者に付けられた診断を表します。"
+    },
+    {
+      "id": "provider_diagnoses",
+      "displayName": "診断する",
+      "displayDescription": "医療提供者が行った診断を表します。"
+    },
+    {
+      "id": "diagnosis_treated",
+      "displayName": "処方箋で治療する",
+      "displayDescription": "診断に対する処方箋を表します。"
+    },
+    {
+      "id": "provider_prescribes",
+      "displayName": "処方する",
+      "displayDescription": "医療提供者が発行する処方箋を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

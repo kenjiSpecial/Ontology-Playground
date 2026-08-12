@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "銀行 — ステップ1：顧客と口座",
+    "displayDescription": "顧客と口座から始める銀行業務の基盤です。",
+    "displayTags": [
+      { "tag": "banking", "displayName": "銀行業務" },
+      { "tag": "finance", "displayName": "金融" },
+      { "tag": "school", "displayName": "学習" },
+      { "tag": "step-1", "displayName": "ステップ1" }
+    ]
+  },
+  "ontology": {
+    "displayName": "銀行・金融 — ステップ1",
+    "displayDescription": "顧客と口座の基本を表す銀行モデルです。"
+  },
+  "entities": [
+    {
+      "id": "customer",
+      "displayName": "顧客",
+      "displayDescription": "銀行の顧客を表します。"
+    },
+    {
+      "id": "account",
+      "displayName": "口座",
+      "displayDescription": "金融口座を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "customer", "propertyName": "customerId", "displayName": "顧客ID" },
+    { "entityId": "customer", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "customer", "propertyName": "ssn", "displayName": "社会保障番号" },
+    { "entityId": "customer", "propertyName": "creditScore", "displayName": "クレジットスコア" },
+    { "entityId": "customer", "propertyName": "riskProfile", "displayName": "リスクプロファイル" },
+    { "entityId": "account", "propertyName": "accountNumber", "displayName": "口座番号" },
+    { "entityId": "account", "propertyName": "type", "displayName": "種類" },
+    { "entityId": "account", "propertyName": "balance", "displayName": "残高" },
+    { "entityId": "account", "propertyName": "interestRate", "displayName": "金利" },
+    { "entityId": "account", "propertyName": "openDate", "displayName": "開設日" }
+  ],
+  "relationships": [
+    {
+      "id": "customer_owns_acct",
+      "displayName": "口座を所有する",
+      "displayDescription": "顧客が所有する口座を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

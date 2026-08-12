@@ -181,10 +181,11 @@ into a static JSON file.
   failures, graph/inspector/search/query/quest behavior, and export boundaries.
 - [x] Document Japanese text and justified technical-token validation in
   [docs/japanese-localization.md](docs/japanese-localization.md).
-- [ ] Translate the real catalogue entries. Issue #27 is planned to complete
-  with Japanese overlays for 8/71 entries (the four Cosmic Coffee and four
-  E-commerce entries); the remaining 63 entries are tracked in Issues #28–#33.
-  The full catalogue translation is not complete.
+- [ ] Translate the real catalogue entries. Issues #27 and #28 cover 24/71
+  entries (the four Cosmic Coffee, four E-commerce, and 16 Banking & Finance,
+  Healthcare, Smart Manufacturing, and University entries); the remaining 47
+  entries are tracked in Issues #29–#33. The full catalogue translation is
+  not complete.
 
 ---
 

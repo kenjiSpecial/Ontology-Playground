@@ -1,0 +1,106 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "銀行 — ステップ3：ローンと投資",
+    "displayDescription": "ローンと投資商品を加えた完成モデルです。",
+    "displayTags": [
+      { "tag": "banking", "displayName": "銀行業務" },
+      { "tag": "finance", "displayName": "金融" },
+      { "tag": "school", "displayName": "学習" },
+      { "tag": "step-3", "displayName": "ステップ3" }
+    ]
+  },
+  "ontology": {
+    "displayName": "銀行・金融 — ステップ3",
+    "displayDescription": "ローンと投資を加えた銀行・金融の完全なモデルです。"
+  },
+  "entities": [
+    {
+      "id": "customer",
+      "displayName": "顧客",
+      "displayDescription": "銀行の顧客を表します。"
+    },
+    {
+      "id": "account",
+      "displayName": "口座",
+      "displayDescription": "金融口座を表します。"
+    },
+    {
+      "id": "transaction",
+      "displayName": "取引",
+      "displayDescription": "金融取引を表します。"
+    },
+    {
+      "id": "loan",
+      "displayName": "ローン",
+      "displayDescription": "融資商品を表します。"
+    },
+    {
+      "id": "investment",
+      "displayName": "投資",
+      "displayDescription": "投資の保有資産を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "customer", "propertyName": "customerId", "displayName": "顧客ID" },
+    { "entityId": "customer", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "customer", "propertyName": "ssn", "displayName": "社会保障番号" },
+    { "entityId": "customer", "propertyName": "creditScore", "displayName": "クレジットスコア" },
+    { "entityId": "customer", "propertyName": "riskProfile", "displayName": "リスクプロファイル" },
+    { "entityId": "account", "propertyName": "accountNumber", "displayName": "口座番号" },
+    { "entityId": "account", "propertyName": "type", "displayName": "種類" },
+    { "entityId": "account", "propertyName": "balance", "displayName": "残高" },
+    { "entityId": "account", "propertyName": "interestRate", "displayName": "金利" },
+    { "entityId": "account", "propertyName": "openDate", "displayName": "開設日" },
+    { "entityId": "transaction", "propertyName": "transactionId", "displayName": "取引ID" },
+    { "entityId": "transaction", "propertyName": "amount", "displayName": "金額" },
+    { "entityId": "transaction", "propertyName": "type", "displayName": "種類" },
+    { "entityId": "transaction", "propertyName": "timestamp", "displayName": "タイムスタンプ" },
+    { "entityId": "transaction", "propertyName": "merchant", "displayName": "取引先" },
+    { "entityId": "loan", "propertyName": "loanId", "displayName": "ローンID" },
+    { "entityId": "loan", "propertyName": "principal", "displayName": "元本" },
+    { "entityId": "loan", "propertyName": "apr", "displayName": "年換算利率" },
+    { "entityId": "loan", "propertyName": "term", "displayName": "期間" },
+    { "entityId": "loan", "propertyName": "status", "displayName": "状態" },
+    { "entityId": "investment", "propertyName": "holdingId", "displayName": "保有ID" },
+    { "entityId": "investment", "propertyName": "symbol", "displayName": "銘柄コード" },
+    { "entityId": "investment", "propertyName": "shares", "displayName": "株式数" },
+    { "entityId": "investment", "propertyName": "purchasePrice", "displayName": "購入価格" },
+    { "entityId": "investment", "propertyName": "currentValue", "displayName": "現在価値" }
+  ],
+  "relationships": [
+    {
+      "id": "customer_owns_acct",
+      "displayName": "口座を所有する",
+      "displayDescription": "顧客が所有する口座を表します。"
+    },
+    {
+      "id": "account_has_txn",
+      "displayName": "取引がある",
+      "displayDescription": "口座で発生する取引を表します。"
+    },
+    {
+      "id": "customer_has_loan",
+      "displayName": "ローンを持つ",
+      "displayDescription": "顧客が利用するローンを表します。"
+    },
+    {
+      "id": "account_funds_loan",
+      "displayName": "資金を提供する",
+      "displayDescription": "ローンの支払元となる口座を表します。"
+    },
+    {
+      "id": "customer_holds",
+      "displayName": "投資を保有する",
+      "displayDescription": "顧客の投資ポートフォリオを表します。"
+    },
+    {
+      "id": "account_linked",
+      "displayName": "関連付く",
+      "displayDescription": "口座と投資の関連を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

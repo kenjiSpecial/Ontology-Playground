@@ -1,0 +1,65 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "大学 — ステップ1：学生と科目",
+    "displayDescription": "学生、科目、履修登録から始める学籍情報の基盤です。",
+    "displayTags": [
+      { "tag": "education", "displayName": "教育" },
+      { "tag": "university", "displayName": "大学" },
+      { "tag": "school", "displayName": "学習" },
+      { "tag": "step-1", "displayName": "ステップ1" }
+    ]
+  },
+  "ontology": {
+    "displayName": "大学システム — ステップ1",
+    "displayDescription": "学生、科目、履修登録を含む学籍情報の中核モデルです。"
+  },
+  "entities": [
+    {
+      "id": "student",
+      "displayName": "学生",
+      "displayDescription": "大学に在籍する学生を表します。"
+    },
+    {
+      "id": "course",
+      "displayName": "科目",
+      "displayDescription": "大学で開講される科目を表します。"
+    },
+    {
+      "id": "enrollment",
+      "displayName": "履修登録",
+      "displayDescription": "学生が特定の科目に登録した履修情報を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "student", "propertyName": "studentId", "displayName": "学生ID" },
+    { "entityId": "student", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "student", "propertyName": "major", "displayName": "専攻" },
+    { "entityId": "student", "propertyName": "gpa", "displayName": "GPA（成績平均）" },
+    { "entityId": "student", "propertyName": "enrollmentYear", "displayName": "入学年度" },
+    { "entityId": "course", "propertyName": "courseCode", "displayName": "科目コード" },
+    { "entityId": "course", "propertyName": "title", "displayName": "科目名" },
+    { "entityId": "course", "propertyName": "credits", "displayName": "単位数" },
+    { "entityId": "course", "propertyName": "level", "displayName": "レベル" },
+    { "entityId": "course", "propertyName": "maxEnrollment", "displayName": "定員" },
+    { "entityId": "enrollment", "propertyName": "enrollmentId", "displayName": "履修登録ID" },
+    { "entityId": "enrollment", "propertyName": "semester", "displayName": "学期" },
+    { "entityId": "enrollment", "propertyName": "grade", "displayName": "成績" },
+    { "entityId": "enrollment", "propertyName": "status", "displayName": "状態" }
+  ],
+  "relationships": [
+    {
+      "id": "student_enrolls",
+      "displayName": "履修登録する",
+      "displayDescription": "学生の履修登録を表します。"
+    },
+    {
+      "id": "enrollment_for",
+      "displayName": "科目に対応する",
+      "displayDescription": "履修登録に対応する科目を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}
