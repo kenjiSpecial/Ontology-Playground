@@ -1,18 +1,18 @@
 ---
-title: "Complete University Model"
+title: "完成した大学モデル"
 slug: complete-university
-description: "Add Department to complete the university ontology — organizing faculty, courses, and students into academic programs."
+description: "Departmentを追加して大学オントロジーを完成させ、教員、科目、学生を教育課程ごとにまとめます。"
 order: 4
 embed: official/university-step-3
 ---
 
-## Organizational structure
+## 組織構造
 
-Universities are organized into **Departments** — administrative units that house faculty, offer courses, and grant degrees. Adding Department creates the organizational hierarchy that ties everything together.
+大学は**Department**という、教員が所属し、科目を開講し、学位を授与する管理単位で構成されています。Departmentを追加すると、すべてを結び付ける組織階層を表現できます。
 
-## Department entity
+## Departmentエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `departmentId` | string | ✓ |
 | `name` | string | |
@@ -20,36 +20,36 @@ Universities are organized into **Departments** — administrative units that ho
 | `budget` | float | |
 | `headOfDept` | string | |
 
-The `budget` float enables resource allocation queries. The `headOfDept` property references a professor who leads the department — a self-referential pattern common in organizational hierarchies.
+浮動小数点数型の `budget` によって、資源配分に関するクエリを実行できます。`headOfDept` プロパティは、学部・学科を率いる教授を参照します。これは、組織階層でよく見られる自己参照パターンです。
 
-## New relationships
+## 新しいリレーションシップ
 
-- **belongs_to** — `Professor` → `Department` (many-to-one)
-  Professors are affiliated with a department.
+- **belongs_to** — `Professor` → `Department`（多対一）
+  教授は1つの学部・学科に所属します。
 
-- **offers** — `Department` → `Course` (one-to-many)
-  Departments offer courses as part of their academic programs.
+- **offers** — `Department` → `Course`（一対多）
+  学部・学科は、教育課程の一部として科目を開講します。
 
-> **Organizational hierarchy:** Department sits at the top of the university ontology. It connects downward to both Professor (faculty) and Course (curriculum). This hub position makes Department ideal for aggregate queries: "department-level statistics."
+> **組織階層：** Departmentは大学オントロジーの最上位に位置し、下位のProfessor（教員）とCourse（カリキュラム）の両方につながります。このハブとしての位置付けにより、Departmentは「学部・学科単位の統計」を求める集約クエリに適しています。
 
-## The complete graph
+## 完成したグラフ
 
 <ontology-embed id="official/university-step-3" diff="official/university-step-2" height="500px"></ontology-embed>
 
-*The complete University ontology: 5 entities, 6 relationships. Department organizes both faculty and curriculum.*
+*5つのエンティティと6つのリレーションシップからなる、完成した大学オントロジーです。Departmentが教員とカリキュラムの両方をまとめます。*
 
-## What the complete model enables
+## 完成したモデルでできること
 
-| Question | Graph path |
+| 質問 | グラフの経路 |
 |---|---|
-| Which departments have the highest average student GPA? | Department → Course ← Enrollment ← Student (avg GPA) |
-| Which professors teach outside their department's courses? | Professor → Department vs Professor → Course → Department |
-| What is the enrollment rate for each department? | Department → Course ← Enrollment (count) / Course.maxEnrollment |
-| Which departments have the most tenured faculty? | Department ← Professor (tenured=true, count) |
+| 学生の平均GPAが最も高い学部・学科はどこか？ | Department → Course ← Enrollment ← Student（GPA平均） |
+| 所属する学部・学科以外の科目を担当している教授は誰か？ | Professor → DepartmentとProfessor → Course → Departmentを比較 |
+| 学部・学科ごとの履修率はいくらか？ | Department → Course ← Enrollment（件数）/ Course.maxEnrollment |
+| テニュア保有教員が最も多い学部・学科はどこか？ | Department ← Professor（tenured=true、件数） |
 
-## GQL query example
+## GQLクエリの例
 
-Find departments where students are struggling (average grade below B):
+学生の成績が振るわない（平均成績がB未満の）学部・学科を検索します。
 
 ```gql
 MATCH (d:Department)-[:offers]->(c:Course)<-[:for_course]-(e:Enrollment)<-[:enrolls_in]-(s:Student)
@@ -58,29 +58,29 @@ RETURN d.name, c.title, COUNT(e) AS struggling_count
 ORDER BY struggling_count DESC
 ```
 
-## What we built
+## 構築したもの
 
-| Step | Entities added | Cumulative | Key concept |
+| ステップ | 追加したエンティティ | 累計 | 重要な概念 |
 |---|---|---|---|
-| 1 | Student, Course, Enrollment | 3 | Junction entities, many-to-many |
-| 2 | Professor | 4 | Transitive queries, boolean properties |
-| 3 | Department | 5 | Organizational hierarchy, hub entities |
+| 1 | Student、Course、Enrollment | 3 | 中間エンティティ、多対多 |
+| 2 | Professor | 4 | 複数ホップのクエリ、真偽値型のプロパティ |
+| 3 | Department | 5 | 組織階層、ハブエンティティ |
 
-## Key takeaways
+## 重要なポイント
 
-1. **Junction entities** (Enrollment) resolve many-to-many relationships with attributes
-2. **Transitive queries** unlock insights by traversing multi-hop paths
-3. **Boolean properties** (tenured) enable categorical filtering
-4. **Organizational hierarchies** (Department) provide aggregate grouping
-5. **Hub entities** (Department) connect multiple branches of the ontology
+1. **中間エンティティ**（Enrollment）は、属性を伴う多対多リレーションシップを表します
+2. **複数ホップのクエリ**は、複数の経路をたどって知見を引き出します
+3. **真偽値型のプロパティ**（tenured）によって、カテゴリ別の絞り込みが可能になります
+4. **組織階層**（Department）は、集約の単位を提供します
+5. **ハブエンティティ**（Department）は、オントロジーの複数の枝をつなぎます
 
 ```quiz
-Q: Why is Department considered a "hub entity" in the university ontology?
-- Because it has the most properties
-- Because it connects to both Professor and Course, sitting at the top of the organizational hierarchy [correct]
-- Because it was added last
-- Because hub entities must have a budget property
-> Department connects downward to both Professor (via belongs_to) and Course (via offers). This dual connection makes it the organizational hub — ideal for aggregate queries that combine faculty and curriculum data at the departmental level.
+Q: 大学オントロジーでDepartmentが「ハブエンティティ」と見なされるのはなぜですか？
+- 最も多くのプロパティを持つため
+- 組織階層の最上位に位置し、ProfessorとCourseの両方につながるため [correct]
+- 最後に追加されたため
+- ハブエンティティにはbudgetプロパティが必要なため
+> Departmentは、belongs_toを介してProfessorに、offersを介してCourseに下向きにつながります。この2方向のつながりによって組織のハブとなり、学部・学科単位で教員とカリキュラムのデータを組み合わせる集約クエリに適した構造になります。
 ```
 
-You've completed the University System learning path! Load any step from the [catalogue](#/catalogue) to explore it interactively.
+大学システムの学習パスはこれで完了です。[カタログ](#/catalogue)から任意のステップを読み込み、対話的に探索してみましょう。

@@ -1,43 +1,43 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Meet the University System — an academic institution that needs an ontology to connect students, courses, faculty, and departments."
+description: "学生、科目、教員、学部・学科をつなぐオントロジーを必要とする教育機関、大学システムを紹介します。"
 order: 1
 ---
 
-## The scenario
+## シナリオ
 
-You are designing the data model for a **university management system**. The institution tracks:
+あなたは、**大学管理システム**のデータモデルを設計しています。この教育機関では、次の情報を管理しています。
 
-- **Students** with their enrollment status, GPA, and academic standing
-- **Courses** with credit hours, levels, and prerequisites
-- **Enrollments** recording which students take which courses and their grades
-- **Professors** teaching courses with their rank, tenure status, and office hours
-- **Departments** organizing academic programs and housing faculty
+- **学生** — 在籍状況、GPA、学業状況
+- **科目** — 単位数、レベル、履修条件
+- **履修登録** — どの学生がどの科目を履修しているか、その成績
+- **教授** — 担当科目、職位、テニュアの有無、オフィスアワー
+- **学部・学科** — 教育課程の編成と教員の所属
 
-Data lives across student information systems (SIS), learning management systems (LMS), human resources, and academic planning databases.
+データは、学生情報システム（SIS）、学習管理システム（LMS）、人事システム、教育計画データベースに分散しています。
 
-## Why an ontology?
+## オントロジーが必要な理由
 
-An academic question like **"Which departments have professors teaching courses where over 50% of enrolled students scored below a C?"** crosses departmental records, faculty assignments, course offerings, and student grades.
+**「履修学生の50％超がC未満の成績を取った科目を担当する教授がいるのは、どの学部・学科か？」**という教育上の問いに答えるには、学部・学科の記録、教員の担当、開講科目、学生の成績を横断する必要があります。
 
-With an ontology, this maps to: `Department → Professor → Course → Enrollment (grade < C) ← Student`.
+オントロジーでは、この問いを `Department → Professor → Course → Enrollment (grade < C) ← Student` として表せます。
 
-## What we'll build
+## 構築するもの
 
-| Step | Entities | What you'll learn |
+| ステップ | エンティティ | 学ぶこと |
 |---|---|---|
-| 1 | Student, Course, Enrollment | Academic records, many-to-many through junction entities |
-| 2 | + Professor | Faculty assignments, teaching relationships |
-| 3 | + Department | Organizational structure, hierarchy |
+| 1 | Student、Course、Enrollment | 学籍情報、中間エンティティを介した多対多 |
+| 2 | + Professor | 教員の担当、指導リレーションシップ |
+| 3 | + Department | 組織構造、階層 |
 
-By the end, you'll have a 5-entity, 6-relationship ontology covering the complete academic administration model.
+最後には、大学運営モデル全体を表す、5つのエンティティと6つのリレーションシップからなるオントロジーが完成します。
 
-## Key concepts
+## 重要な概念
 
-- **Junction entities** — Enrollment resolves the Student–Course many-to-many relationship
-- **Academic hierarchies** — Departments organize professors and courses
-- **Grade tracking** — letter grades and GPA as ontology properties
-- **Temporal data** — semesters, enrollment dates, academic years
+- **中間エンティティ** — EnrollmentによってStudentとCourseの多対多リレーションシップを表します
+- **教育組織の階層** — DepartmentがProfessorとCourseをまとめます
+- **成績の追跡** — レターグレードとGPAをオントロジーのプロパティとして扱います
+- **時系列データ** — 学期、履修登録日、学年度を扱います
 
-Let's start with the academic core.
+まずは、学籍情報の中核から始めましょう。
