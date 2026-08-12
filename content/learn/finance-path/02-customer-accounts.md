@@ -1,25 +1,25 @@
 ---
-title: "Customer & Accounts"
+title: "顧客と口座"
 slug: customer-accounts
-description: "Define Customer and Account — the banking foundation — with ownership relationships and financial properties."
+description: "銀行業務の基礎となる Customer と Account を、所有関係と金融プロパティとともに定義します。"
 order: 2
 embed: official/finance-step-1
 ---
 
-## The banking foundation
+## 銀行業務の基礎
 
-Every financial institution starts with two core concepts:
+あらゆる金融機関のモデルは、2つの中核概念から始まります。
 
-- **Customer** — who holds the accounts?
-- **Account** — where is money stored and managed?
+- **Customer** — 誰が口座を所有しているか？
+- **Account** — どこで資金を保管し、管理しているか？
 
-This pair forms the foundation of any banking ontology. Every other financial product connects through them.
+この組み合わせが、あらゆる銀行オントロジーの基礎になります。ほかのすべての金融商品は、この2つを介してつながります。
 
-## Defining the entities
+## エンティティの定義
 
-### Customer
+### Customerエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `customerId` | string | ✓ |
 | `name` | string | |
@@ -27,13 +27,13 @@ This pair forms the foundation of any banking ontology. Every other financial pr
 | `creditScore` | integer | |
 | `riskProfile` | string | |
 
-The `creditScore` is an integer (300–850) used for lending decisions. The `riskProfile` property captures the bank's assessment for compliance and monitoring.
+`creditScore` は融資判断に使用する整数（300〜850）です。`riskProfile` プロパティには、コンプライアンスと監視のために銀行が行った評価を記録します。
 
-> **Sensitive data note:** Properties like `ssn` appear in the ontology as metadata — they describe what data *exists*, not the actual values. The ontology is a schema, not a database.
+> **機密データに関する注意：** `ssn` のようなプロパティは、オントロジー内ではメタデータとして表現されます。これはどのようなデータが*存在するか*を示すもので、実際の値ではありません。オントロジーはスキーマであり、データベースではありません。
 
-### Account
+### Accountエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `accountNumber` | string | ✓ |
 | `type` | string | |
@@ -41,33 +41,33 @@ The `creditScore` is an integer (300–850) used for lending decisions. The `ris
 | `interestRate` | decimal (%) | |
 | `openDate` | date | |
 
-The `type` property distinguishes between checking, savings, and brokerage accounts. The `interestRate` uses a percentage unit.
+`type` プロパティで、当座口座、普通預金口座、証券口座を区別します。`interestRate` にはパーセント単位を使用します。
 
-## Ownership relationship
+## 所有関係
 
-- **owns** — `Customer` → `Account` (one-to-many)
-  A customer can own multiple accounts (checking, savings, brokerage), but each account belongs to one customer.
+- **owns** — `Customer` → `Account`（一対多）
+  1人の顧客が複数の口座（当座、普通預金、証券）を所有できますが、各口座を所有する顧客は1人です。
 
-## The graph so far
+## 現時点のグラフ
 
 <ontology-embed id="official/finance-step-1" height="300px"></ontology-embed>
 
-*Customer and Account connected by the ownership relationship. Simple but foundational.*
+*Customer と Account が所有関係でつながっています。単純ですが、基礎となる構造です。*
 
-## What we learned
+## 学んだこと
 
-- **Integer properties** work well for scores and ratings (creditScore)
-- **Percentage units** (%) indicate rate-based properties
-- The **owns** relationship creates the fundamental ownership chain
-- Ontologies describe the *shape* of data, not the data itself — sensitive fields like SSN are metadata
+- **整数プロパティ**は、スコアや評価（creditScore）に適しています
+- **パーセント単位**（%）は、割合を表すプロパティであることを示します
+- **owns** リレーションシップが、基本となる所有関係の連鎖を作ります
+- オントロジーが表すのはデータ自体ではなくデータの*形*です。SSNのような機密項目もメタデータとして扱います
 
 ```quiz
-Q: Why is creditScore modeled as an integer rather than a string?
-- Strings are harder to store in databases
-- Integer type enables numeric comparisons and range queries (e.g., creditScore > 700) [correct]
-- Credit scores are always exactly three digits
-- Integers take less storage space
-> By using an integer type, the ontology signals that creditScore supports numeric operations — comparisons, ranges, averages, and thresholds. A string property wouldn't convey this capability to query engines.
+Q: creditScoreをstringではなくintegerとしてモデル化するのはなぜですか？
+- stringはデータベースへの保存が難しいため
+- integer型なら数値比較や範囲クエリ（例：creditScore > 700）を実行できるため [correct]
+- クレジットスコアは常に3桁ちょうどであるため
+- integerのほうが必要な保存容量が少ないため
+> integer型を使用することで、creditScoreが比較、範囲、平均、しきい値などの数値演算に対応していることをオントロジーで示せます。stringプロパティでは、この能力をクエリエンジンへ伝えられません。
 ```
 
-Next, we'll add Transaction to track account activity.
+次は Transaction を追加して、口座の活動を追跡します。

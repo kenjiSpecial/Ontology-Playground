@@ -1,43 +1,43 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Meet the Banking & Finance scenario — why financial services need ontologies for customer, account, and product relationships."
+description: "銀行・金融のシナリオを通じて、金融サービスで顧客、口座、商品の関係を扱うためにオントロジーが必要な理由を学びます。"
 order: 1
 ---
 
-## The scenario
+## シナリオ
 
-You are designing the data model for a **retail banking platform**. The bank manages:
+あなたは、**個人向け銀行プラットフォーム**のデータモデルを設計しています。この銀行では次の情報を管理します。
 
-- **Customers** with credit profiles and risk assessments
-- **Accounts** (checking, savings, brokerage) with balances and interest rates
-- **Transactions** recording every debit, credit, and transfer
-- **Loans** including mortgages, auto loans, and personal credit
-- **Investments** tracking stock holdings and portfolio values
+- 信用情報とリスク評価を持つ**顧客（Customer）**
+- 残高と金利を持つ**口座（Account）**（当座、普通預金、証券）
+- すべての引き落とし、入金、振り替えを記録する**取引（Transaction）**
+- 住宅ローン、自動車ローン、個人向け融資を含む**ローン（Loan）**
+- 株式の保有状況とポートフォリオ価値を追跡する**投資（Investment）**
 
-Data spans core banking systems, payment processors, credit bureaus, and brokerage platforms — each with its own schema and identifiers.
+データは勘定系システム、決済処理システム、信用情報機関、証券取引プラットフォームにまたがり、それぞれが独自のスキーマと識別子を持っています。
 
-## Why an ontology?
+## オントロジーが必要な理由
 
-A compliance question like **"Show all transactions from accounts owned by high-risk customers with active loans exceeding $100K"** requires traversing from transactions to accounts to customers to loans, crossing multiple systems.
+**「10万ドルを超える返済中のローンがある高リスク顧客について、その顧客が所有する口座の全取引を表示する」**というコンプライアンス上の問いに答えるには、複数のシステムを横断し、取引から口座、顧客、ローンへとたどる必要があります。
 
-With an ontology, this is a graph traversal: `Transaction → Account → Customer (riskProfile='high') → Loan (principal > 100000)`.
+オントロジーを使えば、これは `Transaction → Account → Customer (riskProfile='high') → Loan (principal > 100000)` というグラフ探索になります。
 
-## What we'll build
+## このコースで構築するもの
 
-| Step | Entities | What you'll learn |
+| ステップ | エンティティ | 学ぶこと |
 |---|---|---|
-| 1 | Customer, Account | Core banking entities, ownership relationships |
-| 2 | + Transaction | Activity tracking, temporal data |
-| 3 | + Loan, Investment | Financial products, multi-path relationships |
+| 1 | Customer, Account | 銀行業務の中核となるエンティティ、所有関係 |
+| 2 | + Transaction | 活動の追跡、時系列データ |
+| 3 | + Loan, Investment | 金融商品、複数経路のリレーションシップ |
 
-By the end, you'll have a 5-entity, 6-relationship ontology covering the complete banking customer relationship.
+最後には、銀行と顧客の関係全体を表す、5つのエンティティと6つのリレーションシップからなるオントロジーが完成します。
 
-## Key concepts
+## 重要な概念
 
-- **Ownership chains** — Customer → Account → Transaction / Loan / Investment
-- **Financial identifiers** — account numbers, transaction IDs, loan IDs
-- **Risk and compliance** — credit scores, risk profiles
-- **Multi-path relationships** — when one entity connects to another through different paths
+- **所有関係の連鎖** — Customer → Account → Transaction / Loan / Investment
+- **金融識別子** — 口座番号、取引ID、ローンID
+- **リスクとコンプライアンス** — クレジットスコア、リスクプロファイル
+- **複数経路のリレーションシップ** — あるエンティティが別のエンティティへ異なる経路でつながる関係
 
-Let's start with the banking foundation: Customer and Account.
+まずは銀行業務の基礎となる Customer と Account から始めましょう。
