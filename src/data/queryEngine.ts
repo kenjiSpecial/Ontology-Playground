@@ -206,10 +206,11 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
       `show ${entityNamePlural}`,
       `list ${entityNamePlural}`,
     ]);
-    const japaneseListQuery =
-      normalizedQuery.includes(entityNameLower) &&
-      includesAny(normalizedQuery, ['すべて', '全て', '全部', '一覧']) &&
-      includesAny(normalizedQuery, ['表示', '見せ']);
+    const mentionsEntity = normalizedQuery.includes(entityNameLower);
+    const japaneseListQuery = mentionsEntity && (
+      normalizedQuery.includes('一覧') ||
+      (includesAny(normalizedQuery, ['すべて', '全て', '全部']) && includesAny(normalizedQuery, ['表示', '見せ']))
+    );
 
     if (legacyListQuery || japaneseListQuery) {
       return {

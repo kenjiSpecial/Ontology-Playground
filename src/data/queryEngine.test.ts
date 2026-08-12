@@ -96,6 +96,14 @@ describe('processQuery', () => {
     expect(response.highlightEntities).toEqual(['problem']);
   });
 
+  it('answers concise Japanese entity-list requests', () => {
+    const response = processQuery('Problemの一覧', testOntology);
+
+    expect(response.result).toContain('**Problem**');
+    expect(response.highlightEntities).toEqual(['problem']);
+    expect(isFallbackQueryResponse(response.result)).toBe(false);
+  });
+
   it('answers Japanese connection questions', () => {
     const response = processQuery('ServiceはConfigurationItemとどうつながりますか？', testOntology);
 
@@ -145,5 +153,18 @@ describe('processQuery', () => {
     expect(response.result).toContain('Arif Ramadhan');
     expect(response.interpretation).toContain('Fourth Coffee');
     expect(response.highlightEntities).toEqual(['customer']);
+  });
+
+  it.each([
+    ['Show me all Problems', testOntology, ['problem']],
+    ['Show Problem by title', testOntology, ['problem']],
+    ['How many Problems are there?', testOntology, ['problem']],
+    ['Show schema overview', testOntology, ['service', 'configurationitem', 'problem']],
+    ['Show me all Gold tier customers', cosmicCoffeeOntology, ['customer']],
+  ])('keeps legacy English query compatibility for %s', (query, ontology, expectedEntities) => {
+    const response = processQuery(query, ontology);
+
+    expect(isFallbackQueryResponse(response.result)).toBe(false);
+    expect(response.highlightEntities).toEqual(expectedEntities);
   });
 });

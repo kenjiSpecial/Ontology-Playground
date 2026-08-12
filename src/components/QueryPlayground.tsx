@@ -67,15 +67,26 @@ export function QueryPlayground() {
     clearHighlights();
   };
 
-  // Convert markdown-like formatting to simple HTML-like display
+  // Render the supported Markdown-like emphasis as React nodes so query and
+  // ontology text can never be interpreted as HTML.
+  const formatInlineResult = (line: string, lineIndex: number) =>
+    line.split(/(\*\*.*?\*\*|_.*?_)/g).map((part, partIndex) => {
+      const key = `${lineIndex}-${partIndex}`;
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={key}>{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('_') && part.endsWith('_')) {
+        return <em key={key}>{part.slice(1, -1)}</em>;
+      }
+      return part;
+    });
+
   const formatResult = (text: string) => {
     return text
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/_(.+?)_/g, '<em>$1</em>')
       .split('\n')
       .map((line, i) => (
         <span key={i}>
-          <span dangerouslySetInnerHTML={{ __html: line }} />
+          <span>{formatInlineResult(line, i)}</span>
           {i < text.split('\n').length - 1 && <br />}
         </span>
       ));
