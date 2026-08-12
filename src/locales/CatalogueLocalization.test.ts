@@ -71,6 +71,24 @@ const ECOMMERCE_ENTRIES = [
   'ecommerce-step-3',
   'ecommerce',
 ] as const;
+const BUSINESS_DOMAIN_ENTRIES = [
+  'finance-step-1',
+  'finance-step-2',
+  'finance-step-3',
+  'finance',
+  'healthcare-step-1',
+  'healthcare-step-2',
+  'healthcare-step-3',
+  'healthcare',
+  'manufacturing-step-1',
+  'manufacturing-step-2',
+  'manufacturing-step-3',
+  'manufacturing',
+  'university-step-1',
+  'university-step-2',
+  'university-step-3',
+  'university',
+] as const;
 const JAPANESE_DISPLAY_TEXT_RE = /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/u;
 
 function stripDisplayFields(value: unknown): unknown {
@@ -209,12 +227,18 @@ function expectLocalizedEntry(
   const ontology = entry.ontology;
 
   expect(ontology.displayName, `${path}.ontology.displayName`).toBeDefined();
-  expect(ontology.displayDescription, `${path}.ontology.displayDescription`).toBeDefined();
+  if (sourceEntry.ontology.description.trim()) {
+    expect(ontology.displayDescription, `${path}.ontology.displayDescription`).toBeDefined();
+  } else {
+    expect(ontology.displayDescription, `${path}.ontology.displayDescription`).toBeUndefined();
+  }
   expect(ontology.entityTypes.every((entity) => entity.displayName !== undefined)).toBe(true);
   expectStableKeyCoverage(sourceEntry, entry, path);
 
   expectJapaneseDisplayText(ontology.displayName!, `${path}.ontology.displayName`);
-  expectJapaneseDisplayText(ontology.displayDescription!, `${path}.ontology.displayDescription`);
+  if (sourceEntry.ontology.description.trim()) {
+    expectJapaneseDisplayText(ontology.displayDescription!, `${path}.ontology.displayDescription`);
+  }
   ontology.entityTypes.forEach((entity, entityIndex) => {
     expectJapaneseDisplayText(
       entity.displayName!,
@@ -483,6 +507,18 @@ describe('catalogue localization integration', () => {
     const catalogue = compileCatalogue({ rootDir: REPOSITORY_ROOT, logger: quietLogger });
 
     for (const slug of ECOMMERCE_ENTRIES) {
+      const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
+      expect(entry, `official/${slug}`).toBeDefined();
+      const sourceEntry = readSourceEntry(slug);
+      expectLocalizedEntry(entry!, sourceEntry, `official/${slug}`);
+      expect(normalizedInternalValue(entry)).toEqual(normalizedInternalValue(sourceEntry));
+    }
+  });
+
+  it('localizes every business-domain entry while preserving source keys and internal values', () => {
+    const catalogue = compileCatalogue({ rootDir: REPOSITORY_ROOT, logger: quietLogger });
+
+    for (const slug of BUSINESS_DOMAIN_ENTRIES) {
       const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
       expect(entry, `official/${slug}`).toBeDefined();
       const sourceEntry = readSourceEntry(slug);

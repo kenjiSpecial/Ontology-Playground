@@ -1,0 +1,99 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "大学システム",
+    "displayDescription": "学生、教授、科目、学部・学科を扱う教育機関のモデルです。",
+    "displayTags": []
+  },
+  "ontology": {
+    "displayName": "大学システム",
+    "displayDescription": "学生、科目、教員を扱う大学モデルです。"
+  },
+  "entities": [
+    {
+      "id": "student",
+      "displayName": "学生",
+      "displayDescription": "大学に在籍する学生を表します。"
+    },
+    {
+      "id": "professor",
+      "displayName": "教授",
+      "displayDescription": "大学の教員を表します。"
+    },
+    {
+      "id": "course",
+      "displayName": "科目",
+      "displayDescription": "大学の授業を表します。"
+    },
+    {
+      "id": "department",
+      "displayName": "学部・学科",
+      "displayDescription": "大学の教育組織を表します。"
+    },
+    {
+      "id": "enrollment",
+      "displayName": "履修登録",
+      "displayDescription": "科目への履修登録を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "student", "propertyName": "studentId", "displayName": "学生ID" },
+    { "entityId": "student", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "student", "propertyName": "major", "displayName": "専攻" },
+    { "entityId": "student", "propertyName": "gpa", "displayName": "GPA（成績平均）" },
+    { "entityId": "student", "propertyName": "enrollmentYear", "displayName": "入学年度" },
+    { "entityId": "professor", "propertyName": "facultyId", "displayName": "教員ID" },
+    { "entityId": "professor", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "professor", "propertyName": "department", "displayName": "所属学科" },
+    { "entityId": "professor", "propertyName": "tenure", "displayName": "テニュア" },
+    { "entityId": "professor", "propertyName": "researchArea", "displayName": "研究分野" },
+    { "entityId": "course", "propertyName": "courseCode", "displayName": "科目コード" },
+    { "entityId": "course", "propertyName": "title", "displayName": "科目名" },
+    { "entityId": "course", "propertyName": "credits", "displayName": "単位数" },
+    { "entityId": "course", "propertyName": "level", "displayName": "レベル" },
+    { "entityId": "course", "propertyName": "maxEnrollment", "displayName": "定員" },
+    { "entityId": "department", "propertyName": "deptCode", "displayName": "学科コード" },
+    { "entityId": "department", "propertyName": "name", "displayName": "名称" },
+    { "entityId": "department", "propertyName": "building", "displayName": "校舎" },
+    { "entityId": "department", "propertyName": "budget", "displayName": "予算" },
+    { "entityId": "enrollment", "propertyName": "enrollmentId", "displayName": "履修登録ID" },
+    { "entityId": "enrollment", "propertyName": "semester", "displayName": "学期" },
+    { "entityId": "enrollment", "propertyName": "grade", "displayName": "成績" },
+    { "entityId": "enrollment", "propertyName": "status", "displayName": "状態" }
+  ],
+  "relationships": [
+    {
+      "id": "student_enrolls",
+      "displayName": "履修登録する",
+      "displayDescription": "学生の履修登録を表します。"
+    },
+    {
+      "id": "enrollment_for",
+      "displayName": "科目に対応する",
+      "displayDescription": "履修登録に対応する科目を表します。"
+    },
+    {
+      "id": "prof_teaches",
+      "displayName": "授業を担当する",
+      "displayDescription": "教授が担当する科目を表します。"
+    },
+    {
+      "id": "prof_belongs",
+      "displayName": "所属する",
+      "displayDescription": "教授が所属する学部・学科を表します。"
+    },
+    {
+      "id": "course_offered",
+      "displayName": "学科で開講される",
+      "displayDescription": "学部・学科で開講される科目を表します。"
+    },
+    {
+      "id": "student_advised",
+      "displayName": "指導を受ける",
+      "displayDescription": "学生が受ける学業指導を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

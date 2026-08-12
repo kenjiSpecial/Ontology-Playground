@@ -1,0 +1,85 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "医療 — ステップ2：診断",
+    "displayDescription": "診断を加えて患者の病状を追跡するモデルです。",
+    "displayTags": [
+      { "tag": "healthcare", "displayName": "医療" },
+      { "tag": "school", "displayName": "学習" },
+      { "tag": "step-2", "displayName": "ステップ2" }
+    ]
+  },
+  "ontology": {
+    "displayName": "医療システム — ステップ2",
+    "displayDescription": "診断エンティティを加え、患者と医療提供者の診断関係を表します。"
+  },
+  "entities": [
+    {
+      "id": "patient",
+      "displayName": "患者",
+      "displayDescription": "医療を受ける患者を表します。"
+    },
+    {
+      "id": "provider",
+      "displayName": "医療提供者",
+      "displayDescription": "医療専門職を表します。"
+    },
+    {
+      "id": "appointment",
+      "displayName": "予約",
+      "displayDescription": "予定された患者の受診を表します。"
+    },
+    {
+      "id": "diagnosis",
+      "displayName": "診断",
+      "displayDescription": "患者に付けられた医学的な診断を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "patient", "propertyName": "patientId", "displayName": "患者ID" },
+    { "entityId": "patient", "propertyName": "mrn", "displayName": "診療録番号" },
+    { "entityId": "patient", "propertyName": "dateOfBirth", "displayName": "生年月日" },
+    { "entityId": "patient", "propertyName": "bloodType", "displayName": "血液型" },
+    { "entityId": "patient", "propertyName": "allergies", "displayName": "アレルギー" },
+    { "entityId": "provider", "propertyName": "providerId", "displayName": "医療提供者ID" },
+    { "entityId": "provider", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "provider", "propertyName": "specialty", "displayName": "専門分野" },
+    { "entityId": "provider", "propertyName": "licenseNumber", "displayName": "免許番号" },
+    { "entityId": "provider", "propertyName": "department", "displayName": "診療科" },
+    { "entityId": "appointment", "propertyName": "appointmentId", "displayName": "予約ID" },
+    { "entityId": "appointment", "propertyName": "scheduledTime", "displayName": "予約日時" },
+    { "entityId": "appointment", "propertyName": "duration", "displayName": "所要時間" },
+    { "entityId": "appointment", "propertyName": "type", "displayName": "種類" },
+    { "entityId": "appointment", "propertyName": "status", "displayName": "状態" },
+    { "entityId": "diagnosis", "propertyName": "diagnosisId", "displayName": "診断ID" },
+    { "entityId": "diagnosis", "propertyName": "icdCode", "displayName": "ICDコード" },
+    { "entityId": "diagnosis", "propertyName": "description", "displayName": "説明" },
+    { "entityId": "diagnosis", "propertyName": "severity", "displayName": "重症度" },
+    { "entityId": "diagnosis", "propertyName": "diagnosedDate", "displayName": "診断日" }
+  ],
+  "relationships": [
+    {
+      "id": "patient_has_appt",
+      "displayName": "予約を持つ",
+      "displayDescription": "患者の予定された受診を表します。"
+    },
+    {
+      "id": "provider_sees",
+      "displayName": "診療する",
+      "displayDescription": "医療提供者の担当する予約を表します。"
+    },
+    {
+      "id": "patient_diagnosed",
+      "displayName": "診断を受ける",
+      "displayDescription": "患者に付けられた診断を表します。"
+    },
+    {
+      "id": "provider_diagnoses",
+      "displayName": "診断する",
+      "displayDescription": "医療提供者が行った診断を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

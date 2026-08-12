@@ -1,0 +1,100 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "製造 — ステップ3：品質管理",
+    "displayDescription": "品質検査を加えた完成モデルです。",
+    "displayTags": [
+      { "tag": "manufacturing", "displayName": "製造" },
+      { "tag": "iot", "displayName": "IoT技術" },
+      { "tag": "school", "displayName": "学習" },
+      { "tag": "step-3", "displayName": "ステップ3" }
+    ]
+  },
+  "ontology": {
+    "displayName": "スマート製造 — ステップ3"
+  },
+  "entities": [
+    {
+      "id": "machine",
+      "displayName": "機械",
+      "displayDescription": "工場の生産設備を表します。"
+    },
+    {
+      "id": "sensor",
+      "displayName": "センサー",
+      "displayDescription": "機械のパラメーターを監視するセンサー装置を表します。"
+    },
+    {
+      "id": "workorder",
+      "displayName": "作業指示",
+      "displayDescription": "製品を製造する作業指示を表します。"
+    },
+    {
+      "id": "part",
+      "displayName": "部品",
+      "displayDescription": "製造に使う構成部品または予備部品を表します。"
+    },
+    {
+      "id": "qualitycheck",
+      "displayName": "品質検査",
+      "displayDescription": "作業指示に対する品質検査を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "machine", "propertyName": "machineId", "displayName": "機械ID" },
+    { "entityId": "machine", "propertyName": "model", "displayName": "モデル" },
+    { "entityId": "machine", "propertyName": "location", "displayName": "設置場所" },
+    { "entityId": "machine", "propertyName": "status", "displayName": "稼働状態" },
+    { "entityId": "machine", "propertyName": "lastMaintenance", "displayName": "最終メンテナンス日" },
+    { "entityId": "sensor", "propertyName": "sensorId", "displayName": "センサーID" },
+    { "entityId": "sensor", "propertyName": "type", "displayName": "種類" },
+    { "entityId": "sensor", "propertyName": "unit", "displayName": "単位" },
+    { "entityId": "sensor", "propertyName": "minThreshold", "displayName": "最小しきい値" },
+    { "entityId": "sensor", "propertyName": "maxThreshold", "displayName": "最大しきい値" },
+    { "entityId": "workorder", "propertyName": "workOrderId", "displayName": "作業指示ID" },
+    { "entityId": "workorder", "propertyName": "product", "displayName": "製品" },
+    { "entityId": "workorder", "propertyName": "quantity", "displayName": "数量" },
+    { "entityId": "workorder", "propertyName": "priority", "displayName": "優先度" },
+    { "entityId": "workorder", "propertyName": "dueDate", "displayName": "納期" },
+    { "entityId": "part", "propertyName": "partNumber", "displayName": "部品番号" },
+    { "entityId": "part", "propertyName": "name", "displayName": "名前" },
+    { "entityId": "part", "propertyName": "stockLevel", "displayName": "在庫量" },
+    { "entityId": "part", "propertyName": "reorderPoint", "displayName": "再発注点" },
+    { "entityId": "part", "propertyName": "unitCost", "displayName": "単価" },
+    { "entityId": "qualitycheck", "propertyName": "checkId", "displayName": "検査ID" },
+    { "entityId": "qualitycheck", "propertyName": "timestamp", "displayName": "タイムスタンプ" },
+    { "entityId": "qualitycheck", "propertyName": "passed", "displayName": "合格" },
+    { "entityId": "qualitycheck", "propertyName": "defectType", "displayName": "不具合種別" },
+    { "entityId": "qualitycheck", "propertyName": "inspector", "displayName": "検査担当者" }
+  ],
+  "relationships": [
+    {
+      "id": "machine_has_sensor",
+      "displayName": "センサーで監視される",
+      "displayDescription": "機械に取り付けられたセンサーを表します。"
+    },
+    {
+      "id": "machine_runs",
+      "displayName": "作業を実行する",
+      "displayDescription": "機械で実行される作業指示を表します。"
+    },
+    {
+      "id": "workorder_uses",
+      "displayName": "部品を使用する",
+      "displayDescription": "作業指示で消費される部品を表します。"
+    },
+    {
+      "id": "machine_maintains",
+      "displayName": "部品を必要とする",
+      "displayDescription": "機械の保守に必要な予備部品を表します。"
+    },
+    {
+      "id": "workorder_checked",
+      "displayName": "検査を受ける",
+      "displayDescription": "作業指示に対して実施された品質検査を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}
