@@ -294,8 +294,8 @@ These enhance the overall experience for a community learning resource.
   school entries + 6 IQ Lab entries)
 - [x] Japanese localization for learning navigation, presentation, quizzes,
   and embedded graph controls
-- [ ] Japanese translations for course metadata and all 61 learning articles
-      (51/61 articles complete; 10 remaining)
+- [x] Japanese translations for metadata of all 13 courses and all 61 learning
+      articles (13/13 courses and 61/61 articles complete; 0 remaining)
 
 ---
 

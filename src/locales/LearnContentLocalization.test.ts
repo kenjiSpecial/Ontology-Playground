@@ -140,6 +140,17 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '05-risk-and-classifiers.md',
     ],
   },
+  {
+    directory: 'fibo-risk-lab',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-industry-classification.md',
+      '03-geographic-hierarchy.md',
+      '04-loan-classification.md',
+      '05-regulatory-context.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {
