@@ -109,7 +109,7 @@ Translate all generated titles, descriptions, instructions, hints, and badge nam
 
 - [ ] **Step 2: Generate executable Japanese query quests**
 
-Generate corner-quoted Japanese entity-definition and connection questions. Preserve query step IDs/categories/points and validate them against the query engine.
+Generate corner-quoted Japanese entity-definition and connection questions. Build connection questions only from a relationship whose endpoint entities both exist; omit connection steps when the ontology has no valid connected pair. Preserve query step IDs/categories/points and validate them against the query engine.
 
 - [ ] **Step 3: Translate full-journey templates**
 

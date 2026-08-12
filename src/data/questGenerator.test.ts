@@ -57,10 +57,24 @@ describe('generateQuestsForOntology', () => {
     expect(issues).toEqual([]);
   });
 
+  it('does not invent a connection question for disconnected entities', () => {
+    const disconnectedOntology: Ontology = {
+      ...ontology,
+      relationships: [],
+    };
+
+    const quests = generateQuestsForOntology(disconnectedOntology);
+    const queryQuest = quests.find((quest) => quest.id === 'quest-5');
+
+    expect(queryQuest?.steps).toHaveLength(1);
+    expect(queryQuest?.steps[0].id).toBe('step-5-1');
+    expect(validateQueryQuestSteps(quests, disconnectedOntology)).toEqual([]);
+  });
+
   it('uses Japanese entity-based traversal wording for query steps', () => {
     const quests = generateQuestsForOntology(ontology);
     const queryQuest = quests.find((quest) => quest.id === 'quest-5');
-    const traversalStep = queryQuest?.steps.find((step) => step.id === 'step-5-3');
+    const traversalStep = queryQuest?.steps.find((step) => step.id === 'step-5-2');
 
     expect(traversalStep?.instruction).toBe('「ServiceはConfigurationItemとどうつながりますか？」と質問してください');
     expect(traversalStep?.instruction).not.toContain('Show me all is supported by connections');

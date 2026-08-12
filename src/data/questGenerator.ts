@@ -192,26 +192,25 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
     }
   ];
 
-  if (sampleEntities.length >= 2) {
+  const connectedRelationship = relationships.find((relationship) =>
+    entities.some((entity) => entity.id === relationship.from) &&
+    entities.some((entity) => entity.id === relationship.to)
+  );
+
+  if (connectedRelationship) {
+    const fromEntity = entities.find((entity) => entity.id === connectedRelationship.from)!;
+    const toEntity = entities.find((entity) => entity.id === connectedRelationship.to)!;
     querySteps.push({
       id: "step-5-2",
-      instruction: `「${sampleEntities[0].name}は${sampleEntities[1].name}とどうつながりますか？」と質問してください`,
+      instruction: `「${fromEntity.name}は${toEntity.name}とどうつながりますか？」と質問してください`,
       targetType: 'query',
       hint: "エンティティ間のリレーションシップを探索してください"
     });
-  }
-
-  if (relationships.length > 0) {
-    const rel = relationships[0];
-    const fromEntity = entities.find(e => e.id === rel.from);
-    const toEntity = entities.find(e => e.id === rel.to);
     querySteps.push({
       id: "step-5-3",
-      instruction: fromEntity && toEntity
-        ? `「${fromEntity.name}は${toEntity.name}とどうつながりますか？」と質問してください`
-        : `「${rel.name}リレーションシップを表示して」と質問してください`,
+      instruction: `「${connectedRelationship.name}リレーションシップはどうつながりますか？」と質問してください`,
       targetType: 'query',
-      hint: `「${rel.name}」リレーションシップをたどります`
+      hint: `「${connectedRelationship.name}」リレーションシップをたどります`
     });
   }
 
