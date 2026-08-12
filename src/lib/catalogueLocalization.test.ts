@@ -215,6 +215,65 @@ describe('parseCatalogueLocalization', () => {
     expect(() => parse(overlay)).toThrow(/technicalTokenReason.*Japanese/i);
   });
 
+  it('rejects untranslated prose even when it has a formal-looking reason', () => {
+    const overlay = makeOverlay();
+    overlay.entry.displayName = {
+      text: 'This entire sentence is untranslated',
+      technicalTokenReason: '標準規格名として原文を維持します。',
+    };
+
+    expect(() => parse(overlay)).toThrow(/entry\.displayName\.text.*single technical token/i);
+  });
+
+  it('rejects whitespace anywhere in a technical token', () => {
+    for (const text of [' RDF', 'RDF ', 'RDF token', 'RDF\n']) {
+      const overlay = makeOverlay();
+      overlay.entry.displayName = {
+        text,
+        technicalTokenReason: '標準規格の略称であるため原文を維持します。',
+      };
+
+      expect(() => parse(overlay), JSON.stringify(text)).toThrow(
+        /entry\.displayName\.text.*single technical token/i,
+      );
+    }
+  });
+
+  it('rejects a Japanese but ambiguous technical-token reason', () => {
+    const overlay = makeOverlay();
+    overlay.entry.displayName = {
+      text: 'RDF',
+      technicalTokenReason: '日本語にしないため原文を維持します。',
+    };
+
+    expect(() => parse(overlay)).toThrow(
+      /technicalTokenReason.*reason category/i,
+    );
+  });
+
+  it('accepts compact standard and classification tokens with explicit reason categories', () => {
+    const cases = [
+      {
+        text: 'RDF',
+        technicalTokenReason: '標準規格の略称であるため原文を維持します。',
+      },
+      {
+        text: 'NAICS',
+        technicalTokenReason: '公式の分類記号であるため原文を維持します。',
+      },
+      {
+        text: 'schema.org',
+        technicalTokenReason: '標準URIの固有名であるため原文を維持します。',
+      },
+    ];
+
+    for (const technicalToken of cases) {
+      const overlay = makeOverlay();
+      overlay.entry.displayName = technicalToken;
+      expect(parse(overlay).entry.displayName).toEqual(technicalToken);
+    }
+  });
+
   it('rejects duplicate semantic keys', () => {
     const overlay = makeOverlay();
     overlay.properties.push({ ...overlay.properties[0] });

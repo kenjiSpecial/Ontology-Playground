@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdtempSync,
+  mkdirSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { serializeToRDF } from '../src/lib/rdf/serializer';
@@ -184,6 +190,28 @@ describe('compileCatalogue localization integration', () => {
 
     expect(() => compileCatalogue({ rootDir: root, logger: quietLogger })).toThrow(
       /unknown catalogue entry "official\/missing"/i,
+    );
+  });
+
+  it('rejects a localization overlay root that is a symbolic link', () => {
+    const root = createFixture(false);
+    const target = mkdtempSync(join(tmpdir(), 'ontology-catalogue-overlay-target-'));
+    tempRoots.push(target);
+    mkdirSync(join(root, 'content', 'ja'), { recursive: true });
+    symlinkSync(target, join(root, 'content', 'ja', 'catalogue'), 'dir');
+
+    expect(() => compileCatalogue({ rootDir: root, logger: quietLogger })).toThrow(
+      /catalogue.*symlinks are not allowed in catalogue localization overlays/i,
+    );
+  });
+
+  it('rejects a localization overlay root that is not a directory', () => {
+    const root = createFixture(false);
+    mkdirSync(join(root, 'content', 'ja'), { recursive: true });
+    writeFileSync(join(root, 'content', 'ja', 'catalogue'), 'not a directory', 'utf8');
+
+    expect(() => compileCatalogue({ rootDir: root, logger: quietLogger })).toThrow(
+      /catalogue.*localization overlay root must be a directory/i,
     );
   });
 });

@@ -127,7 +127,7 @@
         {
           "type": "string",
           "minLength": 1,
-          "pattern": "[ぁ-んァ-ヶ一-龠ｦ-ﾟ]"
+          "pattern": "[\\u3040-\\u30ff\\u3400-\\u9fff\\uff66-\\uff9f]"
         },
         {
           "type": "object",
@@ -137,13 +137,29 @@
             "text": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 80,
-              "pattern": "^[^ぁ-んァ-ヶ一-龠ｦ-ﾟ]+$"
+              "maxLength": 40,
+              "allOf": [
+                {
+                  "pattern": "^(?=.*[\\p{L}\\p{N}])[\\p{L}\\p{N}._:/+#%()-]+$"
+                },
+                {
+                  "not": {
+                    "pattern": "[\\u3040-\\u30ff\\u3400-\\u9fff\\uff66-\\uff9f]"
+                  }
+                }
+              ]
             },
             "technicalTokenReason": {
               "type": "string",
               "minLength": 1,
-              "pattern": "[ぁ-んァ-ヶ一-龠ｦ-ﾟ]"
+              "allOf": [
+                {
+                  "pattern": "[\\u3040-\\u30ff\\u3400-\\u9fff\\uff66-\\uff9f]"
+                },
+                {
+                  "pattern": "(略称|識別子|規格|標準|コード|固有名|製品名|クラス名|URI|QName|分類記号|単位)"
+                }
+              ]
             }
           }
         }

@@ -103,7 +103,19 @@ function discoverOntologyDirs(baseDir: string): string[] {
 }
 
 function discoverLocalizationFiles(baseDir: string): string[] {
-  if (!existsSync(baseDir)) return [];
+  let rootStat: ReturnType<typeof lstatSync>;
+  try {
+    rootStat = lstatSync(baseDir);
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw cause;
+  }
+  if (rootStat.isSymbolicLink()) {
+    throw new Error(`${baseDir}: symlinks are not allowed in catalogue localization overlays`);
+  }
+  if (!rootStat.isDirectory()) {
+    throw new Error(`${baseDir}: catalogue localization overlay root must be a directory`);
+  }
 
   const files: string[] = [];
   const visit = (dir: string): void => {

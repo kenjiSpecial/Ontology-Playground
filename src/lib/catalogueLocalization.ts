@@ -14,6 +14,9 @@ import type {
 } from '../types/catalogueLocalization';
 
 const JAPANESE_CHARACTER_RE = /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/u;
+const TECHNICAL_TOKEN_RE = /^(?=.*[\p{L}\p{N}])[\p{L}\p{N}._:/+#%()-]+$/u;
+const TECHNICAL_TOKEN_REASON_RE =
+  /(?:略称|識別子|規格|標準|コード|固有名|製品名|クラス名|URI|QName|分類記号|単位)/u;
 
 type JsonObject = Record<string, unknown>;
 
@@ -109,15 +112,26 @@ function parseDisplayText(
   if (JAPANESE_CHARACTER_RE.test(text)) {
     error(filePath, `${path}.text`, 'Japanese display text must use the plain string form');
   }
-  const hasControlCharacter = [...text].some((character) => {
-    const codePoint = character.codePointAt(0) ?? 0;
-    return codePoint <= 31 || codePoint === 127;
-  });
-  if (text.length > 80 || hasControlCharacter) {
-    error(filePath, `${path}.text`, 'technical token must be a single display token of at most 80 characters');
+  if (
+    text !== text.trim() ||
+    [...text].length > 40 ||
+    !TECHNICAL_TOKEN_RE.test(text)
+  ) {
+    error(
+      filePath,
+      `${path}.text`,
+      'must be a single technical token of at most 40 characters using letters, numbers, or ._:/+#%()-',
+    );
   }
   if (!JAPANESE_CHARACTER_RE.test(technicalTokenReason)) {
     error(filePath, `${path}.technicalTokenReason`, 'must contain a Japanese reason');
+  }
+  if (!TECHNICAL_TOKEN_REASON_RE.test(technicalTokenReason)) {
+    error(
+      filePath,
+      `${path}.technicalTokenReason`,
+      'must state a reason category such as 略称, 識別子, 規格, 標準, コード, 固有名, 製品名, クラス名, URI, QName, 分類記号, or 単位',
+    );
   }
   return { text, technicalTokenReason } satisfies TechnicalDisplayText;
 }
