@@ -8,6 +8,7 @@ import type { LearnManifest, LearnCourse, LearnArticle } from '../types/learn';
 import type { Catalogue } from '../types/catalogue';
 import type { Core as CytoscapeCore, StylesheetCSS, LayoutOptions } from 'cytoscape';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayName } from '../lib/displayText';
 
 interface LearnPageProps {
   route: Route & { page: 'learn' };
@@ -760,11 +761,13 @@ function PresentationMode({
 // -------------------------------------------------------------------
 
 interface EmbedOntology {
-  entityTypes: Array<{ id: string; name: string; icon: string; color: string }>;
-  relationships: Array<{ id: string; name: string; from: string; to: string }>;
+  name?: string;
+  displayName?: string;
+  entityTypes: Array<{ id: string; name: string; displayName?: string; icon: string; color: string }>;
+  relationships: Array<{ id: string; name: string; displayName?: string; from: string; to: string }>;
 }
 
-type EmbedEntry = { name: string; ontology: EmbedOntology };
+type EmbedEntry = { name: string; displayName?: string; ontology: EmbedOntology };
 
 /** Shared chessboard background CSS (mirrors .graph-container in app.css) — fully opaque */
 function applyChessboardBg(el: HTMLElement, darkMode: boolean) {
@@ -862,13 +865,13 @@ function mountGraph(
   const nodes = entry.ontology.entityTypes.map((e) => {
     const pos = fixedPositions?.get(e.id);
     return {
-      data: { id: e.id, label: `${e.icon} ${e.name}`, color: e.color },
+      data: { id: e.id, label: `${e.icon} ${getDisplayName(e)}`, color: e.color },
       classes: newEntityIds?.has(e.id) ? 'new' : '',
       ...(pos ? { position: { x: pos.x, y: pos.y } } : {}),
     };
   });
   const edges = entry.ontology.relationships.map((r) => ({
-    data: { id: r.id, source: r.from, target: r.to, label: r.name },
+    data: { id: r.id, source: r.from, target: r.to, label: getDisplayName(r) },
     classes: newRelIds?.has(r.id) ? 'new' : '',
   }));
 
@@ -950,7 +953,7 @@ function renderEmbedSlot(
 
   const titleText = document.createElement('span');
   titleText.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
-  titleText.textContent = entry.name;
+  titleText.textContent = getDisplayName(entry);
   titleBar.appendChild(titleText);
 
   // Legend dot

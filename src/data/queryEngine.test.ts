@@ -52,6 +52,47 @@ const testOntology: Ontology = {
 };
 
 describe('processQuery', () => {
+  it('matches localized display names while keeping internal highlight identifiers', () => {
+    const localizedOntology: Ontology = {
+      ...testOntology,
+      displayName: 'インシデント管理オントロジー',
+      displayDescription: 'インシデントを管理するモデルです。',
+      entityTypes: testOntology.entityTypes.map((entity) => ({
+        ...entity,
+        ...(entity.id === 'service'
+          ? { displayName: 'サービス', displayDescription: '業務またはITサービスです。' }
+          : { displayName: '構成アイテム' }),
+        properties: entity.properties.map((property) =>
+          property.name === 'serviceId'
+            ? { ...property, displayName: 'サービス識別子' }
+            : property,
+        ),
+      })),
+      relationships: testOntology.relationships.map((relationship) => ({
+        ...relationship,
+        displayName: 'サポートされる',
+        displayDescription: 'サービスと構成アイテムを接続します。',
+      })),
+    };
+
+    const entityResponse = processQuery('サービスとは何ですか？', localizedOntology);
+    expect(entityResponse.result).toContain('**サービス**');
+    expect(entityResponse.result).toContain('業務またはITサービスです。');
+    expect(entityResponse.highlightEntities).toEqual(['service']);
+
+    const internalResponse = processQuery('What is a Service?', localizedOntology);
+    expect(internalResponse.highlightEntities).toEqual(['service']);
+
+    const relationshipResponse = processQuery('サービスは構成アイテムとどうつながりますか？', localizedOntology);
+    expect(relationshipResponse.result).toContain('**サポートされる**');
+    expect(relationshipResponse.highlightEntities).toEqual(['service', 'configurationitem']);
+    expect(relationshipResponse.highlightRelationships).toEqual(['service_supported_by_configuration_item']);
+
+    const propertyResponse = processQuery('サービスのサービス識別子について教えて', localizedOntology);
+    expect(propertyResponse.result).toContain('**サービス.サービス識別子**');
+    expect(propertyResponse.highlightEntities).toEqual(['service']);
+  });
+
   it('answers definition-style entity questions', () => {
     const response = processQuery('What is a Problem?', testOntology);
 

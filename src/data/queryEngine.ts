@@ -1,6 +1,12 @@
 import type { Ontology } from './ontology';
 import { nlQueryResponses } from './quests';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import {
+  getDisplayDescription,
+  getDisplayName,
+  getSearchableValues,
+  matchesSearch,
+} from '../lib/displayText';
 
 export interface QueryResponse {
   query: string;
@@ -49,12 +55,58 @@ function matchesDemoQuery(normalizedQuery: string, demoQuery: string, matches: s
   return normalizedQuery === canonical || matches.some(match => normalizedQuery.includes(removePunctuation(normalizeQuery(match))));
 }
 
+function searchableVariants(source: { name?: string; displayName?: string }): string[] {
+  return getSearchableValues(source).map((value) => removePunctuation(normalizeQuery(value)));
+}
+
+function queryIncludesSource(query: string, source: { name?: string; displayName?: string }): boolean {
+  const normalizedQuery = removePunctuation(normalizeQuery(query));
+  return searchableVariants(source).some((variant) =>
+    variant.length > 0 && (normalizedQuery.includes(variant) || matchesSearch(normalizedQuery, variant)),
+  );
+}
+
+function queryMatchesEntityDefinition(query: string, entity: { name: string; displayName?: string }): boolean {
+  const normalizedQuery = removePunctuation(normalizeQuery(query));
+  return searchableVariants(entity).some((variant) => {
+    const singular = singularize(variant);
+    if (normalizedQuery.startsWith('what is ')) {
+      const subject = stripLeadingArticle(normalizedQuery.slice('what is '.length).trim());
+      if (subject === variant || subject === singular || singularize(subject) === singular) return true;
+    }
+    return [
+      `${variant}とは`,
+      `${variant}って何`,
+      `${variant}は何ですか`,
+    ].some((phrase) => normalizedQuery.includes(phrase));
+  });
+}
+
+function displayizeQueryText(text: string, ontology: Ontology): string {
+  const replacements = [
+    ...ontology.entityTypes.flatMap((entity) => [
+      [entity.name, getDisplayName(entity)] as const,
+    ]),
+    ...ontology.relationships.flatMap((relationship) => [
+      [relationship.name, getDisplayName(relationship)] as const,
+    ]),
+    ...ontology.entityTypes.flatMap((entity) => entity.properties.map((property) => [
+      property.name,
+      getDisplayName(property),
+    ] as const)),
+  ].filter(([internal, display]) => internal !== display && internal.length > 0);
+
+  return [...replacements]
+    .sort(([left], [right]) => right.length - left.length)
+    .reduce((result, [internal, display]) => result.split(internal).join(display), text);
+}
+
 function propertyList(ontology: Ontology, entityId: string): string {
   const entity = ontology.entityTypes.find(candidate => candidate.id === entityId);
   if (!entity) return '';
   return entity.properties
     .slice(0, 4)
-    .map(property => `• **${property.name}** (${property.type})${property.isIdentifier ? ' 🔑' : ''}`)
+    .map(property => `• **${getDisplayName(property)}** (${property.type})${property.isIdentifier ? ' 🔑' : ''}`)
     .join('\n');
 }
 
@@ -69,17 +121,17 @@ export function generateQuerySuggestions(ontology: Ontology): string[] {
   const relationships = ontology.relationships;
 
   if (entities.length > 0) {
-    suggestions.push(jaFormatters.querySuggestionShowAll(entities[0].name));
+    suggestions.push(jaFormatters.querySuggestionShowAll(getDisplayName(entities[0])));
 
     if (entities.length > 1) {
-      suggestions.push(jaFormatters.querySuggestionListAll(entities[1].name));
+      suggestions.push(jaFormatters.querySuggestionListAll(getDisplayName(entities[1])));
     }
   }
 
   entities.forEach(entity => {
     entity.properties.forEach(property => {
       if (property.type === 'string' && !property.isIdentifier && property.name !== 'name') {
-        suggestions.push(jaFormatters.querySuggestionByProperty(entity.name, property.name));
+        suggestions.push(jaFormatters.querySuggestionByProperty(getDisplayName(entity), getDisplayName(property)));
       }
     });
   });
@@ -89,7 +141,7 @@ export function generateQuerySuggestions(ontology: Ontology): string[] {
     const fromEntity = entities.find(entity => entity.id === relationship.from);
     const toEntity = entities.find(entity => entity.id === relationship.to);
     if (fromEntity && toEntity) {
-      suggestions.push(jaFormatters.querySuggestionConnection(fromEntity.name, toEntity.name));
+      suggestions.push(jaFormatters.querySuggestionConnection(getDisplayName(fromEntity), getDisplayName(toEntity)));
     }
   }
 
@@ -115,10 +167,10 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
     if (demoResponse) {
       return {
         query,
-        result: demoResponse.result,
+        result: displayizeQueryText(demoResponse.result, ontology),
         highlightEntities: demoResponse.highlightEntities,
         highlightRelationships: demoResponse.highlightRelationships,
-        interpretation: jaFormatters.queryDetectedSample(ontology.name),
+        interpretation: jaFormatters.queryDetectedSample(getDisplayName(ontology)),
       };
     }
   }
@@ -158,7 +210,7 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   if (asksOntologyStructure) {
     return {
       query,
-      result: `**${ontology.name}**オントロジーの構成:\n\n• **${entities.length}個のエンティティ型** - ${entities.map(entity => entity.name).join('、')}\n• **${relationships.length}個のリレーションシップ** - エンティティ同士を接続\n\nオントロジーはデータプラットフォームのソースに結び付くセマンティック層として機能し、ビジネス概念を理解した自然言語クエリを可能にします。`,
+      result: `**${getDisplayName(ontology)}**オントロジーの構成:\n\n• **${entities.length}個のエンティティ型** - ${entities.map(entity => getDisplayName(entity)).join('、')}\n• **${relationships.length}個のリレーションシップ** - エンティティ同士を接続\n\nオントロジーはデータプラットフォームのソースに結び付くセマンティック層として機能し、ビジネス概念を理解した自然言語クエリを可能にします。`,
       highlightEntities: entities.map(entity => entity.id),
       highlightRelationships: [],
       interpretation: jaMessages.query.ontologyStructureInterpretation,
@@ -166,47 +218,30 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   }
 
   for (const entity of entities) {
-    const entityNameLower = entity.name.toLowerCase();
-    const entityNameSingular = singularize(entityNameLower);
-    let isDefinitionQuery = false;
-
-    if (normalizedNoPunctuation.startsWith('what is ')) {
-      const subject = stripLeadingArticle(normalizedNoPunctuation.slice('what is '.length).trim());
-      isDefinitionQuery =
-        subject === entityNameLower ||
-        subject === entityNameSingular ||
-        singularize(subject) === entityNameSingular;
-    }
-
-    isDefinitionQuery ||= includesAny(normalizedNoPunctuation, [
-      `${entityNameLower}とは`,
-      `${entityNameLower}って何`,
-      `${entityNameLower}は何ですか`,
-    ]);
-
-    if (isDefinitionQuery) {
+    if (queryMatchesEntityDefinition(query, entity)) {
       return {
         query,
-        result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**${jaFormatters.queryPropertiesHeading(entity.properties.length)}**\n${propertyList(ontology, entity.id)}`,
+        result: `**${getDisplayName(entity)}** ${entity.icon}\n${getDisplayDescription(entity) ?? ''}\n\n**${jaFormatters.queryPropertiesHeading(entity.properties.length)}**\n${propertyList(ontology, entity.id)}`,
         highlightEntities: [entity.id],
         highlightRelationships: [],
-        interpretation: jaFormatters.queryDetectedEntityDefinition(entity.name),
+        interpretation: jaFormatters.queryDetectedEntityDefinition(getDisplayName(entity)),
       };
     }
   }
 
   for (const entity of entities) {
-    const entityNameLower = entity.name.toLowerCase();
-    const entityNamePlural = `${entityNameLower}s`;
-    const legacyListQuery = includesAny(normalizedQuery, [
-      `show me all ${entityNameLower}`,
-      `show me all ${entityNamePlural}`,
-      `list all ${entityNameLower}`,
-      `list all ${entityNamePlural}`,
-      `show ${entityNamePlural}`,
-      `list ${entityNamePlural}`,
-    ]);
-    const mentionsEntity = normalizedQuery.includes(entityNameLower);
+    const legacyListQuery = searchableVariants(entity).some((entityNameLower) => {
+      const entityNamePlural = `${entityNameLower}s`;
+      return includesAny(normalizedQuery, [
+        `show me all ${entityNameLower}`,
+        `show me all ${entityNamePlural}`,
+        `list all ${entityNameLower}`,
+        `list all ${entityNamePlural}`,
+        `show ${entityNamePlural}`,
+        `list ${entityNamePlural}`,
+      ]);
+    });
+    const mentionsEntity = queryIncludesSource(query, entity);
     const japaneseListQuery = mentionsEntity && (
       normalizedQuery.includes('一覧') ||
       (includesAny(normalizedQuery, ['すべて', '全て', '全部']) && includesAny(normalizedQuery, ['表示', '見せ']))
@@ -215,33 +250,31 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
     if (legacyListQuery || japaneseListQuery) {
       return {
         query,
-        result: `**${entity.name}** ${entity.icon}\n${entity.description}\n\n**${jaFormatters.queryPropertiesHeading(entity.properties.length)}**\n${propertyList(ontology, entity.id)}\n\n${jaFormatters.queryEntityProductionNote(entity.name)}`,
+        result: `**${getDisplayName(entity)}** ${entity.icon}\n${getDisplayDescription(entity) ?? ''}\n\n**${jaFormatters.queryPropertiesHeading(entity.properties.length)}**\n${propertyList(ontology, entity.id)}\n\n${jaFormatters.queryEntityProductionNote(getDisplayName(entity))}`,
         highlightEntities: [entity.id],
         highlightRelationships: [],
-        interpretation: jaFormatters.queryDetectedEntityList(entity.name),
+        interpretation: jaFormatters.queryDetectedEntityList(getDisplayName(entity)),
       };
     }
   }
 
   for (const relationship of relationships) {
-    const relationshipName = relationship.name.toLowerCase().trim().replace(/\s+/g, ' ');
     const fromEntity = entities.find(entity => entity.id === relationship.from);
     const toEntity = entities.find(entity => entity.id === relationship.to);
 
-    if (normalizedNoPunctuation.includes(relationshipName) && hasConnectionIntent(normalizedNoPunctuation)) {
+    if (queryIncludesSource(query, relationship) && hasConnectionIntent(normalizedNoPunctuation)) {
       return {
         query,
-        result: `**${relationship.name}**は**${fromEntity?.name ?? relationship.from}**から**${toEntity?.name ?? relationship.to}**を接続します（${relationship.cardinality}）。${relationship.description ? `\n\n${relationship.description}` : ''}`,
+        result: `**${getDisplayName(relationship)}**は**${fromEntity ? getDisplayName(fromEntity) : relationship.from}**から**${toEntity ? getDisplayName(toEntity) : relationship.to}**を接続します（${relationship.cardinality}）。${getDisplayDescription(relationship) ? `\n\n${getDisplayDescription(relationship)}` : ''}`,
         highlightEntities: [relationship.from, relationship.to],
         highlightRelationships: [relationship.id],
-        interpretation: jaFormatters.queryDetectedRelationship(relationship.name),
+        interpretation: jaFormatters.queryDetectedRelationship(getDisplayName(relationship)),
       };
     }
   }
 
   for (const entity of entities) {
-    const entityNameLower = entity.name.toLowerCase();
-    if (!normalizedQuery.includes(entityNameLower) || !hasConnectionIntent(normalizedNoPunctuation)) continue;
+    if (!queryIncludesSource(query, entity) || !hasConnectionIntent(normalizedNoPunctuation)) continue;
 
     const relatedRelationships = relationships.filter(
       relationship => relationship.from === entity.id || relationship.to === entity.id,
@@ -253,35 +286,35 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
       const otherEntityId = isOutgoing ? relationship.to : relationship.from;
       const otherEntity = entities.find(candidate => candidate.id === otherEntityId);
       const direction = isOutgoing ? '→' : '←';
-      return `• **${relationship.name}** ${direction} ${otherEntity?.icon} ${otherEntity?.name} (${relationship.cardinality})`;
+      return `• **${getDisplayName(relationship)}** ${direction} ${otherEntity?.icon} ${otherEntity ? getDisplayName(otherEntity) : otherEntityId} (${relationship.cardinality})`;
     }).join('\n');
 
     return {
       query,
-      result: `${jaFormatters.queryConnectionCount(entity.name, relatedRelationships.length)}\n\n${relationshipList}`,
+      result: `${jaFormatters.queryConnectionCount(getDisplayName(entity), relatedRelationships.length)}\n\n${relationshipList}`,
       highlightEntities: [entity.id, ...relatedRelationships.map(relationship => relationship.from === entity.id ? relationship.to : relationship.from)],
       highlightRelationships: relatedRelationships.map(relationship => relationship.id),
-      interpretation: jaFormatters.queryDetectedConnections(entity.name),
+      interpretation: jaFormatters.queryDetectedConnections(getDisplayName(entity)),
     };
   }
 
   for (const entity of entities) {
     for (const property of entity.properties) {
-      if (!normalizedQuery.includes(property.name.toLowerCase()) || !normalizedQuery.includes(entity.name.toLowerCase())) continue;
+      if (!queryIncludesSource(query, property) || !queryIncludesSource(query, entity)) continue;
 
       const details = [
         `• ${jaMessages.query.type}: ${property.type}`,
         property.unit ? `• ${jaMessages.query.unit}: ${property.unit}` : '',
         property.isIdentifier ? `• ${jaMessages.query.identifierProperty}` : '',
-        property.description ? `• ${property.description}` : '',
+        getDisplayDescription(property) ? `• ${getDisplayDescription(property)}` : '',
       ].filter(Boolean).join('\n');
 
       return {
         query,
-        result: `**${entity.name}.${property.name}**\n\n${details}\n\n${jaFormatters.queryPropertyProductionNote(entity.name)}`,
+        result: `**${getDisplayName(entity)}.${getDisplayName(property)}**\n\n${details}\n\n${jaFormatters.queryPropertyProductionNote(getDisplayName(entity))}`,
         highlightEntities: [entity.id],
         highlightRelationships: [],
-        interpretation: jaFormatters.queryDetectedProperty(entity.name, property.name),
+        interpretation: jaFormatters.queryDetectedProperty(getDisplayName(entity), getDisplayName(property)),
       };
     }
   }
@@ -289,14 +322,14 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   const asksForCount = normalizedQuery.includes('how many') || includesAny(normalizedQuery, ['何件', 'いくつ', '件数']);
   if (asksForCount) {
     for (const entity of entities) {
-      if (!normalizedQuery.includes(entity.name.toLowerCase())) continue;
+      if (!queryIncludesSource(query, entity)) continue;
 
       return {
         query,
-        result: `オントロジーには**${entity.name}**エンティティ型が定義されています。\n\n${jaFormatters.queryCountProductionNote(entity.name)}\n\n例: "SELECT COUNT(*) FROM ${entity.name.toLowerCase()}s"`,
+        result: `オントロジーには**${getDisplayName(entity)}**エンティティ型が定義されています。\n\n${jaFormatters.queryCountProductionNote(getDisplayName(entity))}\n\n例: "SELECT COUNT(*) FROM ${entity.name.toLowerCase()}s"`,
         highlightEntities: [entity.id],
         highlightRelationships: [],
-        interpretation: jaFormatters.queryDetectedCount(entity.name),
+        interpretation: jaFormatters.queryDetectedCount(getDisplayName(entity)),
       };
     }
   }
@@ -313,11 +346,11 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
 
   if (asksForSchema) {
     const entityList = entities
-      .map(entity => `• ${entity.icon} **${entity.name}** - ${entity.description.slice(0, 50)}...`)
+      .map(entity => `• ${entity.icon} **${getDisplayName(entity)}** - ${(getDisplayDescription(entity) ?? '').slice(0, 50)}...`)
       .join('\n');
     return {
       query,
-      result: `**${ontology.name}** スキーマ概要\n\n${entityList}\n\n**${jaFormatters.querySchemaTotal(entities.length, relationships.length)}**`,
+      result: `**${getDisplayName(ontology)}** スキーマ概要\n\n${entityList}\n\n**${jaFormatters.querySchemaTotal(entities.length, relationships.length)}**`,
       highlightEntities: entities.map(entity => entity.id),
       highlightRelationships: [],
       interpretation: jaMessages.query.schemaInterpretation,
@@ -327,7 +360,7 @@ export function processQuery(query: string, ontology: Ontology): QueryResponse {
   const suggestions = generateQuerySuggestions(ontology).slice(0, 3);
   return {
     query,
-    result: jaFormatters.queryFallback(query, ontology.name, suggestions),
+    result: jaFormatters.queryFallback(query, getDisplayName(ontology), suggestions),
     highlightEntities: [],
     highlightRelationships: [],
     interpretation: undefined,

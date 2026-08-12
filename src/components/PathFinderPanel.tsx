@@ -4,6 +4,7 @@ import { useAppStore } from '../store/appStore';
 import { findShortestPath } from '../lib/pathFinder';
 import type { PathNode } from '../lib/pathFinder';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayName } from '../lib/displayText';
 
 interface PathStep {
   entityId: string;
@@ -38,12 +39,12 @@ export function PathFinderPanel() {
       const entity = entities.find(e => e.id === node.entityId);
       return {
         entityId: node.entityId,
-        entityName: entity?.name ?? node.entityId,
+        entityName: entity ? getDisplayName(entity) : node.entityId,
         entityIcon: entity?.icon ?? '📦',
         relationship: node.via
           ? {
               id: node.via.rel.id,
-              name: node.via.rel.name,
+              name: getDisplayName(node.via.rel),
               cardinality: node.via.rel.cardinality,
             }
           : undefined,
@@ -105,7 +106,7 @@ export function PathFinderPanel() {
               >
                 <option value="">{jaMessages.exploration.pathFinder.selectEntity}</option>
                 {entities.map(e => (
-                  <option key={e.id} value={e.id}>{e.icon} {e.name}</option>
+                  <option key={e.id} value={e.id}>{e.icon} {getDisplayName(e)}</option>
                 ))}
               </select>
             </div>
@@ -121,7 +122,7 @@ export function PathFinderPanel() {
               >
                 <option value="">{jaMessages.exploration.pathFinder.selectEntity}</option>
                 {entities.map(e => (
-                  <option key={e.id} value={e.id}>{e.icon} {e.name}</option>
+                  <option key={e.id} value={e.id}>{e.icon} {getDisplayName(e)}</option>
                 ))}
               </select>
             </div>

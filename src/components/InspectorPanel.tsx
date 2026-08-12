@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react';
 import { useAppStore } from '../store/appStore';
 import { Database, ArrowRight, Key, Link2, Layers, Box, GitBranch } from 'lucide-react';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayDescription, getDisplayName } from '../lib/displayText';
 
 export function InspectorPanel() {
   const { currentOntology, dataBindings, selectedEntityId, selectedRelationshipId, showDataBindings, activeQuest, currentStepIndex, advanceQuestStep } = useAppStore();
@@ -56,23 +57,23 @@ export function InspectorPanel() {
               <GitBranch size={24} />
             </div>
             <div className="entity-info">
-              <h2>{relationship.name}</h2>
-              <p>{relationship.description}</p>
+              <h2>{getDisplayName(relationship)}</h2>
+              <p>{getDisplayDescription(relationship)}</p>
             </div>
           </div>
 
           <div className="relationship-flow">
             <div className="relationship-entity">
               <div className="relationship-entity-icon">{fromEntity?.icon}</div>
-              <div className="relationship-entity-name">{fromEntity?.name}</div>
+              <div className="relationship-entity-name">{fromEntity ? getDisplayName(fromEntity) : undefined}</div>
             </div>
             <div className="relationship-arrow">
-              <div className="relationship-arrow-name">{relationship.name}</div>
+              <div className="relationship-arrow-name">{getDisplayName(relationship)}</div>
               <ArrowRight size={24} />
             </div>
             <div className="relationship-entity">
               <div className="relationship-entity-icon">{toEntity?.icon}</div>
-              <div className="relationship-entity-name">{toEntity?.name}</div>
+              <div className="relationship-entity-name">{toEntity ? getDisplayName(toEntity) : undefined}</div>
             </div>
           </div>
 
@@ -94,7 +95,7 @@ export function InspectorPanel() {
                 {relationship.attributes.map(attr => (
                   <div key={attr.name} className="property-item">
                     <div>
-                      <span className="property-name">{attr.name}</span>
+                      <span className="property-name">{getDisplayName(attr)}</span>
                     </div>
                     <span className="property-type">{attr.type}</span>
                   </div>
@@ -126,8 +127,8 @@ export function InspectorPanel() {
             {entity.icon}
           </div>
           <div className="entity-info">
-            <h2>{entity.name}</h2>
-            <p>{entity.description}</p>
+            <h2>{getDisplayName(entity)}</h2>
+            <p>{getDisplayDescription(entity)}</p>
           </div>
         </div>
 
@@ -140,7 +141,7 @@ export function InspectorPanel() {
             {entity.properties.map(prop => (
               <div key={prop.name} className="property-item" style={{ cursor: 'pointer' }} onClick={() => tryAdvancePropertyQuestStep(prop.name)}>
                 <div>
-                  <span className="property-name">{prop.name}</span>
+                  <span className="property-name">{getDisplayName(prop)}</span>
                   {prop.isIdentifier && <span className="property-identifier">{jaMessages.exploration.inspector.identifier}</span>}
                   {prop.unit && <span className="property-type" style={{ marginLeft: 8 }}>({prop.unit})</span>}
                 </div>
@@ -166,15 +167,15 @@ export function InspectorPanel() {
                   <div className="rel-item-row">
                     {isOutgoing ? (
                       <>
-                        <span className="property-name">{rel.name}</span>
+                        <span className="property-name">{getDisplayName(rel)}</span>
                         <ArrowRight size={12} className="rel-item-arrow" />
-                        <span className="rel-item-entity">{otherEntity?.icon} {otherEntity?.name}</span>
+                        <span className="rel-item-entity">{otherEntity?.icon} {otherEntity ? getDisplayName(otherEntity) : undefined}</span>
                       </>
                     ) : (
                       <>
-                        <span className="rel-item-entity">{otherEntity?.icon} {otherEntity?.name}</span>
+                        <span className="rel-item-entity">{otherEntity?.icon} {otherEntity ? getDisplayName(otherEntity) : undefined}</span>
                         <ArrowRight size={12} className="rel-item-arrow" />
-                        <span className="property-name">{rel.name}</span>
+                        <span className="property-name">{getDisplayName(rel)}</span>
                       </>
                     )}
                   </div>
@@ -209,7 +210,7 @@ export function InspectorPanel() {
                     style={{ cursor: 'pointer' }}
                     onClick={() => tryAdvancePropertyQuestStep(prop)}
                   >
-                    <span className="column-property">{prop}</span>
+                    <span className="column-property">{getDisplayName(entity.properties.find((property) => property.name === prop), prop)}</span>
                     <span className="column-arrow">→</span>
                     <span className="column-source">{column}</span>
                   </div>

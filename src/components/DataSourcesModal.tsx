@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Database, Table, BarChart3, Cloud } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayName } from '../lib/displayText';
 
 interface DataSourcesModalProps {
   onClose: () => void;
@@ -10,6 +11,12 @@ interface DataSourcesModalProps {
 
 export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
   const { currentOntology, dataBindings } = useAppStore();
+  const boundEntityNames = dataBindings
+    .flatMap((binding) => {
+      const entity = currentOntology.entityTypes.find((candidate) => candidate.id === binding.entityTypeId);
+      return entity ? [getDisplayName(entity)] : [];
+    })
+    .join('、');
   
   return (
     <motion.div
@@ -31,7 +38,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
           <div>
             <h2 style={{ fontSize: 24, fontWeight: 600 }}>{jaMessages.dataExchange.dataSources.title}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
-              {jaFormatters.dataExchangeSourceDescription(currentOntology.name)}
+              {jaFormatters.dataExchangeSourceDescription(getDisplayName(currentOntology))}
             </p>
           </div>
           <button className="icon-btn" onClick={onClose} aria-label={jaMessages.common.close}>
@@ -95,7 +102,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                       {entity.icon}
                     </div>
                     <div>
-                      <div style={{ fontSize: 16, fontWeight: 600 }}>{entity.name}</div>
+                      <div style={{ fontSize: 16, fontWeight: 600 }}>{getDisplayName(entity)}</div>
                       <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
                         {jaFormatters.dataExchangePropertiesMapped(entity.properties.length)}
                       </div>
@@ -146,7 +153,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                   <div style={{ color: 'var(--text-tertiary)', fontWeight: 600, textAlign: 'right' }}>{jaMessages.dataExchange.dataSources.column}</div>
                   {Object.entries(binding.columnMappings).map(([prop, column]) => (
                     <Fragment key={prop}>
-                      <div style={{ color: 'var(--text-primary)' }}>{prop}</div>
+                      <div style={{ color: 'var(--text-primary)' }}>{getDisplayName(entity.properties.find((property) => property.name === prop), prop)}</div>
                       <div style={{ color: 'var(--text-tertiary)' }}>→</div>
                       <div style={{ color: 'var(--ms-cyan)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{column}</div>
                     </Fragment>
@@ -164,10 +171,14 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
             textAlign: 'center'
           }}>
             <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 4 }}>
-              <strong>{jaMessages.dataExchange.dataSources.otherEntities}</strong> Store、Supplier、Shipment
+              <strong>{jaMessages.dataExchange.dataSources.otherEntities}</strong>{' '}
+              {currentOntology.entityTypes
+                .filter((entity) => !dataBindings.some((binding) => binding.entityTypeId === entity.id))
+                .map((entity) => getDisplayName(entity))
+                .join('、')}
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-              {jaMessages.dataExchange.dataSources.demoBindingsBeforeValues}Customer、Order、Product
+              {jaMessages.dataExchange.dataSources.demoBindingsBeforeValues}{boundEntityNames}
               {jaMessages.dataExchange.dataSources.demoBindingsAfterValues}
             </div>
           </div>

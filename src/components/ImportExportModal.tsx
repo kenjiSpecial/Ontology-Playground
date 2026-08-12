@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Upload, Download, FileJson, AlertCircle, CheckCircle, RotateCcw, Copy, FileText, Table, Share2, Cloud } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { serializeToRDF } from '../lib/rdf/serializer';
+import { getDisplayName } from '../lib/displayText';
 import { parseRDF, RDFParseError } from '../lib/rdf/parser';
 import type { Ontology, DataBinding } from '../data/ontology';
 import { jaFormatters, jaMessages } from '../locales/ja';
@@ -277,7 +278,7 @@ export function ImportExportModal({ onClose, onFabricPush }: ImportExportModalPr
         }}>
           <div>
             <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 4 }}>{jaMessages.dataExchange.importExport.currentlyLoaded}</div>
-            <div style={{ fontSize: 16, fontWeight: 600 }}>{currentOntology.name}</div>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>{getDisplayName(currentOntology)}</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
               {jaFormatters.dataExchangeOntologyCounts(currentOntology.entityTypes.length, currentOntology.relationships.length)}
             </div>

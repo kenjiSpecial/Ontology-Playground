@@ -10,6 +10,7 @@ import {
   FabricApiError,
   type FabricOntologyResponse,
 } from '../lib/fabric';
+import { getDisplayName } from '../lib/displayText';
 
 interface FabricExportModalProps {
   onClose: () => void;
@@ -139,7 +140,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
           marginBottom: 20,
           fontSize: 13,
         }}>
-          <strong>{currentOntology.name}</strong>
+          <strong>{getDisplayName(currentOntology)}</strong>
           <span style={{ color: 'var(--text-secondary)', marginLeft: 8 }}>
             {jaFormatters.dataExchangeOntologyCounts(currentOntology.entityTypes.length, currentOntology.relationships.length)}
           </span>

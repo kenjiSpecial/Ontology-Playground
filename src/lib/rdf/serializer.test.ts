@@ -93,6 +93,61 @@ describe('serializeToRDF', () => {
     expect(rdf).toContain('<rdfs:comment>A test description</rdfs:comment>');
   });
 
+  it('keeps internal identifiers and labels in RDF when display fields are present', () => {
+    const ontology: Ontology = {
+      name: 'Internal Ontology',
+      displayName: '表示用オントロジー',
+      description: 'Internal description',
+      displayDescription: '表示用の説明です。',
+      entityTypes: [
+        {
+          id: 'customer',
+          name: 'Customer',
+          displayName: '顧客',
+          description: 'A customer',
+          displayDescription: '顧客を表します。',
+          icon: '👤',
+          color: '#0078D4',
+          properties: [
+            { name: 'customerId', displayName: '顧客識別子', type: 'string', isIdentifier: true },
+          ],
+        },
+        {
+          id: 'order',
+          name: 'Order',
+          displayName: '注文',
+          description: 'An order',
+          displayDescription: '注文を表します。',
+          icon: '🧾',
+          color: '#107C10',
+          properties: [],
+        },
+      ],
+      relationships: [
+        {
+          id: 'customer_places_order',
+          name: 'places',
+          displayName: '注文する',
+          from: 'customer',
+          to: 'order',
+          cardinality: 'one-to-many',
+          description: 'A customer places an order',
+          displayDescription: '顧客が注文します。',
+        },
+      ],
+    };
+
+    const rdf = serializeToRDF(ontology);
+    expect(rdf).toContain('ontology/internal-ontology/Customer');
+    expect(rdf).toContain('ontology/internal-ontology/customer_customerId');
+    expect(rdf).toContain('ontology/internal-ontology/customer_places_order');
+    expect(rdf).toContain('<rdfs:label>Customer</rdfs:label>');
+    expect(rdf).toContain('<rdfs:label>places</rdfs:label>');
+    expect(rdf).not.toContain('表示用オントロジー');
+    expect(rdf).not.toContain('顧客識別子');
+    expect(rdf).not.toContain('注文する');
+  });
+
   it('omits description comment when empty', () => {
     const rdf = serializeToRDF(emptyOntology);
     // The ontology element should not have a comment child

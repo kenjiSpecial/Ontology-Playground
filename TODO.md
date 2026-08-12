@@ -170,6 +170,21 @@ into a static JSON file.
   in the repo or displays inline)
 - [x] Add pagination or virtual scroll if the catalogue grows large
 
+### 3.5 Japanese catalogue display overlays
+- [x] Add the typed, strict overlay schema at `content/ja/catalogue/` with
+  stable-key coverage for entry, ontology, entity, property, relationship,
+  relationship-attribute, and enum display text.
+- [x] Apply overlays at catalogue compile time without changing RDF/OWL
+  source values, IDs, endpoints, bindings, query matching, or export output.
+- [x] Connect display-only fields to all catalogue consumers and add compiler
+  fixture QA for localized and fallback entries, invalid fields, coverage
+  failures, graph/inspector/search/query/quest behavior, and export boundaries.
+- [x] Document Japanese text and justified technical-token validation in
+  [docs/japanese-localization.md](docs/japanese-localization.md).
+- [ ] Translate the real catalogue entries. Issues #27–#33 track this work;
+  the overlay infrastructure is complete, but per-entry translations remain
+  unfinished.
+
 ---
 
 ## 4. Embeddable ontology widget

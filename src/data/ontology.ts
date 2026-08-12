@@ -2,32 +2,40 @@
 
 export interface Property {
   name: string;
+  displayName?: string;
   type: 'string' | 'integer' | 'decimal' | 'double' | 'date' | 'datetime' | 'boolean' | 'enum';
   isIdentifier?: boolean;
   unit?: string;
   values?: string[];
+  displayValues?: Record<string, string>;
   description?: string;
+  displayDescription?: string;
 }
 
 export interface RelationshipAttribute {
   name: string;
+  displayName?: string;
   type: string;
 }
 
 export interface Relationship {
   id: string;
   name: string;
+  displayName?: string;
   from: string;
   to: string;
   cardinality: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many';
   description?: string;
+  displayDescription?: string;
   attributes?: RelationshipAttribute[];
 }
 
 export interface EntityType {
   id: string;
   name: string;
+  displayName?: string;
   description: string;
+  displayDescription?: string;
   properties: Property[];
   icon: string;
   color: string;
@@ -41,7 +49,9 @@ export interface EntityInstance {
 
 export interface Ontology {
   name: string;
+  displayName?: string;
   description: string;
+  displayDescription?: string;
   entityTypes: EntityType[];
   relationships: Relationship[];
 }

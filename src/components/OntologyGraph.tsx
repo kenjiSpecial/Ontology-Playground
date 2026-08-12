@@ -5,6 +5,7 @@ import type { Core, EventObject, LayoutOptions } from 'cytoscape';
 import { useAppStore } from '../store/appStore';
 import { ZoomIn, ZoomOut, Maximize2, RotateCcw, Download, Crosshair } from 'lucide-react';
 import { jaMessages } from '../locales/ja';
+import { getDisplayName } from '../lib/displayText';
 
 // Register fcose layout
 cytoscape.use(fcose);
@@ -96,7 +97,7 @@ export function OntologyGraph() {
     const nodes = currentOntology.entityTypes.map(entity => ({
       data: {
         id: entity.id,
-        label: `${entity.icon} ${entity.name}`,
+        label: `${entity.icon} ${getDisplayName(entity)}`,
         name: entity.name,
         icon: entity.icon,
         color: entity.color,
@@ -114,7 +115,7 @@ export function OntologyGraph() {
           id: rel.id,
           source: rel.from,
           target: rel.to,
-          label: rel.name,
+          label: getDisplayName(rel),
           cardinality: rel.cardinality,
           description: rel.description,
           type: 'relationship'
@@ -589,7 +590,7 @@ export function OntologyGraph() {
         {currentOntology.entityTypes.map(entity => (
           <div key={entity.id} className="legend-item">
             <div className="legend-dot" style={{ backgroundColor: entity.color }} />
-            <span>{entity.icon} {entity.name}</span>
+            <span>{entity.icon} {getDisplayName(entity)}</span>
           </div>
         ))}
       </div>

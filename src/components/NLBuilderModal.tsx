@@ -4,6 +4,7 @@ import { X, Sparkles, Send, Loader2, Check, AlertCircle, Edit3, Mic, MicOff } fr
 import { useAppStore } from '../store/appStore';
 import type { Ontology } from '../data/ontology';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayName } from '../lib/displayText';
 
 // Web Speech API types
 interface SpeechRecognitionEvent extends Event {
@@ -365,7 +366,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
             {step === 'preview' && generatedOntology && (
               <div className="nl-builder-content nl-preview">
                 <div className="preview-header">
-                  <h3>{generatedOntology.name}</h3>
+                  <h3>{getDisplayName(generatedOntology)}</h3>
                   <button 
                     className={`edit-toggle ${editMode ? 'active' : ''}`}
                     onClick={() => setEditMode(!editMode)}
@@ -390,7 +391,7 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                         {generatedOntology.entityTypes.map((entity) => (
                           <div key={entity.id} className="preview-item entity">
                             <span className="entity-icon">{entity.icon}</span>
-                            <span className="entity-name">{entity.name}</span>
+                            <span className="entity-name">{getDisplayName(entity)}</span>
                             <span className="entity-props">{jaFormatters.properties(entity.properties.length)}</span>
                           </div>
                         ))}
@@ -402,9 +403,9 @@ export function NLBuilderModal({ onClose }: NLBuilderModalProps) {
                       <div className="preview-items">
                         {generatedOntology.relationships.map((rel) => (
                           <div key={rel.id} className="preview-item relationship">
-                            <span className="rel-from">{rel.from}</span>
-                            <span className="rel-name">→ {rel.name} →</span>
-                            <span className="rel-to">{rel.to}</span>
+                            <span className="rel-from">{getDisplayName(generatedOntology.entityTypes.find((entity) => entity.id === rel.from), rel.from)}</span>
+                            <span className="rel-name">→ {getDisplayName(rel)} →</span>
+                            <span className="rel-to">{getDisplayName(generatedOntology.entityTypes.find((entity) => entity.id === rel.to), rel.to)}</span>
                           </div>
                         ))}
                       </div>

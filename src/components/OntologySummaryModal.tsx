@@ -3,6 +3,7 @@ import { X, FileText, Copy, Check } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { useState } from 'react';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayDescription, getDisplayName } from '../lib/displayText';
 
 interface OntologySummaryModalProps {
   onClose: () => void;
@@ -15,9 +16,9 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
   const generateTextSummary = () => {
     const lines: string[] = [];
     
-    lines.push(`# ${currentOntology.name}`);
+    lines.push(`# ${getDisplayName(currentOntology)}`);
     lines.push('');
-    lines.push(currentOntology.description);
+    lines.push(getDisplayDescription(currentOntology) ?? '');
     lines.push('');
     lines.push('---');
     lines.push('');
@@ -26,13 +27,13 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
     lines.push(`## ${jaMessages.dataExchange.summary.entities}`);
     lines.push('');
     currentOntology.entityTypes.forEach(entity => {
-      lines.push(`### ${entity.icon} ${entity.name}`);
-      lines.push(`${entity.description}`);
+      lines.push(`### ${entity.icon} ${getDisplayName(entity)}`);
+      lines.push(`${getDisplayDescription(entity) ?? ''}`);
       lines.push('');
       lines.push(`**${jaMessages.dataExchange.summary.properties}:**`);
       entity.properties.forEach(prop => {
         const identifier = prop.isIdentifier ? `（${jaMessages.dataExchange.summary.identifier}）` : '';
-        lines.push(`- **${prop.name}** (${prop.type})${identifier}: ${prop.description}`);
+        lines.push(`- **${getDisplayName(prop)}** (${prop.type})${identifier}: ${getDisplayDescription(prop) ?? ''}`);
       });
       lines.push('');
     });
@@ -43,9 +44,9 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
     currentOntology.relationships.forEach(rel => {
       const fromEntity = currentOntology.entityTypes.find(e => e.id === rel.from);
       const toEntity = currentOntology.entityTypes.find(e => e.id === rel.to);
-      lines.push(`### ${rel.name}`);
-      lines.push(`**${fromEntity?.name || rel.from}** → **${toEntity?.name || rel.to}** (${rel.cardinality})`);
-      lines.push(`${rel.description}`);
+      lines.push(`### ${getDisplayName(rel)}`);
+      lines.push(`**${fromEntity ? getDisplayName(fromEntity) : rel.from}** → **${toEntity ? getDisplayName(toEntity) : rel.to}** (${rel.cardinality})`);
+      lines.push(`${getDisplayDescription(rel) ?? ''}`);
       lines.push('');
     });
     
@@ -96,8 +97,8 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
 
         <div className="summary-content">
           <div className="summary-section">
-            <h3>{currentOntology.name}</h3>
-            <p className="summary-description">{currentOntology.description}</p>
+            <h3>{getDisplayName(currentOntology)}</h3>
+            <p className="summary-description">{getDisplayDescription(currentOntology)}</p>
           </div>
 
           <div className="summary-section">
@@ -110,14 +111,14 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
                       {entity.icon}
                     </span>
                     <div>
-                      <strong>{entity.name}</strong>
-                      <p>{entity.description}</p>
+                      <strong>{getDisplayName(entity)}</strong>
+                      <p>{getDisplayDescription(entity)}</p>
                     </div>
                   </div>
                   <div className="entity-properties">
                     {entity.properties.map(prop => (
                       <div key={prop.name} className="property-row">
-                        <span className="prop-name">{prop.name}</span>
+                        <span className="prop-name">{getDisplayName(prop)}</span>
                         <span className="prop-type">{prop.type}</span>
                         {prop.isIdentifier && <span className="prop-id-badge">ID</span>}
                       </div>
@@ -137,16 +138,16 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
                 return (
                   <div key={rel.id} className="summary-relationship-card">
                     <div className="relationship-flow-row">
-                      <span className="rel-entity">{fromEntity?.icon} {fromEntity?.name}</span>
+                      <span className="rel-entity">{fromEntity?.icon} {fromEntity ? getDisplayName(fromEntity) : rel.from}</span>
                       <span className="rel-arrow">
-                        <span className="rel-label">{rel.name}</span>
+                        <span className="rel-label">{getDisplayName(rel)}</span>
                         →
                       </span>
-                      <span className="rel-entity">{toEntity?.icon} {toEntity?.name}</span>
+                      <span className="rel-entity">{toEntity?.icon} {toEntity ? getDisplayName(toEntity) : rel.to}</span>
                     </div>
                     <div className="relationship-meta">
                       <span className="cardinality-badge">{rel.cardinality}</span>
-                      <span className="rel-description">{rel.description}</span>
+                      <span className="rel-description">{getDisplayDescription(rel)}</span>
                     </div>
                   </div>
                 );

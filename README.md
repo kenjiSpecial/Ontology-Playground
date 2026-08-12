@@ -97,6 +97,17 @@ In the Japanese fork, the Ontology School navigation, presentation controls,
 quiz feedback, embedded graph controls, metadata for all 13 courses, and all 61
 learning articles are displayed in Japanese.
 
+### Japanese Catalogue Display Overlays
+
+The Japanese catalogue display-overlay infrastructure is complete. Build-time
+overlays live under `content/ja/catalogue/` and add Japanese display text while
+preserving RDF/OWL source data, stable IDs, bindings, query matching, and
+export compatibility. See the [Japanese localization guide](docs/japanese-localization.md)
+for the schema, complete-coverage rules, and validation procedure.
+
+Per-entry catalogue translation is not complete yet; Issues #27–#33 track the
+remaining real-catalogue translation work.
+
 ### Quest System
 
 Five progressive quests that guide users through ontology concepts with
@@ -264,6 +275,7 @@ The table below lists the main end-user and contributor guides. Internal plannin
 | [GitHub OAuth Setup](docs/github-oauth-setup.md) | How to configure GitHub OAuth for one-click catalogue PRs |
 | [Embed Security](docs/embed-security.md) | Security model for the embeddable widget |
 | [Learning Content Guide](docs/learn-content-guide.md) | How to author courses, articles, quizzes, and ontology embeds for the Ontology School |
+| [Japanese Localization Guide](docs/japanese-localization.md) | Japanese UI rules and catalogue display-overlay authoring, coverage, and compatibility boundaries |
 | [Ontology School Review Workflow](docs/ontology-school-review-workflow.md) | Human review and approval flow for school lesson content |
 | [Theme Authoring Guide](docs/theme-authoring-guide.md) | How to plug a new color theme into the Playground — token contract, the appStore + CSS steps, and contrast gotchas |
 

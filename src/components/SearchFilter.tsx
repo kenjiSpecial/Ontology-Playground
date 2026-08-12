@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayName, matchesSearch } from '../lib/displayText';
 
 export function SearchFilter() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,17 +25,17 @@ export function SearchFilter() {
 
     const query = searchQuery.toLowerCase();
     
-    const entities = currentOntology.entityTypes.filter(entity => 
-      entity.name.toLowerCase().includes(query) ||
-      entity.description?.toLowerCase().includes(query) ||
-      entity.properties.some(p => p.name.toLowerCase().includes(query))
+    const entities = currentOntology.entityTypes.filter(entity =>
+      matchesSearch(query, entity.name, entity.displayName, entity.description, entity.displayDescription) ||
+      entity.properties.some(p => matchesSearch(query, p.name, p.displayName, p.description, p.displayDescription))
     );
 
     const relationships = currentOntology.relationships.filter(rel =>
-      rel.name.toLowerCase().includes(query) ||
-      rel.cardinality.toLowerCase().includes(query) ||
-      rel.from.toLowerCase().includes(query) ||
-      rel.to.toLowerCase().includes(query)
+      matchesSearch(query, rel.name, rel.displayName, rel.description, rel.displayDescription, rel.cardinality, rel.from, rel.to) ||
+      currentOntology.entityTypes.some((entity) =>
+        (entity.id === rel.from || entity.id === rel.to) &&
+        matchesSearch(query, entity.name, entity.displayName)
+      )
     );
 
     return { entities, relationships };
@@ -222,7 +223,7 @@ export function SearchFilter() {
                     }}
                   />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' }}>{entity.name}</div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' }}>{getDisplayName(entity)}</div>
                     <div style={{ fontSize: 9, color: 'var(--text-secondary)' }}>
                       {jaFormatters.properties(entity.properties.length)}
                     </div>
@@ -250,9 +251,11 @@ export function SearchFilter() {
                 >
                   <div style={{ fontSize: 10 }}>↔</div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' }}>{rel.name}</div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-primary)' }}>{getDisplayName(rel)}</div>
                     <div style={{ fontSize: 9, color: 'var(--text-secondary)' }}>
-                      {rel.from} → {rel.to}
+                      {getDisplayName(currentOntology.entityTypes.find((entity) => entity.id === rel.from), rel.from)}{' '}
+                      →{' '}
+                      {getDisplayName(currentOntology.entityTypes.find((entity) => entity.id === rel.to), rel.to)}
                     </div>
                   </div>
                 </motion.div>

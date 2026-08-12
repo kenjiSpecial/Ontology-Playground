@@ -5,6 +5,7 @@ import { routeToHash } from '../lib/router';
 import { encodeSharePayload } from '../lib/shareCodec';
 import { serializeToRDF } from '../lib/rdf/serializer';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayName } from '../lib/displayText';
 import { Palette, Check, Database, Trophy, HelpCircle, FileJson, LayoutGrid, Sparkles, FileText, Share2, PenTool, BookOpen, Menu, X, Download, Info } from 'lucide-react';
 
 interface HeaderProps {
@@ -28,7 +29,7 @@ export function Header({ onAboutClick, onHelpClick, onDataSourcesClick, onImport
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const themeMenuRef = useRef<HTMLDivElement>(null);
 
-  const ontologyDisplayName = currentOntology.name || jaMessages.shell.untitledOntology;
+  const ontologyDisplayName = getDisplayName(currentOntology, jaMessages.shell.untitledOntology);
 
   const shareableId = route.page === 'catalogue' && route.ontologyId ? route.ontologyId : null;
 

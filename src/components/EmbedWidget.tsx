@@ -19,6 +19,7 @@ import { parseRDF } from '../lib/rdf/parser';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rdf/highlighter';
 import type { Catalogue } from '../types/catalogue';
 import { jaFormatters, jaMessages } from '../locales/ja';
+import { getDisplayDescription, getDisplayName } from '../lib/displayText';
 
 cytoscape.use(fcose);
 
@@ -232,7 +233,7 @@ function EmbedHeader({ ontology, tab, setTab, theme, copied, onCopyRdf }: EmbedH
       flexShrink: 0,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontWeight: 600, fontSize: 14 }}>{ontology.name}</span>
+        <span style={{ fontWeight: 600, fontSize: 14 }}>{getDisplayName(ontology)}</span>
         <span style={{ fontSize: 11, color: theme.textTertiary }}>
           {jaFormatters.embedOntologyCounts(ontology.entityTypes.length, ontology.relationships.length)}
         </span>
@@ -272,10 +273,10 @@ function EmbedGraph({ ontology, theme, setSelected }: EmbedGraphProps) {
 
   const elements = useMemo(() => {
     const nodes = ontology.entityTypes.map((e) => ({
-      data: { id: e.id, label: `${e.icon} ${e.name}`, color: e.color },
+      data: { id: e.id, label: `${e.icon} ${getDisplayName(e)}`, color: e.color },
     }));
     const edges = ontology.relationships.map((r) => ({
-      data: { id: r.id, source: r.from, target: r.to, label: r.name },
+      data: { id: r.id, source: r.from, target: r.to, label: getDisplayName(r) },
     }));
     return [...nodes, ...edges];
   }, [ontology]);
@@ -396,10 +397,10 @@ function EmbedInspector({ selected, theme, ontology, onClose }: InspectorProps) 
     return (
       <div style={panelStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>{e.icon} {e.name}</span>
+          <span style={{ fontWeight: 600, fontSize: 14 }}>{e.icon} {getDisplayName(e)}</span>
           <button onClick={onClose} aria-label={jaMessages.embed.closeInspector} style={{ background: 'none', border: 'none', color: theme.textTertiary, cursor: 'pointer', fontSize: 16 }}>✕</button>
         </div>
-        {e.description && <p style={{ color: theme.textSecondary, margin: '0 0 8px' }}>{e.description}</p>}
+        {getDisplayDescription(e) && <p style={{ color: theme.textSecondary, margin: '0 0 8px' }}>{getDisplayDescription(e)}</p>}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
           {e.properties.map((p) => (
             <span key={p.name} style={{
@@ -407,7 +408,7 @@ function EmbedInspector({ selected, theme, ontology, onClose }: InspectorProps) 
               color: p.isIdentifier ? theme.accent : theme.textSecondary, fontSize: 11,
               fontWeight: p.isIdentifier ? 600 : 400,
             }}>
-              {p.isIdentifier ? '🔑 ' : ''}{p.name}: {p.type}
+              {p.isIdentifier ? '🔑 ' : ''}{getDisplayName(p)}: {p.type}
             </span>
           ))}
         </div>
@@ -422,16 +423,16 @@ function EmbedInspector({ selected, theme, ontology, onClose }: InspectorProps) 
     return (
       <div style={panelStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>{r.name}</span>
+          <span style={{ fontWeight: 600, fontSize: 14 }}>{getDisplayName(r)}</span>
           <button onClick={onClose} aria-label={jaMessages.embed.closeInspector} style={{ background: 'none', border: 'none', color: theme.textTertiary, cursor: 'pointer', fontSize: 16 }}>✕</button>
         </div>
         <p style={{ color: theme.textSecondary, margin: '0 0 6px' }}>
-          {fromEntity?.icon} {fromEntity?.name || r.from} → {toEntity?.icon} {toEntity?.name || r.to}
+          {fromEntity?.icon} {fromEntity ? getDisplayName(fromEntity) : r.from} → {toEntity?.icon} {toEntity ? getDisplayName(toEntity) : r.to}
         </p>
         <span style={{ padding: '2px 8px', background: theme.bgTertiary, borderRadius: 4, color: theme.textTertiary, fontSize: 11 }}>
           {r.cardinality}
         </span>
-        {r.description && <p style={{ color: theme.textSecondary, margin: '6px 0 0', fontSize: 11 }}>{r.description}</p>}
+        {getDisplayDescription(r) && <p style={{ color: theme.textSecondary, margin: '6px 0 0', fontSize: 11 }}>{getDisplayDescription(r)}</p>}
       </div>
     );
   }

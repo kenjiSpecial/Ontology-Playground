@@ -2,6 +2,7 @@
 
 import type { Ontology } from './ontology';
 import type { Quest, QuestStep } from './quests';
+import { getDisplayName } from '../lib/displayText';
 
 /**
  * Generates a set of quests dynamically based on the current ontology structure.
@@ -16,7 +17,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
   if (entities.length >= 2) {
     const explorationSteps: QuestStep[] = entities.slice(0, Math.min(4, entities.length)).map((entity, index) => ({
       id: `step-1-${index + 1}`,
-      instruction: `${entity.name}エンティティを選択してプロパティを学びましょう`,
+      instruction: `${getDisplayName(entity)}エンティティを選択してプロパティを学びましょう`,
       targetType: 'entity' as const,
       targetId: entity.id,
       hint: `グラフで${entity.icon}アイコンを探してください`
@@ -25,7 +26,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
     quests.push({
       id: "quest-1",
       title: "エンティティとの出会い",
-      description: `${ontology.name}オントロジーの中核となるエンティティ型を見つけましょう。`,
+      description: `${getDisplayName(ontology)}オントロジーの中核となるエンティティ型を見つけましょう。`,
       difficulty: "beginner",
       category: "exploration",
       steps: explorationSteps,
@@ -50,7 +51,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       if (sourceEntity && !usedEntities.has(sourceEntity.id)) {
         relSteps.push({
           id: `step-2-${relSteps.length + 1}`,
-          instruction: `${sourceEntity.name}エンティティから始めましょう`,
+          instruction: `${getDisplayName(sourceEntity)}エンティティから始めましょう`,
           targetType: 'entity',
           targetId: sourceEntity.id,
           hint: `${sourceEntity.icon}アイコンを探してください`
@@ -60,10 +61,10 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
 
       relSteps.push({
         id: `step-2-${relSteps.length + 1}`,
-        instruction: `${rel.name}リレーションシップをたどりましょう${targetEntity ? `（目的地: ${targetEntity.name}）` : ''}`,
+        instruction: `${getDisplayName(rel)}リレーションシップをたどりましょう${targetEntity ? `（目的地: ${getDisplayName(targetEntity)}）` : ''}`,
         targetType: 'relationship',
         targetId: rel.id,
-        hint: `「${rel.name}」と表示された線を選択してください`
+        hint: `「${getDisplayName(rel)}」と表示された線を選択してください`
       });
     }
 
@@ -71,7 +72,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       quests.push({
         id: "quest-2",
         title: "リレーションシップ案内人",
-        description: `${ontology.name}のエンティティ間の接続をたどりましょう。`,
+        description: `${getDisplayName(ontology)}のエンティティ間の接続をたどりましょう。`,
         difficulty: "intermediate",
         category: "traversal",
         steps: relSteps,
@@ -105,27 +106,27 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
     const hubSteps: QuestStep[] = [
       {
         id: "step-3-1",
-        instruction: `このオントロジーで最も接続の多い${hub.name}エンティティを見つけてください`,
+        instruction: `このオントロジーで最も接続の多い${getDisplayName(hub)}エンティティを見つけてください`,
         targetType: 'entity',
         targetId: hub.id,
-        hint: `${hub.name}には${connectionCount[hub.id]}件の接続があります`
+        hint: `${getDisplayName(hub)}には${connectionCount[hub.id]}件の接続があります`
       }
     ];
 
     connectedRels.forEach((rel, i) => {
       hubSteps.push({
         id: `step-3-${i + 2}`,
-        instruction: `${rel.name}リレーションシップを探索してください`,
+        instruction: `${getDisplayName(rel)}リレーションシップを探索してください`,
         targetType: 'relationship',
         targetId: rel.id,
-        hint: `${rel.from === hub.id ? `${hub.name}から始まります` : `${hub.name}へ接続します`}`
+        hint: `${rel.from === hub.id ? `${getDisplayName(hub)}から始まります` : `${getDisplayName(hub)}へ接続します`}`
       });
     });
 
     quests.push({
       id: "quest-3",
       title: "ハブを探せ",
-      description: `${ontology.name}で最も接続の多いエンティティを見つけましょう。`,
+      description: `${getDisplayName(ontology)}で最も接続の多いエンティティを見つけましょう。`,
       difficulty: "intermediate",
       category: "exploration",
       steps: hubSteps,
@@ -148,7 +149,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
     for (const entity of entitiesWithManyProps) {
       propSteps.push({
         id: `step-4-${propSteps.length + 1}`,
-        instruction: `${entity.name}エンティティを選択し、${entity.properties.length}件のプロパティを確認してください`,
+        instruction: `${getDisplayName(entity)}エンティティを選択し、${entity.properties.length}件のプロパティを確認してください`,
         targetType: 'entity',
         targetId: entity.id,
         hint: `インスペクターでプロパティの詳細を確認してください`
@@ -158,7 +159,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       if (identifierProp) {
         propSteps.push({
           id: `step-4-${propSteps.length + 1}`,
-          instruction: `${entity.name}で識別子プロパティ${identifierProp.name}を見つけてください`,
+          instruction: `${getDisplayName(entity)}で識別子プロパティ${getDisplayName(identifierProp)}を見つけてください`,
           targetType: 'property',
           targetId: identifierProp.name,
           hint: `識別子を示す鍵アイコン🔑を探してください`
@@ -186,7 +187,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
   const querySteps: QuestStep[] = [
     {
       id: "step-5-1",
-      instruction: `「${sampleEntities[0]?.name || 'エンティティ'}とは何ですか？」と質問してください`,
+      instruction: `「${sampleEntities[0] ? getDisplayName(sampleEntities[0]) : 'エンティティ'}とは何ですか？」と質問してください`,
       targetType: 'query',
       hint: "自然言語クエリの入力欄に入力してください"
     }
@@ -202,15 +203,15 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
     const toEntity = entities.find((entity) => entity.id === connectedRelationship.to)!;
     querySteps.push({
       id: "step-5-2",
-      instruction: `「${fromEntity.name}は${toEntity.name}とどうつながりますか？」と質問してください`,
+      instruction: `「${getDisplayName(fromEntity)}は${getDisplayName(toEntity)}とどうつながりますか？」と質問してください`,
       targetType: 'query',
       hint: "エンティティ間のリレーションシップを探索してください"
     });
     querySteps.push({
       id: "step-5-3",
-      instruction: `「${connectedRelationship.name}リレーションシップはどうつながりますか？」と質問してください`,
+      instruction: `「${getDisplayName(connectedRelationship)}リレーションシップはどうつながりますか？」と質問してください`,
       targetType: 'query',
-      hint: `「${connectedRelationship.name}」リレーションシップをたどります`
+      hint: `「${getDisplayName(connectedRelationship)}」リレーションシップをたどります`
     });
   }
 
@@ -257,35 +258,35 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       const chainSteps: QuestStep[] = [
         {
           id: "step-6-1",
-          instruction: `${chain.entities[0].name}から旅を始めましょう`,
+          instruction: `${getDisplayName(chain.entities[0])}から旅を始めましょう`,
           targetType: 'entity',
           targetId: chain.entities[0].id,
           hint: `${chain.entities[0].icon}アイコンを探してください`
         },
         {
           id: "step-6-2",
-          instruction: `${chain.rels[0].name}をたどって${chain.entities[1].name}へ進みましょう`,
+          instruction: `${getDisplayName(chain.rels[0])}をたどって${getDisplayName(chain.entities[1])}へ進みましょう`,
           targetType: 'relationship',
           targetId: chain.rels[0].id,
           hint: "接続する線を選択してください"
         },
         {
           id: "step-6-3",
-          instruction: `${chain.entities[1].name}エンティティを探索してください`,
+          instruction: `${getDisplayName(chain.entities[1])}エンティティを探索してください`,
           targetType: 'entity',
           targetId: chain.entities[1].id,
           hint: `ここが旅の中間地点です`
         },
         {
           id: "step-6-4",
-          instruction: `${chain.rels[1].name}をたどって${chain.entities[2].name}へ進みましょう`,
+          instruction: `${getDisplayName(chain.rels[1])}をたどって${getDisplayName(chain.entities[2])}へ進みましょう`,
           targetType: 'relationship',
           targetId: chain.rels[1].id,
           hint: "あと1つの接続です！"
         },
         {
           id: "step-6-5",
-          instruction: `到着しました！${chain.entities[2].name}を探索してください`,
+          instruction: `到着しました！${getDisplayName(chain.entities[2])}を探索してください`,
           targetType: 'entity',
           targetId: chain.entities[2].id,
           hint: `旅は完了です！${chain.entities[2].icon}`
@@ -295,7 +296,7 @@ export function generateQuestsForOntology(ontology: Ontology): Quest[] {
       quests.push({
         id: "quest-6",
         title: "完全な旅路",
-        description: `${chain.entities[0].name}から${chain.entities[2].name}までたどりましょう。`,
+      description: `${getDisplayName(chain.entities[0])}から${getDisplayName(chain.entities[2])}までたどりましょう。`,
         difficulty: "advanced",
         category: "traversal",
         steps: chainSteps,

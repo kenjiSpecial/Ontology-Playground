@@ -167,6 +167,35 @@ describe('convertToFabricParts', () => {
     expect(rel.target.entityTypeId).toBe(entityIdMap.get('order'));
   });
 
+  it('uses internal names and endpoints for Fabric definitions when display fields exist', () => {
+    const localizedOntology: Ontology = {
+      ...minimalOntology,
+      displayName: '表示用オントロジー',
+      entityTypes: minimalOntology.entityTypes.map((entity) => ({
+        ...entity,
+        displayName: entity.id === 'customer' ? '顧客' : '注文',
+        properties: entity.properties.map((property) => ({
+          ...property,
+          displayName: property.name === 'customerId' ? '顧客識別子' : undefined,
+        })),
+      })),
+      relationships: minimalOntology.relationships.map((relationship) => ({
+        ...relationship,
+        displayName: '注文する',
+      })),
+    };
+
+    const { definition } = convertToFabricParts(localizedOntology);
+    const encodedParts = definition.parts.map((part) => decode(part.payload));
+    const serialized = JSON.stringify(encodedParts);
+    expect(serialized).toContain('Customer');
+    expect(serialized).toContain('customerId');
+    expect(serialized).toContain('places');
+    expect(serialized).not.toContain('表示用オントロジー');
+    expect(serialized).not.toContain('顧客識別子');
+    expect(serialized).not.toContain('注文する');
+  });
+
   it('skips relationships referencing unknown entities', () => {
     const ontologyWithBadRel: Ontology = {
       ...minimalOntology,

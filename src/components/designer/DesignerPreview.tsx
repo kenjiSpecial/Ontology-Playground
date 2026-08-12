@@ -8,6 +8,7 @@ import { serializeDesignerToRDF } from '../../lib/designerRdf';
 import { parseRDF } from '../../lib/rdf/parser';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../../lib/rdf/highlighter';
 import { jaMessages } from '../../locales/ja';
+import { getDisplayName } from '../../lib/displayText';
 
 cytoscape.use(fcose);
 
@@ -50,7 +51,7 @@ export function DesignerPreview() {
 // ─── Graph tab ───────────────────────────────────────────────────────────────
 
 interface GraphPreviewProps {
-  ontology: { entityTypes: { id: string; name: string; icon: string; color: string }[]; relationships: { id: string; name: string; from: string; to: string; cardinality: string }[] };
+  ontology: { entityTypes: { id: string; name: string; displayName?: string; icon: string; color: string }[]; relationships: { id: string; name: string; displayName?: string; from: string; to: string; cardinality: string }[] };
   theme: ThemeId;
   onSelectEntity: (id: string | null) => void;
   onSelectRelationship: (id: string | null) => void;
@@ -62,10 +63,10 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
 
   const buildElements = useCallback(() => {
     const nodes = ontology.entityTypes.map((e) => ({
-      data: { id: e.id, label: `${e.icon} ${e.name}`, color: e.color },
+      data: { id: e.id, label: `${e.icon} ${getDisplayName(e)}`, color: e.color },
     }));
     const edges = ontology.relationships.map((r) => ({
-      data: { id: r.id, source: r.from, target: r.to, label: r.name },
+      data: { id: r.id, source: r.from, target: r.to, label: getDisplayName(r) },
     }));
     return [...nodes, ...edges];
   }, [ontology]);
@@ -172,7 +173,7 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
     const newNodes: { data: Record<string, string> }[] = [];
     for (const entity of ontology.entityTypes) {
       if (!currentNodeIds.has(entity.id)) {
-        newNodes.push({ data: { id: entity.id, label: `${entity.icon} ${entity.name}`, color: entity.color } });
+        newNodes.push({ data: { id: entity.id, label: `${entity.icon} ${getDisplayName(entity)}`, color: entity.color } });
       }
     }
 
@@ -180,7 +181,7 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
     const newEdges: { data: Record<string, string> }[] = [];
     for (const rel of ontology.relationships) {
       if (!currentEdgeIds.has(rel.id)) {
-        newEdges.push({ data: { id: rel.id, source: rel.from, target: rel.to, label: rel.name } });
+        newEdges.push({ data: { id: rel.id, source: rel.from, target: rel.to, label: getDisplayName(rel) } });
       }
     }
 
@@ -207,14 +208,14 @@ function GraphPreview({ ontology, theme, onSelectEntity, onSelectRelationship }:
     for (const entity of ontology.entityTypes) {
       const node = cy.getElementById(entity.id);
       if (node.length) {
-        node.data('label', `${entity.icon} ${entity.name}`);
+        node.data('label', `${entity.icon} ${getDisplayName(entity)}`);
         node.data('color', entity.color);
       }
     }
     for (const rel of ontology.relationships) {
       const edge = cy.getElementById(rel.id);
       if (edge.length) {
-        edge.data('label', rel.name);
+        edge.data('label', getDisplayName(rel));
       }
     }
   }, [ontology]);
