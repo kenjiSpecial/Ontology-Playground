@@ -49,7 +49,7 @@ Zavaは**「4段階品質管理」**も実施しています。同じロット�
 
 <ontology-embed id="official/zava-grove-to-shelf-step-2" diff="official/zava-grove-to-shelf-step-1" height="420px"></ontology-embed>
 
-*エンティティは6つです。新しい二つの中心に注目してください。HarvestLotが来歴の基点となり、QualityCheckが横から接続されています。*
+*エンティティは6つです。新たに加わった二つの中核エンティティに注目してください。HarvestLotが来歴の基点となり、QualityCheckがそこへ接続されています。*
 
 ## 答えられるようになるビジネス上の問い
 
