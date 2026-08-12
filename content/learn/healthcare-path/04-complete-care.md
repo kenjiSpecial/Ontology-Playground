@@ -44,7 +44,7 @@ embed: official/healthcare-step-3
 |---|---|
 | 処方箋の再調剤が必要な患者は誰か？ | Patient → Diagnosis → Prescription (refillsRemaining=0) |
 | 最も多くの薬剤を処方している医療提供者は誰か？ | Provider → Prescription (count) |
-| まだ治療されていない重症の診断はどれか？ | Diagnosis (severity=severe) かつ → Prescription なし |
+| まだ治療されていない重症の診断はどれか？ | Diagnosis (severity=severe) から Prescription へのリレーションシップなし |
 | 自ら診断した病状に処方も行っている専門医は誰か？ | Provider → Diagnosis かつ Provider → Prescription |
 
 ## GQLクエリの例
