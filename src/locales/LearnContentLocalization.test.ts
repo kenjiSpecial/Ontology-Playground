@@ -107,6 +107,18 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '07-complete-model.md',
     ],
   },
+  {
+    directory: 'zava-grove-to-shelf',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-orchard-foundation.md',
+      '03-harvest-and-quality.md',
+      '04-cold-chain-logistics.md',
+      '05-retail-fulfillment.md',
+      '06-complete-model.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {

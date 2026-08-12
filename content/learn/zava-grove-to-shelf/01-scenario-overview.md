@@ -1,58 +1,58 @@
 ---
-title: Scenario Overview
+title: シナリオ概要
 slug: scenario-overview
-description: Meet Zava — a premium fresh-fruit producer that needs one semantic layer across farms, cold-chain logistics, retail and sustainability.
+description: 農園、コールドチェーン物流、小売、サステナビリティを横断する単一のセマンティック レイヤーを必要とする高級青果物生産者、Zavaを紹介します。
 order: 1
 ---
 
-## The Zava story
+## Zavaの事業
 
-**Zava** is a global premium fresh fruit & vegetable producer and distributor. Their business spans:
+**Zava**は、高級な生鮮果物と野菜を世界各地で生産・流通する企業です。その事業は次の領域にまたがります。
 
-- **Multi-origin sourcing** — partner farms in Spain, Ecuador, South Africa, Tunisia, Germany and more.
-- **Four-stage quality control** — every harvest is inspected in the field, the packhouse, the destination DC and finally the store.
-- **Cold-chain logistics** — reefer containers carrying perishable lots, monitored continuously by temperature sensors.
-- **Retail partners** — supermarket chains (DCs and stores) place orders for specific varieties.
-- **Sustainability** — a grower-development program (Zava Dreams) that farms can join.
+- **複数産地からの調達** — スペイン、エクアドル、南アフリカ、チュニジア、ドイツなどの提携農園から調達します。
+- **4段階の品質管理** — すべての収穫物を、圃場、選果梱包施設、配送先の物流センター、最後に店舗で検査します。
+- **コールドチェーン物流** — 生鮮品ロットを運ぶ冷蔵コンテナを温度センサーで継続的に監視します。
+- **小売パートナー** — スーパーマーケット チェーンの物流センターと店舗が、特定品種を注文します。
+- **サステナビリティ** — 農園が参加できる生産者育成プログラム（Zava Dreams）を運営します。
 
-## The data problem
+## データの課題
 
-Today, every one of those domains lives in a different system: agronomy ERPs, packhouse QC apps, IoT eventhouses, retail EDI feeds, CSR spreadsheets. A single question like:
+現在、各領域のデータはそれぞれ別のシステムにあります。農業ERP、選果梱包施設の品質管理アプリ、IoT Eventhouse、小売EDIフィード、CSRのスプレッドシートです。たとえば次の一つの問いに答えるだけでも、複数のシステムを調べる必要があります。
 
-> *"This morning a reefer container with 18 tonnes of Nadorcott mandarins crossed 9°C while in transit to a retailer's DC. Which retailer orders are at risk, and what is the revenue exposure?"*
+> *「今朝、Nadorcottマンダリンを18トン積んだ冷蔵コンテナが、小売業者の物流センターへの輸送中に9°Cを超えました。どの小売注文にリスクがあり、影響を受ける売上はいくらですか？」*
 
-…requires manually traversing five different systems. Analysts need to know which table holds shipments, which lakehouse holds orders, which eventhouse holds sensor telemetry — and how to join them.
+この問いには、5つの異なるシステムを手作業でたどらなければ答えられません。アナリストは、出荷がどのテーブルに、注文がどのLakehouseに、センサーのテレメトリがどのEventhouseにあるか、さらにそれらをどう結合するかまで把握する必要があります。
 
-## Why an ontology
+## オントロジーが必要な理由
 
-An ontology defines the **business concepts** — `Grower`, `Farm`, `HarvestLot`, `Shipment`, `ColdChainSensor`, `RetailDC`, `Order`, `SustainabilityProgram` — and the **relationships** between them, *once*. The underlying tables and event streams are then **bound** to these concepts.
+オントロジーでは、`Grower`、`Farm`、`HarvestLot`、`Shipment`、`ColdChainSensor`、`RetailDC`、`Order`、`SustainabilityProgram`という**ビジネス概念**と、それらの間の**リレーションシップ**を一度だけ定義します。そのうえで、基礎となるテーブルやイベント ストリームをこれらの概念に**バインド**します。
 
-| Without ontology | With ontology |
+| オントロジーなし | オントロジーあり |
 |---|---|
-| Analyst must know that `dim_grow.gr_lt_id = fact_harv.gr_id` | Business user asks "which growers placed lots at risk this week?" |
-| Cold-chain telemetry lives in one system, orders in another | One traversal `Sensor → Shipment → HarvestLot → Order → Store` |
-| New retailer? Rewrite five queries | New retailer? Add bindings, model stays the same |
-| Sustainability tracking is a side spreadsheet | `Farm participatesIn SustainabilityProgram` is first-class |
+| アナリストが`dim_grow.gr_lt_id = fact_harv.gr_id`を知っている必要がある | ビジネス ユーザーが「今週、どの生産者のロットにリスクが生じたか」と質問できる |
+| コールドチェーンのテレメトリと注文が別々のシステムにある | `Sensor → Shipment → HarvestLot → Order → Store`を一度たどればよい |
+| 新しい小売業者が加わるたびに5つのクエリを書き直す | バインディングを追加するだけで、モデルは変わらない |
+| サステナビリティ追跡が独立したスプレッドシートにある | `Farm participatesIn SustainabilityProgram`を第一級の概念として扱える |
 
-## What we'll build
+## 構築するもの
 
-Over five progressive steps we'll construct the complete Zava grove-to-shelf ontology — **12 entity types** and **13 relationships** covering every layer of the business:
+5つの段階を通じて、Zavaの事業全体を網羅する**12個のエンティティ型**と**13個のリレーションシップ**からなる、果樹園から店頭までの完全なオントロジーを構築します。
 
-1. **Orchard Foundation** — `Grower`, `Farm`, `Plot`, `FruitVariety`
-2. **Harvest & Quality** — `HarvestLot`, `QualityCheck`
-3. **Cold-Chain Logistics** — `Shipment`, `ColdChainSensor`
-4. **Retail Fulfillment** — `RetailDC`, `Store`, `Order`
-5. **Complete Model** — `SustainabilityProgram`
+1. **果樹園の基盤** — `Grower`、`Farm`、`Plot`、`FruitVariety`
+2. **収穫と品質** — `HarvestLot`、`QualityCheck`
+3. **コールドチェーン物流** — `Shipment`、`ColdChainSensor`
+4. **小売フルフィルメント** — `RetailDC`、`Store`、`Order`
+5. **完全なモデル** — `SustainabilityProgram`
 
-At each step you'll see the graph grow and we'll preview the business questions the new entities unlock.
+各段階でグラフが成長する様子を確認し、新しいエンティティによって答えられるようになるビジネス上の問いを見ていきます。
 
 ```quiz
-Q: Which of these is the *primary* reason Zava benefits from an ontology over a traditional data warehouse?
-- An ontology is faster than SQL at runtime
-- It eliminates the need to store data altogether
-- It expresses cross-domain business concepts once so business users can ask plain-language questions [correct]
-- It replaces the need for cold-chain sensors
-> The value isn't speed or storage — it's that *one* semantic vocabulary spans agronomy, logistics, retail and CSR data, so cross-domain questions become natural.
+Q: Zavaにとって従来のデータ ウェアハウスよりもオントロジーが有用である*最も重要な*理由はどれですか？
+- 実行時にオントロジーのほうがSQLより高速だから
+- データを保存する必要が一切なくなるから
+- 領域横断のビジネス概念を一度だけ表現し、ビジネス ユーザーが自然な言葉で質問できるようになるから [correct]
+- コールドチェーン センサーが不要になるから
+> 価値は速度やストレージではありません。農業、物流、小売、CSRのデータを*一つ*のセマンティックな語彙が横断するため、領域をまたぐ問いを自然に表現できる点にあります。
 ```
 
-Let's start with the orchard.
+まずは果樹園から始めましょう。
