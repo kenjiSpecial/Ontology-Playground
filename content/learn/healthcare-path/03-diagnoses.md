@@ -1,23 +1,23 @@
 ---
-title: "Diagnoses"
+title: "診断"
 slug: diagnoses
-description: "Add Diagnosis to track medical conditions — connecting patients to their clinical findings and providers to their assessments."
+description: "Diagnosisを追加して病状を追跡し、患者と臨床所見、医療提供者とその評価をつなぎます。"
 order: 3
 embed: official/healthcare-step-2
 ---
 
-## Recording clinical findings
+## 臨床所見の記録
 
-An appointment produces clinical findings — what condition does the patient have? The **Diagnosis** entity captures these findings with standardized coding.
+診察では「患者がどのような病状にあるか」という臨床所見が得られます。**Diagnosis**エンティティは、標準化されたコードを用いてこれらの所見を表します。
 
-Adding Diagnosis enables:
-- "Which patients have been diagnosed with diabetes?"
-- "Which provider identified the most severe conditions last quarter?"
-- "What are the most common diagnoses by department?"
+Diagnosisを追加すると、次の問いに答えられます。
+- 「糖尿病と診断された患者は誰か？」
+- 「前四半期に最も重症度の高い病状を特定した医療提供者は誰か？」
+- 「診療科ごとに最も多い診断は何か？」
 
-## Diagnosis entity
+## Diagnosisエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `diagnosisId` | string | ✓ |
 | `icdCode` | string | |
@@ -25,38 +25,38 @@ Adding Diagnosis enables:
 | `severity` | string | |
 | `diagnosedDate` | date | |
 
-The `icdCode` property holds the standardized ICD (International Classification of Diseases) code — a globally recognized coding system. This makes the ontology interoperable with insurance, billing, and research systems.
+`icdCode` プロパティには、世界的に認知された標準分類であるICD（国際疾病分類）コードを格納します。これにより、オントロジーは保険、請求、研究の各システムと相互運用できるようになります。
 
-## New relationships
+## 新しいリレーションシップ
 
-- **diagnosed_with** — `Patient` → `Diagnosis` (one-to-many)
-  A patient can have multiple diagnoses over their medical history.
+- **diagnosed_with** — `Patient` → `Diagnosis`（一対多）
+  1人の患者が診療履歴の中で複数の診断を受けることがあります。
 
-- **diagnoses** — `Provider` → `Diagnosis` (one-to-many)
-  A provider records diagnoses based on their clinical assessment.
+- **diagnoses** — `Provider` → `Diagnosis`（一対多）
+  医療提供者は、臨床評価に基づいて診断を記録します。
 
-> **Dual authorship:** Diagnosis connects to both Patient (who has the condition) and Provider (who identified it). This dual connection enables both patient-centric views ("all of my conditions") and provider-centric views ("all conditions I've identified").
+> **2つの主体との接続：** Diagnosisは、病状を持つPatientと、その病状を特定したProviderの両方につながります。この二重の接続により、「自分が持つすべての病状」という患者中心の視点と、「自分が特定したすべての病状」という医療提供者中心の視点の両方が可能になります。
 
-## The growing graph
+## 拡張されたグラフ
 
 <ontology-embed id="official/healthcare-step-2" diff="official/healthcare-step-1" height="400px"></ontology-embed>
 
-*Diagnosis joins the graph with connections to both Patient and Provider. The diff highlights what's new.*
+*DiagnosisがPatientとProviderの両方につながる形でグラフに加わります。差分表示では追加箇所が強調されます。*
 
-## What we learned
+## 学んだこと
 
-- **Standardized codes** (ICD) make ontologies interoperable with external systems
-- **Dual-connected entities** (Patient → Diagnosis ← Provider) capture both perspectives
-- **Severity properties** enable risk stratification and clinical prioritization
-- The graph now supports both scheduling queries (via Appointment) and clinical queries (via Diagnosis)
+- **標準化されたコード**（ICD）により、オントロジーと外部システムの相互運用が可能になります
+- **2方向に接続されたエンティティ**（Patient → Diagnosis ← Provider）は、双方の視点を表します
+- **重症度プロパティ**により、リスク層別化と臨床上の優先順位付けが可能になります
+- グラフは、Appointmentを介した予約クエリとDiagnosisを介した臨床クエリの両方に対応できるようになりました
 
 ```quiz
-Q: Why is the ICD code property important for the Diagnosis entity?
-- It makes the diagnosis identifier shorter
-- It provides a globally standardized coding system that enables interoperability with insurance, billing, and research systems [correct]
-- ICD codes are required by all ontology formats
-- It prevents duplicate diagnoses from being recorded
-> ICD (International Classification of Diseases) codes are the universal standard for classifying medical conditions. Including them in the ontology enables interoperability — the same code means the same condition across EHRs, insurance claims, clinical trials, and public health systems.
+Q: DiagnosisエンティティでICDコードのプロパティが重要なのはなぜですか？
+- 診断の識別子を短くできるため
+- 保険、請求、研究の各システムとの相互運用を可能にする、世界標準のコード体系だから [correct]
+- すべてのオントロジー形式でICDコードが必須だから
+- 重複する診断が記録されるのを防げるため
+> ICD（国際疾病分類）コードは、病状を分類するための世界標準です。これをオントロジーに含めることで、EHR、保険請求、臨床試験、公衆衛生システムの間で相互運用が可能になります。同じコードは、どのシステムでも同じ病状を意味します。
 ```
 
-Next, we'll add Prescription to complete the treatment chain.
+次はPrescriptionを追加して、治療の連鎖を完成させます。

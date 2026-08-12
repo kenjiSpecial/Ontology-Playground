@@ -54,6 +54,16 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '04-complete-banking.md',
     ],
   },
+  {
+    directory: 'healthcare-path',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-care-delivery.md',
+      '03-diagnoses.md',
+      '04-complete-care.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {

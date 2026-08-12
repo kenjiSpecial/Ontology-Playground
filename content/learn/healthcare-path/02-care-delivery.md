@@ -1,26 +1,26 @@
 ---
-title: "Care Delivery"
+title: "診療提供"
 slug: care-delivery
-description: "Define Patient, Provider, and Appointment — the core entities that power healthcare scheduling and care delivery."
+description: "医療の予約と診療提供を支える中核エンティティ、Patient、Provider、Appointmentを定義します。"
 order: 2
 embed: official/healthcare-step-1
 ---
 
-## The care delivery foundation
+## 診療提供の基盤
 
-Healthcare delivery revolves around three concepts:
+診療提供は、次の3つの概念を中心に成り立ちます。
 
-- **Patient** — who is receiving care?
-- **Provider** — who is delivering care?
-- **Appointment** — when and where does the care happen?
+- **Patient** — 誰が診療を受けるか？
+- **Provider** — 誰が診療を提供するか？
+- **Appointment** — いつ、どこで診療を行うか？
 
-These three entities capture the scheduling and delivery of healthcare. Every diagnosis and treatment flows from an appointment.
+この3つのエンティティは、医療の予約と提供を表します。あらゆる診断と治療は予約を起点として進みます。
 
-## Defining the entities
+## エンティティの定義
 
 ### Patient
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `patientId` | string | ✓ |
 | `mrn` | string | |
@@ -28,11 +28,11 @@ These three entities capture the scheduling and delivery of healthcare. Every di
 | `bloodType` | string | |
 | `allergies` | string | |
 
-The `mrn` (Medical Record Number) is the hospital's internal identifier. The `patientId` is used as the ontology identifier, while `mrn` is a domain-specific property that maps to the EHR system.
+`mrn`（診療録番号）は、病院内部の識別子です。`patientId` をオントロジーの識別子として使用する一方、`mrn` はEHRシステムに対応付ける医療分野固有のプロパティです。
 
 ### Provider
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `providerId` | string | ✓ |
 | `name` | string | |
@@ -40,11 +40,11 @@ The `mrn` (Medical Record Number) is the hospital's internal identifier. The `pa
 | `licenseNumber` | string | |
 | `department` | string | |
 
-The `specialty` and `department` properties enable filtering providers by clinical domain — essential for referral and routing queries.
+`specialty` と `department` プロパティを使うと、医療提供者を臨床分野で絞り込めます。これは紹介先や患者の振り分けを調べるクエリに不可欠です。
 
 ### Appointment
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `appointmentId` | string | ✓ |
 | `scheduledTime` | datetime | |
@@ -52,38 +52,38 @@ The `specialty` and `department` properties enable filtering providers by clinic
 | `type` | string | |
 | `status` | string | |
 
-The `duration` property uses an integer with a minutes unit — enabling scheduling calculations and utilization analysis.
+`duration` プロパティには分単位の整数を使用します。これにより、予約時間の計算や稼働率の分析が可能になります。
 
-## Relationships
+## リレーションシップ
 
-- **has_appointment** — `Patient` → `Appointment` (one-to-many)
-  A patient can have many appointments over time.
+- **has_appointment** — `Patient` → `Appointment`（一対多）
+  1人の患者が時間の経過とともに複数の予約を持つことができます。
 
-- **sees** — `Provider` → `Appointment` (one-to-many)
-  A provider handles many appointments.
+- **sees** — `Provider` → `Appointment`（一対多）
+  1人の医療提供者が複数の予約を担当します。
 
-> **Shared entity pattern:** Appointment connects to *both* Patient and Provider. It's the meeting point where two independent entities interact. This pattern is common whenever two actors participate in the same event.
+> **共有エンティティのパターン：** AppointmentはPatientとProviderの*両方*につながります。これは、独立した2つのエンティティが関わる接点です。このパターンは、2者が同じイベントに参加する場面でよく使われます。
 
-## The graph so far
+## 現時点のグラフ
 
 <ontology-embed id="official/healthcare-step-1" height="350px"></ontology-embed>
 
-*Patient and Provider both connect to Appointment — the meeting point of care delivery.*
+*PatientとProviderの両方が、診療提供の接点となるAppointmentにつながっています。*
 
-## What we learned
+## 学んだこと
 
-- **Shared entities** (Appointment) connect two independent actors (Patient, Provider)
-- **Duration properties** use integers with units (minutes, hours, days)
-- **Domain-specific identifiers** (MRN) coexist with ontology identifiers (patientId)
-- The scheduling triangle (Patient–Appointment–Provider) is the healthcare foundation
+- **共有エンティティ**（Appointment）は、独立した2者（PatientとProvider）をつなぎます
+- **期間プロパティ**には、単位（分、時間、日）を伴う整数を使用します
+- **分野固有の識別子**（MRN）は、オントロジーの識別子（patientId）と併存できます
+- 予約の三角形（Patient–Appointment–Provider）が医療モデルの基盤になります
 
 ```quiz
-Q: Why is Appointment connected to both Patient and Provider instead of just one?
-- To make the graph look more complete
-- Because Appointment is a shared entity — it represents the interaction point between the two actors [correct]
-- Because every entity must have at least two relationships
-- Because Patient and Provider have the same properties
-> An appointment is inherently a collaborative event involving both a patient and a provider. Modelling both relationships captures the full scheduling picture and enables queries from either perspective: "When is the patient's next visit?" or "How many patients does this provider see per day?"
+Q: AppointmentをPatientかProviderの一方だけでなく、両方につなぐのはなぜですか？
+- グラフをより完全に見せるため
+- Appointmentは2者の接点を表す共有エンティティだから [correct]
+- すべてのエンティティには少なくとも2つのリレーションシップが必要だから
+- PatientとProviderが同じプロパティを持つから
+> 予約は本質的に、患者と医療提供者の両方が関わる共同イベントです。両方のリレーションシップをモデル化することで予約の全体像を表し、「患者の次回受診はいつか？」と「この医療提供者が1日に診る患者は何人か？」のどちらの視点からもクエリを実行できます。
 ```
 
-Next, we'll add Diagnosis to track medical conditions.
+次はDiagnosisを追加して、病状を追跡します。
