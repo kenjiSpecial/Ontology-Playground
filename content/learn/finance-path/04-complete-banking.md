@@ -25,7 +25,7 @@ embed: official/finance-step-3
 | `term` | integer (months) | |
 | `status` | string | |
 
-`term` は月数を表す整数で、期間プロパティによく使われるパターンです。`apr`（年率）にはパーセント単位を使用します。
+`term` は月数を表す整数で、期間プロパティによく使われるパターンです。`apr`（年換算利率、Annual Percentage Rate）にはパーセント単位を使用します。
 
 ## Investment（投資）
 
@@ -70,7 +70,7 @@ embed: official/finance-step-3
 | 多額のローンがある高リスク顧客は誰か？ | Customer (riskProfile=high) → Loan (principal > 100K) |
 | 主要顧客のポートフォリオ価値はいくらか？ | Customer → Investment (sum currentValue) |
 | ローンと投資の両方に資金を提供している口座はどれか？ | Account → Loan かつ Account → Investment |
-| 投資収益がローン費用を上回る顧客は誰か？ | Customer → Investment (currentValue) と Customer → Loan (principal × apr) を比較 |
+| 投資の現在価値がローン費用を上回る顧客は誰か？ | Customer → Investment (currentValue) と Customer → Loan (principal × apr) を比較 |
 
 ## GQLクエリの例
 
