@@ -1,0 +1,133 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "FIBOローンラボ — ステップ2：担保・返済予定",
+    "displayDescription": "担保と返済予定の意味を追加した、FIBOの債務・ローン概念に基づく学習モデルです。",
+    "displayTags": [
+      {
+        "tag": "fibo",
+        "displayName": "FIBO（金融業界ビジネスオントロジー）"
+      },
+      {
+        "tag": "loan",
+        "displayName": "ローン"
+      },
+      {
+        "tag": "school",
+        "displayName": "学習"
+      },
+      {
+        "tag": "step-2",
+        "displayName": "ステップ2"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "FIBOローンラボ — ステップ2：担保と返済予定",
+    "displayDescription": "中核ローンモデルに担保と返済予定の概念を加えたモデルです。"
+  },
+  "entities": [
+    {
+      "id": "loan",
+      "displayName": "ローン",
+      "displayDescription": "契約条件に従って借り手に供与され、返済される債務証書です。"
+    },
+    {
+      "id": "borrower",
+      "displayName": "借り手",
+      "displayDescription": "資金を受け取り、返済義務を負う当事者です。"
+    },
+    {
+      "id": "lender",
+      "displayName": "貸し手",
+      "displayDescription": "ローン契約の条件に基づき、資金または信用を提供する当事者です。"
+    },
+    {
+      "id": "collateral",
+      "displayName": "担保",
+      "displayDescription": "返済義務を担保するために差し入れられる資産です。"
+    },
+    {
+      "id": "loanPaymentSchedule",
+      "displayName": "ローン返済予定",
+      "displayDescription": "支払期日と予定されるローン支払を定めた定期的な予定です。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "loan",
+      "propertyName": "loanId",
+      "displayName": "ローンID"
+    },
+    {
+      "entityId": "loan",
+      "propertyName": "principalAmount",
+      "displayName": "元本金額"
+    },
+    {
+      "entityId": "loan",
+      "propertyName": "isInterestOnly",
+      "displayName": "利息のみ返済"
+    },
+    {
+      "entityId": "borrower",
+      "propertyName": "borrowerId",
+      "displayName": "借り手ID"
+    },
+    {
+      "entityId": "borrower",
+      "propertyName": "creditScore",
+      "displayName": "信用スコア"
+    },
+    {
+      "entityId": "lender",
+      "propertyName": "lenderId",
+      "displayName": "貸し手ID"
+    },
+    {
+      "entityId": "collateral",
+      "propertyName": "assetType",
+      "displayName": "資産種別"
+    },
+    {
+      "entityId": "collateral",
+      "propertyName": "appraisedValue",
+      "displayName": "査定価値"
+    },
+    {
+      "entityId": "loanPaymentSchedule",
+      "propertyName": "scheduleId",
+      "displayName": "返済予定ID"
+    },
+    {
+      "entityId": "loanPaymentSchedule",
+      "propertyName": "expectedPayments",
+      "displayName": "予定支払回数"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "owedBy",
+      "displayName": "返済義務を負う借り手",
+      "displayDescription": "返済義務を負う借り手へローンを関連付けます。"
+    },
+    {
+      "id": "originatedBy",
+      "displayName": "ローンを組成した貸し手",
+      "displayDescription": "ローンを組成した貸し手へローンを関連付けます。"
+    },
+    {
+      "id": "securedBy",
+      "displayName": "担保で保全される",
+      "displayDescription": "担保資産へ担保付ローンを関連付けます。"
+    },
+    {
+      "id": "repaidBySchedule",
+      "displayName": "返済予定に基づく",
+      "displayDescription": "ローンを返済予定に関連付けます。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

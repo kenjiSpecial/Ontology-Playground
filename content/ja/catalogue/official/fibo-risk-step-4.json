@@ -1,0 +1,421 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "FIBOリスクラボ — ステップ4：規制の文脈",
+    "displayDescription": "銀行規制、集中限度、領域横断の接続を加えてリスクモデルを完成させます。",
+    "displayTags": [
+      {
+        "tag": "fibo",
+        "displayName": "FIBO（金融業界ビジネスオントロジー）"
+      },
+      {
+        "tag": "risk",
+        "displayName": "リスク"
+      },
+      {
+        "tag": "regulation",
+        "displayName": "規制"
+      },
+      {
+        "tag": "compliance",
+        "displayName": "コンプライアンス"
+      },
+      {
+        "tag": "school",
+        "displayName": "学習"
+      },
+      {
+        "tag": "step-4",
+        "displayName": "ステップ4"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "FIBOリスクラボ — ステップ4：規制の文脈",
+    "displayDescription": "産業、地理、ローン分類に規制の文脈と領域横断リレーションシップを加えた、リスク管理モデルの完成版です。"
+  },
+  "entities": [
+    {
+      "id": "sector",
+      "displayName": "セクター",
+      "displayDescription": "幅広い機能によって産業をまとめる経済分類の最上位区分です。"
+    },
+    {
+      "id": "subsector",
+      "displayName": "サブセクター",
+      "displayDescription": "経済セクターをより細かく分類した下位区分です。"
+    },
+    {
+      "id": "industryGroup",
+      "displayName": "産業グループ",
+      "displayDescription": "リスク分析のため、NAICSで符号化し気候感応度と景気循環性を持つ産業グループです。"
+    },
+    {
+      "id": "region",
+      "displayName": "地域",
+      "displayDescription": "マクロ経済分析のため、大陸または地理的地域をまとめる区分です。"
+    },
+    {
+      "id": "country",
+      "displayName": "国",
+      "displayDescription": "経済区分、通貨、規制フレームワークの属性を持つ国家です。"
+    },
+    {
+      "id": "jurisdiction",
+      "displayName": "管轄区域",
+      "displayDescription": "ハリケーン、洪水、地震、山火事のリスク地域フラグを持つ、国より下位の管轄区域です。"
+    },
+    {
+      "id": "concentrationCategory",
+      "displayName": "集中区分",
+      "displayDescription": "ポートフォリオのリスク管理についてOCC/FDICガイダンスが定める規制上の集中区分です。"
+    },
+    {
+      "id": "loanType",
+      "displayName": "ローン種別",
+      "displayDescription": "Basel IIIのリスクウェイト、規制上の取扱い、自己資本区分を持つローン商品の分類です。"
+    },
+    {
+      "id": "collateralType",
+      "displayName": "担保種別",
+      "displayDescription": "回収見込みと集中区分を持つ担保資産の分類です。"
+    },
+    {
+      "id": "regulation",
+      "displayName": "規制",
+      "displayDescription": "ポートフォリオリスクを管理するため、銀行当局（OCC、FDIC、Basel委員会）が発行する規制フレームワークです。"
+    },
+    {
+      "id": "regulatoryLimit",
+      "displayName": "規制限度",
+      "displayDescription": "ポートフォリオ集中度、エクスポージャー、自己資本比率に対して規制が課す定量的な閾値または限度です。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "sector",
+      "propertyName": "sectorCode",
+      "displayName": "セクターコード"
+    },
+    {
+      "entityId": "sector",
+      "propertyName": "sectorName",
+      "displayName": "セクター名"
+    },
+    {
+      "entityId": "sector",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "subsector",
+      "propertyName": "subsectorCode",
+      "displayName": "サブセクターコード"
+    },
+    {
+      "entityId": "subsector",
+      "propertyName": "subsectorName",
+      "displayName": "サブセクター名"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "naicsCode",
+      "displayName": "NAICSコード"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "cyclicality",
+      "displayName": "景気循環性"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "climateSensitivity",
+      "displayName": "気候感応度"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "essentialServices",
+      "displayName": "必須サービス"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "regionCode",
+      "displayName": "地域コード"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "regionName",
+      "displayName": "地域名"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "disasterProfile",
+      "displayName": "災害プロファイル"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "countryCode",
+      "displayName": "国コード"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "countryName",
+      "displayName": "国名"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "economicZone",
+      "displayName": "経済区分"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "currency",
+      "displayName": "通貨コード"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "regulatoryFramework",
+      "displayName": "規制フレームワーク"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "code",
+      "displayName": "管轄区域コード"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "hurricaneZone",
+      "displayName": "ハリケーン地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "floodZone",
+      "displayName": "洪水地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "earthquakeZone",
+      "displayName": "地震地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "wildfireZone",
+      "displayName": "山火事地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "coastal",
+      "displayName": "沿岸地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "latitude",
+      "displayName": "緯度"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "longitude",
+      "displayName": "経度"
+    },
+    {
+      "entityId": "concentrationCategory",
+      "propertyName": "categoryId",
+      "displayName": "集中区分ID"
+    },
+    {
+      "entityId": "concentrationCategory",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "concentrationCategory",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "concentrationCategory",
+      "propertyName": "occGuidance",
+      "displayName": "OCCガイダンス"
+    },
+    {
+      "entityId": "loanType",
+      "propertyName": "loanTypeCode",
+      "displayName": "ローン種別コード"
+    },
+    {
+      "entityId": "loanType",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "loanType",
+      "propertyName": "baselRiskWeight",
+      "displayName": "Basel IIIリスクウェイト"
+    },
+    {
+      "entityId": "loanType",
+      "propertyName": "regulatoryTreatment",
+      "displayName": "規制上の取扱い"
+    },
+    {
+      "entityId": "loanType",
+      "propertyName": "capitalTier",
+      "displayName": "自己資本区分"
+    },
+    {
+      "entityId": "loanType",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "collateralType",
+      "propertyName": "collateralTypeCode",
+      "displayName": "担保種別コード"
+    },
+    {
+      "entityId": "collateralType",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "collateralType",
+      "propertyName": "recoveryExpectation",
+      "displayName": "回収見込み"
+    },
+    {
+      "entityId": "collateralType",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "regulation",
+      "propertyName": "regulationCode",
+      "displayName": "規制コード"
+    },
+    {
+      "entityId": "regulation",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "regulation",
+      "propertyName": "issuingAuthority",
+      "displayName": "発行主体"
+    },
+    {
+      "entityId": "regulation",
+      "propertyName": "effectiveDate",
+      "displayName": "発効日"
+    },
+    {
+      "entityId": "regulation",
+      "propertyName": "scope",
+      "displayName": "適用範囲"
+    },
+    {
+      "entityId": "regulation",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "regulatoryLimit",
+      "propertyName": "limitId",
+      "displayName": "限度ID"
+    },
+    {
+      "entityId": "regulatoryLimit",
+      "propertyName": "limitName",
+      "displayName": "限度名"
+    },
+    {
+      "entityId": "regulatoryLimit",
+      "propertyName": "category",
+      "displayName": "対象区分"
+    },
+    {
+      "entityId": "regulatoryLimit",
+      "propertyName": "thresholdPct",
+      "displayName": "限度率"
+    },
+    {
+      "entityId": "regulatoryLimit",
+      "propertyName": "severity",
+      "displayName": "対応レベル"
+    },
+    {
+      "entityId": "regulatoryLimit",
+      "propertyName": "description",
+      "displayName": "説明"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "partOfSector",
+      "displayName": "セクターに属する",
+      "displayDescription": "サブセクターを親の経済セクターへ関連付けます。"
+    },
+    {
+      "id": "belongsToSubsector",
+      "displayName": "サブセクターに属する",
+      "displayDescription": "産業グループを親のサブセクターへ関連付けます。"
+    },
+    {
+      "id": "inCountry",
+      "displayName": "国に属する",
+      "displayDescription": "管轄区域を所属する国へ関連付けます。"
+    },
+    {
+      "id": "inRegion",
+      "displayName": "地域に属する",
+      "displayDescription": "管轄区域を地理的地域へ関連付けます。"
+    },
+    {
+      "id": "loanClassifiedAs",
+      "displayName": "ローン種別を集中区分に分類する",
+      "displayDescription": "ローン種別をOCC/FDICの集中区分へ分類します。"
+    },
+    {
+      "id": "collateralClassifiedAs",
+      "displayName": "担保種別を集中区分に分類する",
+      "displayDescription": "担保種別をOCC/FDICの集中区分へ分類します。"
+    },
+    {
+      "id": "typicallySecuredBy",
+      "displayName": "通常このローン種別の担保となる",
+      "displayDescription": "担保種別を、通常それで担保されるローン種別へ関連付けます。"
+    },
+    {
+      "id": "mandatedBy",
+      "displayName": "規制・方針で定められる",
+      "displayDescription": "規制限度を、その根拠となる規制へ関連付けます。"
+    },
+    {
+      "id": "limitAppliesToCategory",
+      "displayName": "集中区分に適用される",
+      "displayDescription": "規制限度を、制約対象となる集中区分へ関連付けます。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

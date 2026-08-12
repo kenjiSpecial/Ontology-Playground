@@ -1,0 +1,198 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "FIBOローンラボ — ステップ4：リスク分類子",
+    "displayDescription": "リスクと引受審査のため、担保権順位と所有権持分の分類子を追加したモデルです。",
+    "displayTags": [
+      {
+        "tag": "fibo",
+        "displayName": "FIBO（金融業界ビジネスオントロジー）"
+      },
+      {
+        "tag": "loan",
+        "displayName": "ローン"
+      },
+      {
+        "tag": "school",
+        "displayName": "学習"
+      },
+      {
+        "tag": "step-4",
+        "displayName": "ステップ4"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "FIBOローンラボ — ステップ4：リスク分類子",
+    "displayDescription": "引受審査と担保階層の分析に用いるリスク・分類エンティティを加えたモデルです。"
+  },
+  "entities": [
+    {
+      "id": "loan",
+      "displayName": "ローン",
+      "displayDescription": "契約条件に従って借り手に供与され、返済される債務証書です。"
+    },
+    {
+      "id": "borrower",
+      "displayName": "借り手",
+      "displayDescription": "資金を受け取り、返済義務を負う当事者です。"
+    },
+    {
+      "id": "lender",
+      "displayName": "貸し手",
+      "displayDescription": "ローン契約の条件に基づき、資金または信用を提供する当事者です。"
+    },
+    {
+      "id": "collateral",
+      "displayName": "担保",
+      "displayDescription": "返済義務を担保するために差し入れられる資産です。"
+    },
+    {
+      "id": "loanPaymentSchedule",
+      "displayName": "ローン返済予定",
+      "displayDescription": "支払期日と予定されるローン支払を定めた定期的な予定です。"
+    },
+    {
+      "id": "servicer",
+      "displayName": "サービサー",
+      "displayDescription": "ローン支払の回収を担う金融サービス提供者です。"
+    },
+    {
+      "id": "paymentHistory",
+      "displayName": "支払履歴",
+      "displayDescription": "ローン口座に関連するすべての支払イベントの記録です。"
+    },
+    {
+      "id": "paymentTransaction",
+      "displayName": "支払取引",
+      "displayDescription": "支払履歴を構成する個々の支払イベントです。"
+    },
+    {
+      "id": "ownershipInterest",
+      "displayName": "所有権持分",
+      "displayDescription": "担保資産に関する所有権の性質を表す分類子です。"
+    },
+    {
+      "id": "lenderLienPosition",
+      "displayName": "貸し手の担保権順位",
+      "displayDescription": "担保資産に対する貸し手の請求権の優先順位を示す分類子です。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "loan",
+      "propertyName": "loanId",
+      "displayName": "ローンID"
+    },
+    {
+      "entityId": "loan",
+      "propertyName": "principalAmount",
+      "displayName": "元本金額"
+    },
+    {
+      "entityId": "borrower",
+      "propertyName": "borrowerId",
+      "displayName": "借り手ID"
+    },
+    {
+      "entityId": "lender",
+      "propertyName": "lenderId",
+      "displayName": "貸し手ID"
+    },
+    {
+      "entityId": "collateral",
+      "propertyName": "assetType",
+      "displayName": "資産種別"
+    },
+    {
+      "entityId": "loanPaymentSchedule",
+      "propertyName": "scheduleId",
+      "displayName": "返済予定ID"
+    },
+    {
+      "entityId": "servicer",
+      "propertyName": "servicerId",
+      "displayName": "サービサーID"
+    },
+    {
+      "entityId": "paymentHistory",
+      "propertyName": "paymentHistoryId",
+      "displayName": "支払履歴ID"
+    },
+    {
+      "entityId": "paymentTransaction",
+      "propertyName": "paymentTransactionId",
+      "displayName": "支払取引ID"
+    },
+    {
+      "entityId": "paymentTransaction",
+      "propertyName": "amount",
+      "displayName": "支払額"
+    },
+    {
+      "entityId": "ownershipInterest",
+      "propertyName": "ownershipInterestType",
+      "displayName": "所有権持分種別"
+    },
+    {
+      "entityId": "lenderLienPosition",
+      "propertyName": "lienPosition",
+      "displayName": "担保権順位"
+    },
+    {
+      "entityId": "lenderLienPosition",
+      "propertyName": "positionRank",
+      "displayName": "順位"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "owedBy",
+      "displayName": "返済義務を負う借り手",
+      "displayDescription": "返済義務を負う借り手へローンを関連付けます。"
+    },
+    {
+      "id": "originatedBy",
+      "displayName": "ローンを組成した貸し手",
+      "displayDescription": "ローンを組成した貸し手へローンを関連付けます。"
+    },
+    {
+      "id": "securedBy",
+      "displayName": "担保で保全される",
+      "displayDescription": "担保資産へ担保付ローンを関連付けます。"
+    },
+    {
+      "id": "repaidBySchedule",
+      "displayName": "返済予定に基づく",
+      "displayDescription": "ローンを返済予定に関連付けます。"
+    },
+    {
+      "id": "servicedBy",
+      "displayName": "サービサーが管理する",
+      "displayDescription": "支払を回収するサービシング組織へローンを関連付けます。"
+    },
+    {
+      "id": "hasPaymentHistory",
+      "displayName": "支払履歴を持つ",
+      "displayDescription": "返済予定を支払履歴の記録へ関連付けます。"
+    },
+    {
+      "id": "hasIndividualPayment",
+      "displayName": "個別支払を含む",
+      "displayDescription": "支払履歴を個々の支払取引イベントへ関連付けます。"
+    },
+    {
+      "id": "classifiesCollateralOwnership",
+      "displayName": "担保の所有権を分類する",
+      "displayDescription": "所有権持分の区分で担保を分類します。"
+    },
+    {
+      "id": "hasLienPosition",
+      "displayName": "担保権順位を持つ",
+      "displayDescription": "貸し手の請求権の優先順位で担保を分類します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

@@ -1,0 +1,173 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "FIBOローンラボ — ステップ3：サービシング・支払履歴",
+    "displayDescription": "サービシング組織と監査可能な支払履歴を追加した、FIBOローン学習モデルです。",
+    "displayTags": [
+      {
+        "tag": "fibo",
+        "displayName": "FIBO（金融業界ビジネスオントロジー）"
+      },
+      {
+        "tag": "loan",
+        "displayName": "ローン"
+      },
+      {
+        "tag": "school",
+        "displayName": "学習"
+      },
+      {
+        "tag": "step-3",
+        "displayName": "ステップ3"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "FIBOローンラボ — ステップ3：サービシングと支払履歴",
+    "displayDescription": "ローンの運用管理と支払履歴を追跡する概念を加えたモデルです。"
+  },
+  "entities": [
+    {
+      "id": "loan",
+      "displayName": "ローン",
+      "displayDescription": "契約条件に従って借り手に供与され、返済される債務証書です。"
+    },
+    {
+      "id": "borrower",
+      "displayName": "借り手",
+      "displayDescription": "資金を受け取り、返済義務を負う当事者です。"
+    },
+    {
+      "id": "lender",
+      "displayName": "貸し手",
+      "displayDescription": "ローン契約の条件に基づき、資金または信用を提供する当事者です。"
+    },
+    {
+      "id": "collateral",
+      "displayName": "担保",
+      "displayDescription": "返済義務を担保するために差し入れられる資産です。"
+    },
+    {
+      "id": "loanPaymentSchedule",
+      "displayName": "ローン返済予定",
+      "displayDescription": "支払期日と予定されるローン支払を定めた定期的な予定です。"
+    },
+    {
+      "id": "servicer",
+      "displayName": "サービサー",
+      "displayDescription": "ローン支払の回収を担う金融サービス提供者です。"
+    },
+    {
+      "id": "paymentHistory",
+      "displayName": "支払履歴",
+      "displayDescription": "ローン口座に関連するすべての支払イベントの記録です。"
+    },
+    {
+      "id": "paymentTransaction",
+      "displayName": "支払取引",
+      "displayDescription": "支払履歴を構成する個々の支払イベントです。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "loan",
+      "propertyName": "loanId",
+      "displayName": "ローンID"
+    },
+    {
+      "entityId": "loan",
+      "propertyName": "principalAmount",
+      "displayName": "元本金額"
+    },
+    {
+      "entityId": "borrower",
+      "propertyName": "borrowerId",
+      "displayName": "借り手ID"
+    },
+    {
+      "entityId": "lender",
+      "propertyName": "lenderId",
+      "displayName": "貸し手ID"
+    },
+    {
+      "entityId": "collateral",
+      "propertyName": "assetType",
+      "displayName": "資産種別"
+    },
+    {
+      "entityId": "loanPaymentSchedule",
+      "propertyName": "scheduleId",
+      "displayName": "返済予定ID"
+    },
+    {
+      "entityId": "servicer",
+      "propertyName": "servicerId",
+      "displayName": "サービサーID"
+    },
+    {
+      "entityId": "servicer",
+      "propertyName": "organizationName",
+      "displayName": "組織名"
+    },
+    {
+      "entityId": "paymentHistory",
+      "propertyName": "paymentHistoryId",
+      "displayName": "支払履歴ID"
+    },
+    {
+      "entityId": "paymentTransaction",
+      "propertyName": "paymentTransactionId",
+      "displayName": "支払取引ID"
+    },
+    {
+      "entityId": "paymentTransaction",
+      "propertyName": "amount",
+      "displayName": "支払額"
+    },
+    {
+      "entityId": "paymentTransaction",
+      "propertyName": "postedAt",
+      "displayName": "計上日時"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "owedBy",
+      "displayName": "返済義務を負う借り手",
+      "displayDescription": "返済義務を負う借り手へローンを関連付けます。"
+    },
+    {
+      "id": "originatedBy",
+      "displayName": "ローンを組成した貸し手",
+      "displayDescription": "ローンを組成した貸し手へローンを関連付けます。"
+    },
+    {
+      "id": "securedBy",
+      "displayName": "担保で保全される",
+      "displayDescription": "担保資産へ担保付ローンを関連付けます。"
+    },
+    {
+      "id": "repaidBySchedule",
+      "displayName": "返済予定に基づく",
+      "displayDescription": "ローンを返済予定に関連付けます。"
+    },
+    {
+      "id": "servicedBy",
+      "displayName": "サービサーが管理する",
+      "displayDescription": "支払を回収するサービシング組織へローンを関連付けます。"
+    },
+    {
+      "id": "hasPaymentHistory",
+      "displayName": "支払履歴を持つ",
+      "displayDescription": "返済予定を支払履歴の記録へ関連付けます。"
+    },
+    {
+      "id": "hasIndividualPayment",
+      "displayName": "個別支払を含む",
+      "displayDescription": "支払履歴を個々の支払取引イベントへ関連付けます。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

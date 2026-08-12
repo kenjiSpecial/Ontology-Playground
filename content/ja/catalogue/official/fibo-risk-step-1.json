@@ -1,0 +1,122 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "FIBOリスクラボ — ステップ1：産業分類",
+    "displayDescription": "集中リスク分析の基礎となる経済セクター、サブセクター、NAICS産業グループを扱います。",
+    "displayTags": [
+      {
+        "tag": "fibo",
+        "displayName": "FIBO（金融業界ビジネスオントロジー）"
+      },
+      {
+        "tag": "risk",
+        "displayName": "リスク"
+      },
+      {
+        "tag": "industry",
+        "displayName": "産業"
+      },
+      {
+        "tag": "school",
+        "displayName": "学習"
+      },
+      {
+        "tag": "step-1",
+        "displayName": "ステップ1"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "FIBOリスクラボ — ステップ1：産業分類",
+    "displayDescription": "集中リスク分析のための産業分類階層を表すモデルです。"
+  },
+  "entities": [
+    {
+      "id": "sector",
+      "displayName": "セクター",
+      "displayDescription": "幅広い機能によって産業をまとめる経済分類の最上位区分です。"
+    },
+    {
+      "id": "subsector",
+      "displayName": "サブセクター",
+      "displayDescription": "経済セクターをより細かく分類した下位区分です。"
+    },
+    {
+      "id": "industryGroup",
+      "displayName": "産業グループ",
+      "displayDescription": "リスク分析のため、NAICSで符号化し気候感応度と景気循環性を持つ産業グループです。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "sector",
+      "propertyName": "sectorCode",
+      "displayName": "セクターコード"
+    },
+    {
+      "entityId": "sector",
+      "propertyName": "sectorName",
+      "displayName": "セクター名"
+    },
+    {
+      "entityId": "sector",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "subsector",
+      "propertyName": "subsectorCode",
+      "displayName": "サブセクターコード"
+    },
+    {
+      "entityId": "subsector",
+      "propertyName": "subsectorName",
+      "displayName": "サブセクター名"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "naicsCode",
+      "displayName": "NAICSコード"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "cyclicality",
+      "displayName": "景気循環性"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "climateSensitivity",
+      "displayName": "気候感応度"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "essentialServices",
+      "displayName": "必須サービス"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "description",
+      "displayName": "説明"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "partOfSector",
+      "displayName": "セクターに属する",
+      "displayDescription": "サブセクターを親の経済セクターへ関連付けます。"
+    },
+    {
+      "id": "belongsToSubsector",
+      "displayName": "サブセクターに属する",
+      "displayDescription": "産業グループを親のサブセクターへ関連付けます。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}
