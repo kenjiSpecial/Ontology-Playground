@@ -1,4 +1,5 @@
 import type { Ontology, DataBinding } from '../data/ontology';
+import { jaMessages } from '../locales/ja';
 
 export interface CatalogueEntry {
   id: string;
@@ -19,20 +20,7 @@ export interface Catalogue {
   entries: CatalogueEntry[];
 }
 
-export const CATEGORY_LABELS: Record<string, string> = {
-  retail: 'Retail',
-  healthcare: 'Healthcare',
-  finance: 'Finance',
-  manufacturing: 'Manufacturing',
-  education: 'Education',
-  food: 'Food & Beverage',
-  media: 'Media & Publishing',
-  events: 'Events & Entertainment',
-  technology: 'Technology',
-  general: 'General',
-  school: 'Ontology School: Get Started',
-  fibo: 'FIBO (EDM Council)',
-};
+export const CATEGORY_LABELS: Record<string, string> = jaMessages.catalogue.categories;
 
 export const CATEGORY_COLORS: Record<string, string> = {
   retail: '#0078D4',

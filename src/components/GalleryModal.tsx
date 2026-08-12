@@ -8,6 +8,7 @@ import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../lib/rd
 import { navigate, parseHash } from '../lib/router';
 import type { CatalogueEntry, Catalogue } from '../types/catalogue';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../types/catalogue';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 interface GalleryModalProps {
   onClose: () => void;
@@ -47,7 +48,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}catalogue.json`)
       .then((res) => {
-        if (!res.ok) throw new Error(`Failed to load catalogue (${res.status})`);
+        if (!res.ok) throw new Error(jaFormatters.catalogueLoadFailed(res.status));
         return res.json() as Promise<Catalogue>;
       })
       .then((data) => {
@@ -55,7 +56,12 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message);
+        const detail = err instanceof Error ? err.message : String(err);
+        setError(
+          detail.startsWith(jaMessages.catalogue.loadFailed)
+            ? detail
+            : jaFormatters.catalogueLoadError(detail),
+        );
         setLoading(false);
       });
   }, []);
@@ -144,12 +150,12 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 600 }}>Ontology Gallery</h2>
+            <h2 style={{ fontSize: 24, fontWeight: 600 }}>{jaMessages.catalogue.title}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
-              Browse and load ontologies from the catalogue
+              {jaMessages.catalogue.subtitle}
             </p>
           </div>
-          <button className="icon-btn" onClick={onClose}>
+          <button className="icon-btn" onClick={onClose} aria-label={jaMessages.common.close}>
             <X size={20} />
           </button>
         </div>
@@ -160,7 +166,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
             <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
             <input
               type="text"
-              placeholder="Search by name, tag, author…"
+              placeholder={jaMessages.catalogue.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -175,6 +181,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
             />
           </div>
           <select
+            aria-label={jaMessages.catalogue.sourceFilterLabel}
             value={sourceFilter}
             onChange={(e) => {
               const newSource = e.target.value as SourceFilter;
@@ -194,12 +201,13 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
               fontSize: 13,
             }}
           >
-            <option value="all">All sources</option>
-            <option value="official">Official</option>
-            <option value="external">External</option>
-            <option value="community">Community</option>
+            <option value="all">{jaMessages.catalogue.allSources}</option>
+            <option value="official">{jaMessages.catalogue.official}</option>
+            <option value="external">{jaMessages.catalogue.external}</option>
+            <option value="community">{jaMessages.catalogue.community}</option>
           </select>
           <select
+            aria-label={jaMessages.catalogue.categoryFilterLabel}
             value={categoryFilter}
             onChange={(e) => {
               const newCategory = e.target.value;
@@ -219,7 +227,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
               fontSize: 13,
             }}
           >
-            <option value="all">All categories</option>
+            <option value="all">{jaMessages.catalogue.allCategories}</option>
             {categories.map((cat) => (
               <option key={cat} value={cat}>
                 {CATEGORY_LABELS[cat] ?? cat}
@@ -231,7 +239,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         {/* Loading / Error / Empty */}
         {loading && (
           <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-secondary)' }}>
-            Loading catalogue…
+            {jaMessages.catalogue.loading}
           </div>
         )}
         {error && (
@@ -241,14 +249,14 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
         )}
         {!loading && !error && filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: 40, color: 'var(--text-secondary)' }}>
-            No ontologies match your filters.
+            {jaMessages.catalogue.empty}
           </div>
         )}
 
         {/* Result count */}
         {!loading && !error && filtered.length > 0 && (
           <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>
-            Showing {Math.min(visibleCount, filtered.length)} of {filtered.length} ontolog{filtered.length === 1 ? 'y' : 'ies'}
+            {jaFormatters.catalogueResultCount(Math.min(visibleCount, filtered.length), filtered.length)}
           </div>
         )}
 
@@ -321,7 +329,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                                 fontWeight: 500,
                               }}
                             >
-                              Community
+                              {jaMessages.catalogue.community}
                             </span>
                           )}
                           {entry.source === 'external' && (
@@ -335,7 +343,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                                 fontWeight: 500,
                               }}
                             >
-                              External
+                              {jaMessages.catalogue.external}
                             </span>
                           )}
                         </div>
@@ -352,7 +360,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                           fontWeight: 600,
                         }}
                       >
-                        Active
+                        {jaMessages.catalogue.active}
                       </div>
                     )}
                   </div>
@@ -403,13 +411,13 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <Layers size={14} color="var(--text-tertiary)" />
                         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                          {entry.ontology.entityTypes.length} entities
+                          {jaFormatters.catalogueEntityCount(entry.ontology.entityTypes.length)}
                         </span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <ArrowRight size={14} color="var(--text-tertiary)" />
                         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                          {entry.ontology.relationships.length} relationships
+                          {jaFormatters.catalogueRelationshipCount(entry.ontology.relationships.length)}
                         </span>
                       </div>
                     </div>
@@ -418,7 +426,8 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
-                        title="View RDF source"
+                        title={showRdf ? jaMessages.catalogue.hideRdfSource : jaMessages.catalogue.viewRdfSource}
+                        aria-label={showRdf ? jaMessages.catalogue.hideRdfSource : jaMessages.catalogue.viewRdfSource}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleViewRdf(entry);
@@ -429,7 +438,8 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
-                        title={copiedEmbedId === entry.id ? 'Copied!' : 'Copy embed code'}
+                        title={copiedEmbedId === entry.id ? jaMessages.catalogue.copied : jaMessages.catalogue.copyEmbed}
+                        aria-label={copiedEmbedId === entry.id ? jaMessages.catalogue.copied : jaMessages.catalogue.copyEmbed}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCopyEmbed(entry);
@@ -440,7 +450,8 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                       <button
                         className="btn btn-secondary"
                         style={{ padding: '5px 8px', fontSize: 11 }}
-                        title="Edit in Designer"
+                        title={jaMessages.catalogue.editInDesigner}
+                        aria-label={jaMessages.catalogue.editInDesigner}
                         onClick={(e) => {
                           e.stopPropagation();
                           // Load into both stores: playground (appStore) and designer
@@ -463,7 +474,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                             handleLoadOntology(entry);
                           }}
                         >
-                          Load
+                          {jaMessages.catalogue.load}
                         </button>
                       )}
                     </div>
@@ -495,7 +506,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                 style={{ padding: '8px 24px', fontSize: 13 }}
                 onClick={handleShowMore}
               >
-                Show more ({filtered.length - visibleCount} remaining)
+                {jaFormatters.catalogueRemainingCount(filtered.length - visibleCount)}
               </button>
             </div>
           )}
@@ -513,7 +524,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
           }}
         >
           <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-            Want to contribute? See{' '}
+            {jaMessages.catalogue.contributionBeforeGuide}{' '}
             <a
               href="https://github.com/microsoft/Ontology-Playground/blob/main/CONTRIBUTING.md"
               target="_blank"
@@ -526,7 +537,7 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
             >
               <strong>CONTRIBUTING.md</strong>
             </a>
-            {' '}— add your ontology as an RDF file and{' '}
+            {jaMessages.catalogue.contributionAfterGuide}{' '}
             <a
               href="https://github.com/microsoft/Ontology-Playground/fork"
               target="_blank"
@@ -537,15 +548,15 @@ export function GalleryModal({ onClose }: GalleryModalProps) {
                 cursor: 'pointer',
               }}
             >
-              open a PR
+              {jaMessages.catalogue.openPullRequest}
             </a>
-            .
+            {jaMessages.catalogue.contributionEnd}
           </p>
         </div>
 
         <div style={{ marginTop: 20, textAlign: 'center' }}>
           <button className="btn btn-primary" onClick={onClose}>
-            Done
+            {jaMessages.catalogue.done}
           </button>
         </div>
       </motion.div>
