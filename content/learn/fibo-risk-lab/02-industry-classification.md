@@ -1,78 +1,78 @@
 ---
-title: "Step 1: Industry Classification"
+title: "ステップ1：産業分類"
 slug: industry-classification
-description: Model the economic hierarchy — Sector, Subsector, and IndustryGroup with climate and cyclicality attributes.
+description: Sector、Subsector、IndustryGroupに気候感応度と景気循環性の属性を加え、経済活動の階層をモデル化します。
 order: 2
 embed: official/fibo-risk-step-1
 reviewStatus: under-human-review
 ---
 
-## Why classify industries?
+## 産業を分類する理由
 
-Banks need to understand their exposure across economic sectors. If 40% of a portfolio's loans are to construction companies, a housing downturn could be devastating. The **NAICS** (North American Industry Classification System) provides a standard taxonomy that FIBO builds upon.
+銀行は、経済セクターごとのエクスポージャーを把握する必要があります。ポートフォリオのローンの40%が建設会社向けであれば、住宅市場の低迷によって深刻な影響を受ける可能性があります。**NAICS**（North American Industry Classification System、北米産業分類システム）は、FIBOの基礎となる標準分類体系を提供しています。
 
-In this step we model a three-level hierarchy: Sector → Subsector → IndustryGroup, enriched with risk-relevant attributes.
+このステップでは、リスクに関係する属性を持つ3階層、Sector → Subsector → IndustryGroupをモデル化します。
 
-## Entity types
+## エンティティ型
 
 ### Sector
 
-The broadest classification — think "Manufacturing", "Finance", "Healthcare".
+最も大きな分類です。「製造業（Manufacturing）」「金融（Finance）」「医療（Healthcare）」などが該当します。
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `sectorCode` | string | Identifier (e.g., "31-33") |
-| `sectorName` | string | Display name |
-| `description` | string | What this sector covers |
+| `sectorCode` | string | 識別子（例："31-33"） |
+| `sectorName` | string | 表示名 |
+| `description` | string | このセクターが対象とする範囲 |
 
 ### Subsector
 
-A subdivision within a sector — "Food Manufacturing" within "Manufacturing".
+セクターを細分化した分類です。たとえば「製造業（Manufacturing）」内の「食品製造業（Food Manufacturing）」が該当します。
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `subsectorCode` | string | Identifier (e.g., "311") |
-| `subsectorName` | string | Display name |
+| `subsectorCode` | string | 識別子（例："311"） |
+| `subsectorName` | string | 表示名 |
 
 ### IndustryGroup
 
-The most granular level, with risk attributes that matter for portfolio analysis.
+最も細かい分類で、ポートフォリオ分析に重要なリスク属性を持ちます。
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `naicsCode` | string | Identifier — official NAICS code |
-| `name` | string | Industry name |
-| `cyclicality` | string | How sensitive to economic cycles (e.g., "high", "low", "counter-cyclical") |
-| `climateSensitivity` | string | Exposure to climate events (e.g., "high", "moderate", "low") |
-| `essentialServices` | boolean | Whether the industry provides essential services (more resilient) |
-| `description` | string | Industry description |
+| `naicsCode` | string | 識別子（公式NAICSコード） |
+| `name` | string | 産業名 |
+| `cyclicality` | string | 景気循環への感応度（例："high"、"low"、"counter-cyclical"） |
+| `climateSensitivity` | string | 気候事象へのエクスポージャー（例："high"、"moderate"、"low"） |
+| `essentialServices` | boolean | 産業が必須サービスを提供するかどうか（回復力の指標） |
+| `description` | string | 産業の説明 |
 
-## Relationships
+## リレーションシップ
 
-- **partOfSector**: `Subsector` → `Sector` (`many-to-one`) — every subsector belongs to exactly one sector
-- **belongsToSubsector**: `IndustryGroup` → `Subsector` (`many-to-one`) — every industry group belongs to a subsector
+- **partOfSector**：`Subsector` → `Sector`（`many-to-one`）— 各サブセクターは、必ず1つのセクターに属します
+- **belongsToSubsector**：`IndustryGroup` → `Subsector`（`many-to-one`）— 各産業グループは、1つのサブセクターに属します
 
-This creates a strict hierarchy: `Sector` ← `Subsector` ← `IndustryGroup`
+これにより、`Sector` ← `Subsector` ← `IndustryGroup`という厳密な階層が形成されます。
 
-## The design pattern: classification hierarchy
+## 設計パターン：分類階層
 
-This is one of the most common ontology patterns — a **strict tree hierarchy** where each child has exactly one parent. It enables:
+これはオントロジーで最も一般的なパターンの1つです。各子要素が親を1つだけ持つ、**厳密なツリー階層**です。次の分析が可能になります。
 
-- **Roll-up aggregation**: Sum all loans to IndustryGroups within a Subsector to get subsector exposure
-- **Drill-down analysis**: Start at Sector level, drill into Subsectors, then into specific IndustryGroups
-- **Risk attribute inheritance**: If a Sector is "cyclical", all its children inherit that risk context
+- **ロールアップ集計**：実運用のローンデータを`IndustryGroup`へ結んだ場合、ある`Subsector`に属する産業グループ向けのローンを合計し、サブセクターのエクスポージャーを算出します
+- **ドリルダウン分析**：`Sector`階層から`Subsector`へ、さらに個々の`IndustryGroup`へと掘り下げます
+- **上位区分の文脈を使った解釈**：`IndustryGroup`から`Subsector`、`Sector`へたどり、上位区分の景気循環性を集計や共通のリスク文脈として利用します。属性が子要素へ自動継承されるわけではありません
 
-## Step 1 graph
+## ステップ1のグラフ
 
 <ontology-embed id="official/fibo-risk-step-1" height="340px"></ontology-embed>
 
-*Three entities forming a classification tree — the foundational pattern for industry concentration analysis.*
+*3つのエンティティが分類ツリーを形成します。これは産業集中分析の基礎となるパターンです。*
 
 ```quiz
-Q: Why does IndustryGroup include a climateSensitivity property?
-- To track the industry's carbon emissions
-- To enable portfolio risk queries that filter industries by their exposure to climate events like hurricanes or wildfires [correct]
-- To comply with ESG reporting requirements
-- To calculate insurance premiums for loans
-> The climateSensitivity property lets risk analysts identify which parts of the loan portfolio are exposed to climate-related events. Combined with geographic data (next step), this enables powerful cross-domain concentration queries.
+Q: IndustryGroupにclimateSensitivityプロパティがあるのはなぜですか？
+- 産業の炭素排出量を追跡するため
+- ハリケーンや山火事などの気候事象へのエクスポージャーで産業を絞り込む、ポートフォリオリスクのクエリを可能にするため [correct]
+- ESG報告要件に準拠するため
+- ローンの保険料を計算するため
+> climateSensitivityプロパティにより、気候関連事象の影響を受けやすい産業を識別できます。貸出ポートフォリオの影響範囲を特定し、次のステップの地理データと横断して照会するには、実運用データ側でローンとIndustryGroup、Jurisdictionを結ぶ関係が必要です。
 ```

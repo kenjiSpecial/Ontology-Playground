@@ -1,130 +1,135 @@
 ---
-title: "Step 4: Regulatory Context"
+title: "ステップ4：規制の文脈"
 slug: regulatory-context
-description: Complete the model with banking regulations, concentration limits, and cross-domain connections.
+description: 銀行規制、監督上の基準、内部集中限度、ローン分類との接続を追加してモデルを完成させます。
 order: 5
 embed: official/fibo-risk-step-4
 reviewStatus: under-human-review
 ---
 
-## Closing the loop
+## モデルを一巡させる
 
-The first three steps built reference data: industry, geography, and loan classification. In this final step we add the **regulatory enforcement layer** — the regulations and quantitative limits that constrain portfolio concentration.
+最初の3つのステップでは、産業、地理、ローン分類の参照データを構築しました。最後のステップでは、規制、監督上のスクリーニング基準、銀行の内部リスク方針にある定量的な閾値を表す**規制・方針層**を追加します。
 
-This is where the ontology becomes operationally powerful: you can now trace from a specific loan to its concentration category to the regulatory limits that apply, and know which regulation mandates each limit.
+この参照モデルでは、`LoanType`から集中区分と、その区分に対応する規制・監督ガイダンス・内部方針までをたどれます。個々のローンやポートフォリオの集中度と照合するには、実運用データ側の接続が別途必要です。
 
-## New entity types
+## 新しいエンティティ型
 
 ### Regulation
 
-A regulatory framework issued by a banking authority.
+銀行監督当局の規制・監督ガイダンス、または銀行内部のリスク方針を表すフレームワークです。このラボでは単純化のため、いずれも`Regulation`として扱います。
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `regulationCode` | string | Identifier (e.g., "OCC_CRE_2006") |
-| `name` | string | Regulation name |
-| `issuingAuthority` | string | Who issued it (OCC, FDIC, Basel Committee) |
-| `effectiveDate` | date | When it took effect |
-| `scope` | string | What it covers |
-| `description` | string | Full description |
+| `regulationCode` | string | 識別子（例："OCC_CRE_2006"） |
+| `name` | string | 規制名 |
+| `issuingAuthority` | string | 発行主体（OCC、FDIC、Basel Committee、銀行のリスク管理部門など） |
+| `effectiveDate` | date | 発効日 |
+| `scope` | string | 適用範囲 |
+| `description` | string | 詳細な説明 |
 
 ### RegulatoryLimit
 
-A specific quantitative threshold from a regulation.
+規制、監督ガイダンス、または銀行の内部リスク方針に記録された定量的な閾値です。すべてが法定上限を表すわけではありません。
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `limitId` | string | Identifier |
-| `limitName` | string | Display name |
-| `category` | string | What dimension it constrains |
-| `thresholdPct` | decimal (%) | The limit value |
-| `severity` | string | Consequences of breach (e.g., "warning", "action required", "supervisory intervention") |
-| `description` | string | What this limit means |
+| `limitId` | string | 識別子 |
+| `limitName` | string | 表示名 |
+| `category` | string | 制約する軸 |
+| `thresholdPct` | decimal (%) | 限度値 |
+| `severity` | string | 閾値到達・超過時の対応（例："warning"、"action required"、"supervisory intervention"） |
+| `description` | string | この限度の意味 |
 
-Key examples:
+このラボで扱う例を示します。
 
-| Limit | Threshold | Regulation |
+| 基準・限度 | 閾値 | 根拠と位置づけ |
 |---|---|---|
-| CRE concentration | 300% of capital | OCC Guidance 2006-46 |
-| Climate + hurricane | 15% of portfolio | Internal risk policy |
-| Geographic concentration | 20% of portfolio | OCC Bulletin 2011-12 |
-| Industry concentration | 25% of portfolio | FDIC Risk Management |
+| CRE監督スクリーニング基準 | 総CRE貸出が自己資本の300%以上、かつ直近36か月でCRE貸出残高が50%以上増加 | [OCC Bulletin 2006-46](https://www.occ.gov/news-issuances/bulletins/2006/bulletin-2006-46.html)に示された監督上の基準であり、法定上限ではありません |
+| 気候・ハリケーン集中限度 | ポートフォリオの15% | このラボで例示する銀行内部のリスク方針 |
+| 地理的集中限度 | ポートフォリオの20% | このラボで例示する銀行内部のリスク方針 |
+| 産業集中限度 | ポートフォリオの25% | このラボで例示する銀行内部のリスク方針 |
 
-## New relationships
+## 新しいリレーションシップ
 
-- **mandatedBy**: `RegulatoryLimit` → `Regulation` (`many-to-one`) — each limit is mandated by a specific regulation
-- **limitAppliesToCategory**: `RegulatoryLimit` → `ConcentrationCategory` (`many-to-one`) — links limits to the concentration categories they constrain
+- **mandatedBy**：`RegulatoryLimit` → `Regulation`（`many-to-one`）— 閾値を、その出典となる規制・監督ガイダンス・内部方針のレコードに対応付けます。内部方針もこのラボでは簡略化のため`Regulation`で表します
+- **limitAppliesToCategory**：`RegulatoryLimit` → `ConcentrationCategory`（`many-to-one`）— 閾値を、その対象となる集中区分に結び付けます
 
-## The design pattern: cross-domain bridge
+## 設計パターン：規制層への橋渡しと実運用での拡張
 
-With `limitAppliesToCategory`, the regulatory layer connects to the loan classification layer via ConcentrationCategory. This completes a **cross-domain query path**:
+`limitAppliesToCategory`により、規制・方針層は`ConcentrationCategory`を介してローン分類層に接続されます。一方、産業クラスターと地理クラスターをローン分類へ結ぶ関係は、このラボのRDFにはありません。
+
+領域横断クエリを実行するには、ポートフォリオのローン実データを追加し、ローンの所在地を`Jurisdiction`へ、借り手の産業を`IndustryGroup`へ、商品分類を`LoanType`または`ConcentrationCategory`へ結ぶ関係が必要です。たとえば、実運用側で接続を追加すると、概念上は次のようにたどれます。
 
 ```
 Jurisdiction (hurricaneZone=true)
-  → [geographic dimension]
-    → ConcentrationCategory
-      → [regulatory dimension]
-        → RegulatoryLimit (thresholdPct)
-          → Regulation (issuingAuthority)
+  ← [実運用データ側のローン所在地の関係] ← PortfolioLoan
+  → [実運用データ側の商品分類の関係] → LoanType
+  → loanClassifiedAs → ConcentrationCategory
+  ← limitAppliesToCategory ← RegulatoryLimit (thresholdPct)
+  → mandatedBy → Regulation (issuingAuthority)
 ```
 
-And from the industry side:
+産業側でも同様に、実運用データ側の借り手産業の関係が必要です。
 
 ```
 IndustryGroup (climateSensitivity="high")
-  → [industry dimension]
-    → Subsector → Sector
+  ← [実運用データ側の借り手産業の関係] ← PortfolioLoan
+  → [実運用データ側の商品分類の関係] → LoanType
+  → loanClassifiedAs → ConcentrationCategory
 ```
 
-## Complete model
+`PortfolioLoan`と角括弧内の関係は拡張例であり、現在のRDFに含まれるクラスやリレーションシップではありません。
 
-The final ontology has **11 entity types** across four domains and **10 relationships**:
+## 完成したモデル
 
-| Domain | Entities | Relationships |
+最終的なオントロジーには、4つの領域にまたがる**11個のエンティティ型**と**9個のリレーションシップ**があります。
+
+| 領域 | エンティティ | リレーションシップ |
 |---|---|---|
-| Industry | Sector, Subsector, IndustryGroup | partOfSector, belongsToSubsector |
-| Geography | Region, Country, Jurisdiction | inCountry, inRegion |
-| Loan Classification | ConcentrationCategory, LoanType, CollateralType | loanClassifiedAs, collateralClassifiedAs, typicallySecuredBy |
-| Regulation | Regulation, RegulatoryLimit | mandatedBy, limitAppliesToCategory |
+| 産業 | Sector, Subsector, IndustryGroup | partOfSector, belongsToSubsector |
+| 地理 | Region, Country, Jurisdiction | inCountry, inRegion |
+| ローン分類 | ConcentrationCategory, LoanType, CollateralType | loanClassifiedAs, collateralClassifiedAs, typicallySecuredBy |
+| 規制 | Regulation, RegulatoryLimit | mandatedBy, limitAppliesToCategory |
 
-## Step 4 graph (diff from Step 3)
+## ステップ4のグラフ（ステップ3との差分）
 
 <ontology-embed id="official/fibo-risk-step-4" diff="official/fibo-risk-step-3" height="480px"></ontology-embed>
 
-*Two new entities (Regulation and RegulatoryLimit) complete the model. The limitAppliesToCategory relationship bridges regulatory enforcement to loan classification.*
+*2つの新しいエンティティ（RegulationとRegulatoryLimit）が参照モデルを完成させます。limitAppliesToCategoryリレーションシップが規制・方針層とローン分類を橋渡ししますが、産業・地理クラスターとの接続には実運用データ側の拡張が必要です。*
 
-## Full external reference ontologies
+## 外部の完全な参照オントロジー
 
-You can also explore each domain individually in the external catalogue:
+外部カタログでは、各領域を個別に確認することもできます。
 
-- [FIBO Industry Classification](/#/catalogue/external/fibo/industry-classification)
-- [FIBO Geographic Hierarchy](/#/catalogue/external/fibo/geographic-hierarchy)
-- [FIBO Loan Classification](/#/catalogue/external/fibo/loan-classification)
-- [FIBO Regulatory Context](/#/catalogue/external/fibo/regulatory-context)
+- [FIBO産業分類](/#/catalogue/external/fibo/industry-classification)
+- [FIBO地理的階層](/#/catalogue/external/fibo/geographic-hierarchy)
+- [FIBOローン分類](/#/catalogue/external/fibo/loan-classification)
+- [FIBO規制コンテキスト](/#/catalogue/external/fibo/regulatory-context)
 
-## What you built
+## 構築したもの
 
-You now have a comprehensive FIBO-inspired risk management ontology that enables:
+これで、FIBOを参考にしたリスク管理の参照オントロジーが完成しました。実運用のポートフォリオデータを前述の関係で接続すると、次の分析を構成できます。
 
-- **Industry concentration analysis** — roll up exposure by sector, subsector, and industry group
-- **Geographic risk assessment** — filter by disaster-zone flags and cross-reference with portfolio data
-- **Basel III capital calculations** — apply standardized risk weights to loan types
-- **Regulatory compliance monitoring** — check portfolio concentration against mandated limits
+- **産業集中分析** — セクター、サブセクター、産業グループごとにエクスポージャーをロールアップします
+- **地理的リスク評価** — 災害地域フラグで絞り込み、ポートフォリオデータと相互参照します
+- **Basel III自己資本計算** — ローン種別に標準リスクウェイトを適用します
+- **規制・内部方針の監視** — ポートフォリオの集中度を、監督上の基準や銀行の内部集中限度と照合します
 
-This model powers the kind of cross-domain risk queries that would require complex multi-table JOINs in a traditional data warehouse, but can be expressed as simple graph traversals in an ontology-driven system.
+参照モデル単体では、産業、地理、「ローン分類＋規制」の3クラスター間を横断できません。実運用データ側で不足する関係を追加すれば、従来のデータウェアハウスでは複数テーブルの複雑なJOINが必要になるリスククエリを、オントロジー駆動システムのグラフ探索として表現できます。
 
-## Licensing
+## ライセンス
 
-All FIBO ontology content referenced in this lab is:
+このラボで参照するすべてのFIBOオントロジーコンテンツには、次の条件が適用されます。
 
 - **Copyright** (c) 2016-2025 EDM Council, Inc. and Object Management Group, Inc.
-- **Licensed** under the [MIT License](https://opensource.org/licenses/MIT)
+- [MIT License](https://opensource.org/licenses/MIT)のもとで**ライセンス許諾**されています
 
 ```quiz
-Q: What role does ConcentrationCategory play in the complete model?
-- It stores geographic coordinates
-- It acts as a hub entity connecting loan classification, collateral types, and regulatory limits across domains [correct]
-- It defines the Basel risk weight for each loan
-- It replaces the Regulation entity for compliance tracking
-> ConcentrationCategory is the central hub that bridges the loan classification domain to the regulatory domain. Both LoanType and CollateralType classify into it, and RegulatoryLimit constrains it. This makes it the key node for cross-domain concentration risk queries.
+Q: 完成したモデルでConcentrationCategoryはどのような役割を果たしますか？
+- 地理座標を格納する
+- ローン種別、担保種別、規制・内部方針の基準を接続するハブエンティティとして機能する [correct]
+- 各ローンのBaselリスクウェイトを定義する
+- 規制遵守の追跡においてRegulationエンティティを置き換える
+> ConcentrationCategoryは、ローン分類領域と規制・方針領域を橋渡しする中心的なハブです。LoanTypeとCollateralTypeはどちらもこのエンティティに分類され、RegulatoryLimitはこのエンティティを対象にします。産業・地理を含む横断クエリには、実運用データ側の追加関係が必要です。
 ```

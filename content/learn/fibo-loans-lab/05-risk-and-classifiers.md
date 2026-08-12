@@ -1,84 +1,84 @@
 ---
-title: Risk and Classifiers
+title: リスクと分類子
 slug: risk-and-classifiers
-description: Add FIBO ownership and lien classifiers to support underwriting and collateral risk analysis.
+description: FIBOの所有権と担保権順位の分類子を追加し、引受審査と担保リスクの分析に対応します。
 order: 5
 embed: official/fibo-loans-step-4
 reviewStatus: under-human-review
 ---
 
-## Classification layer
+## 分類層
 
-FIBO relies heavily on explicit classifiers — entities whose primary role is to categorize other entities. In this final step, we add two concepts critical to mortgage and secured lending risk analysis:
+FIBOでは、ほかのエンティティを分類することを主な役割とする明示的な分類子を多用します。最後のステップでは、住宅ローンや担保付融資のリスク分析に欠かせない2つの概念を追加します。
 
-- **OwnershipInterest** — classifies the legal ownership type of collateral (adapted from `fibo-loan-ln-ln:OwnershipInterest` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans), grounded in `fibo-fnd-oac-own:Ownership`)
-- **LenderLienPosition** — classifies lender claim seniority over collateral assets (adapted from `fibo-loan-ln-ln:LenderLienPosition` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans))
+- **OwnershipInterest** — 担保に対する法的な所有権の種類を分類します（[LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)の`fibo-loan-ln-ln:OwnershipInterest`を基に翻案し、`fibo-fnd-oac-own:Ownership`を基礎としています）
+- **LenderLienPosition** — 担保資産に対する貸し手の担保権順位を分類します（[LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)の`fibo-loan-ln-ln:LenderLienPosition`を基に翻案）
 
-## Why classifiers matter
+## 分類子が重要な理由
 
-In the FIBO Mortgages module ([LOAN/RealEstateLoans/Mortgages](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)), lien position determines recovery priority in foreclosure. A first-lien mortgage has stronger recovery expectations than a subordinate lien, which directly affects:
+FIBOのMortgagesモジュール（[LOAN/RealEstateLoans/Mortgages](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)）では、担保権順位が担保権実行（競売など）時の回収順位を決めます。第一順位抵当権付きの住宅ローンは、劣後担保権よりも高い回収を期待でき、次の項目へ直接影響します。
 
-- Credit risk modeling
-- Loss-given-default estimation
-- Portfolio risk aggregation
-- Regulatory capital calculations
+- 信用リスクのモデリング
+- デフォルト時損失率の推定
+- ポートフォリオリスクの集計
+- 規制資本の計算
 
-> **FIBO reference**: The FIBO Mortgages ontology uses `owl:Restriction` blocks to constrain real-estate collateral and contract semantics. In the LOAN ontology, `SecurityAgreement` and `Loan` are further constrained by classifier usage such as `LenderLienPosition` and `OwnershipInterest`. See [LOAN/RealEstateLoans/Mortgages.rdf](https://github.com/edmcouncil/fibo/blob/master/LOAN/RealEstateLoans/Mortgages.rdf) and [LOAN/LoansGeneral/Loans.rdf](https://github.com/edmcouncil/fibo/blob/master/LOAN/LoansGeneral/Loans.rdf).
+> **FIBO参照**：FIBOのMortgagesオントロジーでは、`owl:Restriction`ブロックを使用して不動産担保と契約のセマンティクスを制約します。LOANオントロジーでは、`SecurityAgreement`と`Loan`を、`LenderLienPosition`や`OwnershipInterest`などの分類子を使用してさらに制約します。[LOAN/RealEstateLoans/Mortgages.rdf](https://github.com/edmcouncil/fibo/blob/master/LOAN/RealEstateLoans/Mortgages.rdf)と[LOAN/LoansGeneral/Loans.rdf](https://github.com/edmcouncil/fibo/blob/master/LOAN/LoansGeneral/Loans.rdf)を参照してください。
 
-## New relationships
+## 新しいリレーションシップ
 
-- **classifiesCollateralOwnership**: `OwnershipInterest` → `Collateral` (`one-to-many`)
-- **hasLienPosition**: `Collateral` → `LenderLienPosition` (`many-to-one`)
+- **classifiesCollateralOwnership**：`OwnershipInterest` → `Collateral`（`one-to-many`）
+- **hasLienPosition**：`Collateral` → `LenderLienPosition`（`many-to-one`）
 
-## Step 4 graph (diff from Step 3)
+## ステップ4のグラフ（ステップ3との差分）
 
 <ontology-embed id="official/fibo-loans-step-4" diff="official/fibo-loans-step-3" height="460px"></ontology-embed>
 
-*Two classifier entities (OwnershipInterest and LenderLienPosition) complete the model with risk and underwriting semantics.*
+*2つの分類子エンティティ（OwnershipInterestとLenderLienPosition）により、リスクと引受審査のセマンティクスを加えてモデルを完成させます。*
 
-## Complete adapted model
+## 完成した翻案モデル
 
-You can also inspect the full external subset built from the same FIBO source concepts:
+同じFIBOのソース概念から構築した完全な外部サブセットも確認できます。
 
 <ontology-embed id="external/fibo/loans-general" height="420px"></ontology-embed>
 
-## What you built
+## 構築したもの
 
-You now have a progressive, FIBO-inspired loan ontology covering:
+ここまでで、次の領域を扱う段階的なFIBOベースのローンオントロジーを構築しました。
 
-| Layer | Entities | FIBO source module |
+| 層 | エンティティ | FIBOソースモジュール |
 |---|---|---|
-| Contract actors | Loan, Borrower, Lender | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) |
-| Security & schedule | Collateral, LoanPaymentSchedule | [FBC/DebtAndEquities/Debt](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt) |
-| Servicing operations | Servicer, PaymentHistory, PaymentTransaction | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) + [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts) |
-| Risk classifiers | OwnershipInterest, LenderLienPosition | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) + [FND/OwnershipAndControl/Ownership](https://github.com/edmcouncil/fibo/tree/master/FND/OwnershipAndControl) |
+| 契約当事者 | Loan, Borrower, Lender | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) |
+| 担保と返済予定 | Collateral, LoanPaymentSchedule | [FBC/DebtAndEquities/Debt](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt) |
+| サービシング業務 | Servicer, PaymentHistory, PaymentTransaction | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) + [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts) |
+| リスク分類子 | OwnershipInterest, LenderLienPosition | [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) + [FND/OwnershipAndControl/Ownership](https://github.com/edmcouncil/fibo/tree/master/FND/OwnershipAndControl) |
 
-This is a strong foundation for expanding into domain-specific modules — mortgage types, HELOC products, auto lending, or small business lending.
+これは、住宅ローンの種類、HELOC商品、自動車ローン、中小企業向け融資など、ドメイン固有のモジュールへ拡張するための確かな基礎になります。
 
-## Further reading
+## 関連資料
 
-- **FIBO GitHub**: [github.com/edmcouncil/fibo](https://github.com/edmcouncil/fibo)
-- **FIBO specification**: [spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
-- **EDM Council**: [edmcouncil.org](https://edmcouncil.org/)
-- **FIBO Loans module**: [LOAN/LoansGeneral/Loans source](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)
-- **FIBO Mortgages module**: [LOAN/RealEstateLoans/Mortgages source](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)
-- **FIBO Debt module**: [FBC/DebtAndEquities/Debt source](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt)
-- **FIBO Clients and Accounts module**: [FBC/ProductsAndServices/ClientsAndAccounts source](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts)
+- **FIBOのGitHubリポジトリ**：[github.com/edmcouncil/fibo](https://github.com/edmcouncil/fibo)
+- **FIBO仕様**：[spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
+- **EDM Council**：[edmcouncil.org](https://edmcouncil.org/)
+- **FIBO Loansモジュール**：[LOAN/LoansGeneral/Loansのソース](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)
+- **FIBO Mortgagesモジュール**：[LOAN/RealEstateLoans/Mortgagesのソース](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)
+- **FIBO Debtモジュール**：[FBC/DebtAndEquities/Debtのソース](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt)
+- **FIBO Clients and Accountsモジュール**：[FBC/ProductsAndServices/ClientsAndAccountsのソース](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts)
 
-## Licensing
+## ライセンス
 
-All FIBO ontology content referenced in this lab is:
+このラボで参照するすべてのFIBOオントロジーコンテンツには、次の条件が適用されます。
 
-- **Copyright** EDM Council, Inc. and Object Management Group, Inc. (see module headers for exact year ranges)
-- **Licensed** under the [MIT License](https://opensource.org/licenses/MIT)
+- **著作権**：EDM Council, Inc.およびObject Management Group, Inc.（正確な年の範囲は各モジュールのヘッダーを参照）
+- **ライセンス**：[MIT License](https://opensource.org/licenses/MIT)
 
-The MIT License permits use, modification, and redistribution of the ontology files, including for commercial purposes, provided the copyright notice is retained. The ontology files in this lab are adapted subsets created for educational purposes.
+MIT Licenseでは、著作権表示を保持することを条件に、商用目的を含むオントロジーファイルの使用、変更、再配布が認められています。このラボのオントロジーファイルは、教育目的で作成した翻案サブセットです。
 
 ```quiz
-Q: What is the main value of adding LenderLienPosition to a collateral model?
-- It replaces the need for borrower information
-- It captures seniority of lender claims, which is key for credit risk and loss modeling [correct]
-- It stores payment timestamps
-- It determines loan interest rates automatically
-> Lien position captures claim priority (for example, first lien vs. subordinate lien), which directly influences recovery expectations in foreclosure. This is critical for underwriting, portfolio risk models, and regulatory capital calculations — a key concept from FIBO's debt and equity modules.
+Q: 担保モデルにLenderLienPositionを追加する主な価値は何ですか？
+- 借り手情報が不要になること
+- 貸し手の請求権の優先順位を表し、信用リスクと損失のモデリングに役立つこと [correct]
+- 支払日時を保存すること
+- ローン金利を自動的に決定すること
+> 担保権順位は、請求権の優先順位（第一順位か劣後順位かなど）を表し、担保権実行時の回収見込みに直接影響します。これは引受審査、ポートフォリオリスクモデル、規制資本の計算に不可欠です。`LenderLienPosition`はFIBOの`LOAN/LoansGeneral/Loans`で定義されています。
 ```

@@ -129,6 +129,28 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '04-mitigation-execution.md',
     ],
   },
+  {
+    directory: 'fibo-loans-lab',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-core-loan-triad.md',
+      '03-collateral-and-schedules.md',
+      '04-servicing-and-payment-history.md',
+      '05-risk-and-classifiers.md',
+    ],
+  },
+  {
+    directory: 'fibo-risk-lab',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-industry-classification.md',
+      '03-geographic-hierarchy.md',
+      '04-loan-classification.md',
+      '05-regulatory-context.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {

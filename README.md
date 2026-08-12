@@ -70,7 +70,7 @@ inline base64), and click-to-inspect. See the
 
 ### Ontology School
 
-A structured learning hub (`/#/learn`) with **9 courses** spanning conceptual
+A structured learning hub (`/#/learn`) with **13 courses** spanning conceptual
 learning paths and hands-on labs:
 
 - **Ontology Fundamentals** — 6 articles covering core concepts (What is an
@@ -82,18 +82,20 @@ learning paths and hands-on labs:
   entities at each stage.
 - **IQ Lab: Retail Supply Chain** — A 7-step hands-on lab that builds a 15-entity
   ontology from scratch (3 → 15 entities across 6 progressive catalogue entries).
+- **Zava Grove to Shelf** — A 6-article farm-to-retail lab covering harvest,
+  quality, cold-chain logistics, and fulfilment.
+- **Supply Chain Disruption & Risk Propagation** — A 4-article path for modelling
+  disruption propagation and mitigation execution.
+- **2 FIBO Labs** — Loans and Risk Management labs with 5 articles each,
+  adapted from EDM Council FIBO concepts under the MIT License.
 
 Every article supports **presentation mode** (slides split at `##` headings)
 and includes **interactive quizzes** with instant feedback. Ontology embeds
 load live graphs from the catalogue with optional diff highlighting.
 
 In the Japanese fork, the Ontology School navigation, presentation controls,
-quiz feedback, and embedded graph controls are displayed in Japanese. Course
-metadata and all 51 articles across Ontology Fundamentals, Fourth Coffee,
-E-Commerce, Finance, Healthcare, Manufacturing, University, HR System, IQ Lab:
-Retail Supply Chain, Zava Grove to Shelf, and Supply Chain Disruption & Risk
-Propagation are now available in Japanese; the remaining 10 of 61 learning
-articles are being translated in a separate localization phase.
+quiz feedback, embedded graph controls, metadata for all 13 courses, and all 61
+learning articles are displayed in Japanese.
 
 ### Quest System
 

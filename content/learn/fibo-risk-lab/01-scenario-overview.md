@@ -1,57 +1,59 @@
 ---
-title: Scenario Overview
+title: シナリオの概要
 slug: scenario-overview
-description: Why risk management needs ontologies, and what we'll build in this lab.
+description: リスク管理にオントロジーが必要な理由と、このラボで構築するモデルを説明します。
 order: 1
 reviewStatus: under-human-review
 ---
 
-## The problem: concentration risk
+## 課題：集中リスク
 
-When a bank's loan portfolio is too heavily exposed to a single industry, geography, or product type, a single adverse event — a hurricane, an industry downturn, a regulatory change — can cascade into systemic losses. This is **concentration risk**, and regulators like the OCC and FDIC require banks to monitor and limit it.
+銀行の貸出ポートフォリオが、特定の産業、地域、商品種別に過度に偏っていると、ハリケーン、業界不況、規制変更といった1つの不利な事象が波及し、システミックな損失につながる可能性があります。これが**集中リスク**です。OCCやFDICなどの監督当局は、銀行にその監視と抑制を求めています。
 
-The challenge? Concentration risk spans multiple domains simultaneously:
+難しいのは、集中リスクが複数の領域に同時にまたがることです。
 
-- **Industry**: Is too much lending concentrated in construction or real estate?
-- **Geography**: Are loans clustered in hurricane-prone or earthquake-prone jurisdictions?
-- **Product type**: What's the Basel III risk-weighted exposure by loan type?
-- **Regulation**: Which concentration limits are approaching their thresholds?
+- **産業**：建設業や不動産業に融資が集中しすぎていないか？
+- **地域**：ハリケーンや地震が発生しやすい管轄区域にローンが集中していないか？
+- **商品種別**：ローン種別ごとのBasel IIIリスク加重エクスポージャーはどの程度か？
+- **規制**：どの集中限度が閾値に近づいているか？
 
-## Why ontologies matter here
+## オントロジーが重要な理由
 
-Traditional data warehouses store these dimensions in separate tables with foreign keys. An ontology-driven approach gives you:
+従来のデータウェアハウスでは、これらの軸を外部キーで結ばれた別々のテーブルに格納します。オントロジー駆動のアプローチには、次の利点があります。
 
-- **Explicit semantics** — "a residential mortgage has a 35% Basel risk weight" is encoded in the model, not buried in business rules
-- **Cross-domain queries** — traverse from a jurisdiction's disaster flags through its loans to their concentration categories in a single graph walk
-- **Regulatory traceability** — every limit links to the regulation that mandates it
+- **明示的なセマンティクス** — 「住宅ローンのBaselリスクウェイトは35%」という知識を、ビジネスルールの奥に埋めずモデルに符号化できます
+- **領域横断クエリへの拡張性** — 実運用のポートフォリオデータ側で、ローンを`Jurisdiction`、`IndustryGroup`、`LoanType`、`ConcentrationCategory`に結ぶ関係を追加すれば、管轄区域の災害フラグから集中区分までグラフでたどれます
+- **基準のトレーサビリティ** — 各閾値を、その出典となる規制、監督ガイダンス、または内部リスク方針にリンクできます
 
-## What we'll build
+## このラボで構築するもの
 
-Over four progressive steps, we'll model a **FIBO Risk Management** ontology with 11 entity types and 10 relationships:
+4つのステップを通じて、11個のエンティティ型と9個のリレーションシップを持つ**FIBOリスク管理**オントロジーを構築します。
 
-| Step | Domain | New Entities |
+| ステップ | 領域 | 新しいエンティティ |
 |---|---|---|
-| 1 | Industry Classification | Sector, Subsector, IndustryGroup |
-| 2 | Geographic Hierarchy | Region, Country, Jurisdiction |
-| 3 | Loan Classification | ConcentrationCategory, LoanType, CollateralType |
-| 4 | Regulatory Context | Regulation, RegulatoryLimit |
+| 1 | 産業分類 | Sector, Subsector, IndustryGroup |
+| 2 | 地理的階層 | Region, Country, Jurisdiction |
+| 3 | ローン分類 | ConcentrationCategory, LoanType, CollateralType |
+| 4 | 規制の文脈 | Regulation, RegulatoryLimit |
 
-## Real questions this model supports
+## 実運用データとの接続後に答えられる問い
 
-- Which jurisdictions in hurricane zones have the highest concentration of construction loans?
-- What percentage of the portfolio exceeds OCC concentration limits?
-- Which loan types carry the highest Basel risk weight in regions with high climate sensitivity?
-- How do regulatory limits map across concentration categories?
+このラボの参照モデルだけでは、産業、地理、「ローン分類＋規制」の3クラスターは相互に接続されていません。ポートフォリオのローン実データを各クラスターへ結ぶ関係を追加すると、次の問いを扱えるようになります。
 
-## Source and licensing
+- ハリケーン地域にある管轄区域のうち、建設ローンの集中度が最も高いのはどこか？
+- ポートフォリオの何パーセントが監督上のスクリーニング基準または銀行の内部集中限度に達しているか？
+- 気候感応度の高い地域で、Baselリスクウェイトが最も高いローン種別は何か？
+- 規制・監督ガイダンスまたは内部方針の基準は、各集中区分にどのように対応しているか？
 
-All concepts in this lab are adapted from the [EDM Council FIBO](https://github.com/edmcouncil/fibo) ontology under the [MIT License](https://opensource.org/licenses/MIT). The specific modules referenced include classification, geographic, debt/equity, and regulatory frameworks from the FIBO family.
+## 出典とライセンス
+
+このラボのすべての概念は、[EDM Council FIBO](https://github.com/edmcouncil/fibo)オントロジーを[MIT License](https://opensource.org/licenses/MIT)のもとで翻案したものです。FIBOファミリーのうち、分類、地理、債務・資本、規制フレームワークの各モジュールを参照しています。
 
 ```quiz
-Q: What is concentration risk in banking?
-- The risk that a bank's technology systems are too centralized
-- The risk that too much of a loan portfolio is exposed to a single industry, geography, or product type [correct]
-- The risk that a bank has too many branches in one city
-- The risk that interest rates change unexpectedly
-> Concentration risk occurs when a bank's lending is overly exposed to a single sector, region, or product type. A single adverse event (natural disaster, industry downturn) can then cause outsized losses across the portfolio.
+Q: 銀行業務における集中リスクとは何ですか？
+- 銀行の技術システムが一元化されすぎているリスク
+- 貸出ポートフォリオが特定の産業、地域、商品種別に過度に偏っているリスク [correct]
+- 銀行が1つの都市に支店を持ちすぎているリスク
+- 金利が予期せず変動するリスク
+> 集中リスクは、銀行の融資が特定のセクター、地域、商品種別に過度に偏っている場合に生じます。その結果、自然災害や業界不況など1つの不利な事象によって、ポートフォリオ全体に不釣り合いに大きな損失が生じる可能性があります。
 ```

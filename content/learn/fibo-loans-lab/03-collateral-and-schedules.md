@@ -1,55 +1,55 @@
 ---
-title: Collateral and Schedules
+title: 担保と返済予定
 slug: collateral-and-schedules
-description: Add security agreements and repayment cadence using FIBO's collateral and payment schedule concepts.
+description: FIBOの担保と支払予定の概念を用いて、担保権設定契約と返済周期を追加します。
 order: 3
 embed: official/fibo-loans-step-2
 reviewStatus: under-human-review
 ---
 
-## From contract to structure
+## 契約から構造へ
 
-A loan becomes operationally meaningful when you add two concepts from FIBO:
+FIBOの次の2つの概念を追加すると、ローンを実務で扱える構造になります。
 
-- **Collateral** — what secures repayment (adapted from `fibo-fbc-dae-dbt:Collateral` in [FBC/DebtAndEquities/Debt](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt))
-- **LoanPaymentSchedule** — how repayment is expected over time (adapted from `fibo-loan-ln-ln:LoanPaymentSchedule` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans))
+- **Collateral** — 返済を担保するもの（[FBC/DebtAndEquities/Debt](https://github.com/edmcouncil/fibo/tree/master/FBC/DebtAndEquities/Debt)の`fibo-fbc-dae-dbt:Collateral`を基に翻案）
+- **LoanPaymentSchedule** — 返済が時間の経過に沿ってどのように予定されているか（[LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)の`fibo-loan-ln-ln:LoanPaymentSchedule`を基に翻案）
 
-These additions capture two core FIBO concerns: **security agreements** and **temporal obligations**.
+これらを追加することで、FIBOの中核的な関心事である**担保権設定契約**と**時間的な義務**を表現できます。
 
-## New properties
+## 新しいプロパティ
 
 ### Collateral
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `assetType` | string | Identifier — the kind of asset (e.g., "real property", "vehicle", "securities") |
-| `appraisedValue` | decimal (USD) | Market value at time of appraisal |
+| `assetType` | string | 識別子 — 資産の種類（例："不動産"、"車両"、"有価証券"） |
+| `appraisedValue` | decimal (USD) | 査定時点の市場価値 |
 
-> **FIBO reference**: In the full ontology, debt collateral is modeled as `fibo-fbc-dae-dbt:Collateral`, which can represent physical and non-physical pledged assets. In the FIBO Mortgages module ([LOAN/RealEstateLoans/Mortgages](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)), `LoanSecuredByRealEstate` constrains collateral to `fibo-fnd-plc-rp:RealProperty` and links to `SecurityAgreement` via `owl:Restriction` blocks.
+> **FIBO参照**：完全なオントロジーでは、債務の担保を`fibo-fbc-dae-dbt:Collateral`としてモデル化し、差し入れられた有形・無形の資産を表現できます。FIBOのMortgagesモジュール（[LOAN/RealEstateLoans/Mortgages](https://github.com/edmcouncil/fibo/tree/master/LOAN/RealEstateLoans/Mortgages)）では、`LoanSecuredByRealEstate`が担保を`fibo-fnd-plc-rp:RealProperty`に制約し、`SecurityAgreement`へ`owl:Restriction`ブロックを介して結び付けます。
 
 ### LoanPaymentSchedule
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `scheduleId` | string | Identifier |
-| `expectedPayments` | integer | Anticipated number of payment periods |
+| `scheduleId` | string | 識別子 |
+| `expectedPayments` | integer | 予定される支払回数 |
 
-## New relationships
+## 新しいリレーションシップ
 
-- **securedBy**: `Loan` → `Collateral` (`one-to-many`) — a loan can be secured by multiple assets
-- **repaidBySchedule**: `Loan` → `LoanPaymentSchedule` (`one-to-one`) — each loan has one primary repayment schedule
+- **securedBy**：`Loan` → `Collateral`（`one-to-many`）— 1件のローンに複数の資産を担保として設定できます
+- **repaidBySchedule**：`Loan` → `LoanPaymentSchedule`（`one-to-one`）— 各ローンには1つの主要な返済予定があります
 
-## Step 2 graph (diff from Step 1)
+## ステップ2のグラフ（ステップ1との差分）
 
 <ontology-embed id="official/fibo-loans-step-2" diff="official/fibo-loans-step-1" height="380px"></ontology-embed>
 
-*New entities highlighted: Collateral and LoanPaymentSchedule extend the loan model with security and temporal structure.*
+*新しいエンティティを強調表示しています。CollateralとLoanPaymentScheduleにより、ローンモデルへ担保構造と時間構造を追加します。*
 
 ```quiz
-Q: In FIBO, where does the Collateral concept originate?
+Q: FIBOのCollateral概念は、どのモジュールで定義されていますか？
 - LOAN/LoansGeneral/Loans
 - FBC/DebtAndEquities/Debt [correct]
 - FND/Agreements/Contracts
 - FND/Places/RealProperty
-> Collateral is defined in FIBO's FBC (Financial Business and Commerce) domain under DebtAndEquities/Debt. It represents assets pledged to secure repayment obligations — a concept shared across all secured lending types, not just mortgages.
+> Collateralは、FIBOのFBC（Financial Business and Commerce）ドメインにあるDebtAndEquities/Debtで定義されています。返済義務を担保するために差し入れられた資産を表す概念であり、住宅ローンだけでなく、あらゆる担保付融資で共通して使用されます。
 ```
