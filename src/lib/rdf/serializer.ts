@@ -32,8 +32,7 @@ const XSD_TYPE_MAP: Record<string, string> = {
  * Strips characters that are invalid in XML/URI contexts.
  */
 export function deriveBaseUri(ontologyName: string): string {
-  const legacyCompatibleName = ontologyName === 'マイ オントロジー' ? 'My Ontology' : ontologyName;
-  const slug = legacyCompatibleName
+  const slug = ontologyName
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')

@@ -3,7 +3,7 @@ import { Download, AlertTriangle, CheckCircle, Upload, Github, FilePlus, Undo2, 
 import { designerRdfFilename, useDesignerStore } from '../../store/designerStore';
 import type { ValidationError } from '../../store/designerStore';
 import { useAppStore } from '../../store/appStore';
-import { serializeToRDF } from '../../lib/rdf/serializer';
+import { serializeDesignerToRDF } from '../../lib/designerRdf';
 import { navigate } from '../../lib/router';
 import { SubmitCatalogueModal } from './SubmitCatalogueModal';
 import { jaFormatters, jaMessages } from '../../locales/ja';
@@ -26,7 +26,7 @@ export function DesignerToolbar() {
     const errors = validate();
     // Allow download even with validation errors (user sees warnings in sidebar)
     try {
-      const rdf = serializeToRDF(ontology, []);
+      const rdf = serializeDesignerToRDF(ontology, []);
       const blob = new Blob([rdf], { type: 'application/rdf+xml' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');

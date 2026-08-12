@@ -59,11 +59,6 @@ describe('deriveBaseUri', () => {
     expect(deriveBaseUri('&&&')).toBe('http://example.org/ontology/unnamed/');
   });
 
-  it('preserves the legacy URI seed for the localized default designer name', () => {
-    expect(deriveBaseUri('マイ オントロジー')).toBe(
-      'http://example.org/ontology/my-ontology/',
-    );
-  });
 });
 
 describe('serializeToRDF', () => {

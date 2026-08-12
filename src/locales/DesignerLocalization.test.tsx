@@ -8,6 +8,7 @@ import { RelationshipForm } from '../components/designer/RelationshipForm';
 import { SubmitCatalogueModal } from '../components/designer/SubmitCatalogueModal';
 import { TemplatePicker } from '../components/designer/TemplatePicker';
 import { designerTemplates } from '../data/designerTemplates';
+import { serializeDesignerToRDF } from '../lib/designerRdf';
 import { useAppStore } from '../store/appStore';
 import { useDesignerStore } from '../store/designerStore';
 
@@ -110,22 +111,36 @@ describe('Japanese ontology designer', () => {
     expect(screen.getByText('先にRDF/XMLの内容を貼り付けてください')).toBeInTheDocument();
   });
 
+  it('keeps the localized default label with the legacy designer RDF base URI', () => {
+    const rdf = serializeDesignerToRDF(useDesignerStore.getState().ontology);
+
+    expect(rdf).toContain('xml:base="http://example.org/ontology/my-ontology/"');
+    expect(rdf).toContain('<rdfs:label>マイ オントロジー</rdfs:label>');
+  });
+
   it('renders Japanese template cards without changing template payload names', () => {
     render(<TemplatePicker />);
 
     expect(screen.getByRole('heading', { name: 'テンプレートから始める' })).toBeInTheDocument();
     expect(screen.getByText('小売')).toBeInTheDocument();
     expect(screen.getByText('顧客、製品、注文')).toBeInTheDocument();
-    expect(designerTemplates.map((template) => ({
-      id: template.id,
-      entities: template.ontology.entityTypes.map((entity) => entity.name),
-      relationships: template.ontology.relationships.map((relationship) => relationship.name),
-    }))).toEqual([
-      { id: 'retail', entities: ['Customer', 'Product', 'Order'], relationships: ['places', 'contains'] },
-      { id: 'healthcare', entities: ['Patient', 'Provider', 'Encounter'], relationships: ['hasEncounter', 'seenBy'] },
-      { id: 'finance', entities: ['Party', 'Account', 'Transaction'], relationships: ['owns', 'hasTransaction'] },
-      { id: 'iot', entities: ['Device', 'Sensor', 'Reading'], relationships: ['hasSensor', 'produces'] },
-      { id: 'education', entities: ['Student', 'Course', 'Instructor'], relationships: ['enrolledIn', 'taughtBy'] },
+    const technicalFingerprints = designerTemplates.map((template) => [
+      template.id,
+      template.ontology.name,
+      template.ontology.entityTypes.map((entity) =>
+        `${entity.id}:${entity.name}[${entity.properties.map((property) => `${property.name}:${property.type}`).join(',')}]`
+      ).join(';'),
+      template.ontology.relationships.map((relationship) =>
+        `${relationship.id}:${relationship.name}:${relationship.from}>${relationship.to}:${relationship.cardinality}`
+      ).join(';'),
+    ].join('|'));
+
+    expect(technicalFingerprints).toEqual([
+      'retail|Retail Ontology|customer:Customer[customerId:string,name:string,email:string,memberSince:date];product:Product[sku:string,name:string,price:decimal,category:string];order:Order[orderId:string,orderDate:date,total:decimal]|r-places:places:customer>order:one-to-many;r-contains:contains:order>product:many-to-many',
+      'healthcare|Healthcare Ontology|patient:Patient[patientId:string,name:string,dateOfBirth:date,bloodType:enum];provider:Provider[npi:string,name:string,specialty:string];encounter:Encounter[encounterId:string,date:datetime,diagnosis:string]|r-has-encounter:hasEncounter:patient>encounter:one-to-many;r-seen-by:seenBy:encounter>provider:many-to-one',
+      'finance|Finance Ontology|party:Party[partyId:string,name:string,type:enum];account:Account[accountNumber:string,accountType:enum,balance:decimal,openedDate:date];transaction:Transaction[transactionId:string,amount:decimal,timestamp:datetime,type:enum]|r-owns:owns:party>account:one-to-many;r-has-txn:hasTransaction:account>transaction:one-to-many',
+      'iot|IoT Ontology|device:Device[deviceId:string,manufacturer:string,firmwareVersion:string,installedDate:date];sensor:Sensor[sensorId:string,sensorType:enum,unit:string];reading:Reading[readingId:string,value:decimal,timestamp:datetime]|r-has-sensor:hasSensor:device>sensor:one-to-many;r-produces:produces:sensor>reading:one-to-many',
+      'education|Education Ontology|student:Student[studentId:string,name:string,enrollmentYear:integer];course:Course[courseCode:string,title:string,credits:integer];instructor:Instructor[instructorId:string,name:string,department:string]|r-enrolled-in:enrolledIn:student>course:many-to-many;r-taught-by:taughtBy:course>instructor:many-to-one',
     ]);
   });
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Github, ExternalLink, Download, Check } from 'lucide-react';
 import { designerRdfFilename, useDesignerStore } from '../../store/designerStore';
-import { serializeToRDF } from '../../lib/rdf/serializer';
+import { serializeDesignerToRDF } from '../../lib/designerRdf';
 import { jaMessages } from '../../locales/ja';
 
 interface SubmitCatalogueModalProps {
@@ -15,7 +15,7 @@ export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
   const [downloaded, setDownloaded] = useState(false);
 
   const handleDownloadRdf = () => {
-    const rdf = serializeToRDF(ontology, []);
+    const rdf = serializeDesignerToRDF(ontology, []);
     const blob = new Blob([rdf], { type: 'application/rdf+xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

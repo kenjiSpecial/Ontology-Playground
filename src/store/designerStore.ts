@@ -22,7 +22,7 @@ export interface ValidationError {
 // an alphanumeric character.
 
 const FABRIC_IQ_NAME_RE = /^[A-Za-z0-9]([A-Za-z0-9_-]{0,24}[A-Za-z0-9])?$/;
-export const DEFAULT_DESIGNER_ONTOLOGY_NAME = 'マイ オントロジー';
+export const DEFAULT_DESIGNER_ONTOLOGY_NAME = jaMessages.designer.defaultOntologyName;
 
 export function designerRdfFilename(name: string, draft = false): string {
   const asciiSlug = name

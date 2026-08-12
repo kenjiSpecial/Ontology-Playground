@@ -14,6 +14,7 @@
 - Issue: `kenjiSpecial/Ontology-Playground#11`; parent: `kenjiSpecial/kura#644`.
 - Preserve route names, ontology IDs, entity/relationship/property IDs and technical names, RDF/XML syntax, JSON keys, type enum values, cardinality values, and imported data.
 - Keep the localized default ontology label mapped to the legacy `my-ontology` URI/file seed, and create new entities with an empty display name while retaining the `new-entity-*` ID seed.
+- Keep shared RDF serialization behavior unchanged; apply the legacy default-name mapping only through a designer-specific serialization wrapper.
 - Translate template card labels/descriptions only; do not translate the template ontology payload.
 - Do not edit gallery/import-export/Fabric/AI Builder/learning/catalogue/deployment files.
 - Use Node 20 for every npm command. Stage exact paths only and never push to `upstream`.
@@ -101,6 +102,7 @@ Run form, store, and designer localization tests.
 ### Task 4: Localize preview, templates, and catalogue submission
 
 **Files:**
+- Create: `src/lib/designerRdf.ts`
 - Modify: `src/components/designer/DesignerPreview.tsx`
 - Modify: `src/components/designer/TemplatePicker.tsx`
 - Modify: `src/data/designerTemplates.ts`

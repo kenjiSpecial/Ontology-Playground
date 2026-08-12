@@ -158,6 +158,7 @@ export const jaMessages = {
   },
   designer: {
     back: '戻る',
+    defaultOntologyName: 'マイ オントロジー',
     ontologyName: 'オントロジー名',
     description: '説明',
     toolbar: {

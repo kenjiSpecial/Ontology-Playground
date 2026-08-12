@@ -4,7 +4,7 @@ import fcose from 'cytoscape-fcose';
 import type { Core } from 'cytoscape';
 import { useDesignerStore } from '../../store/designerStore';
 import { useAppStore, type ThemeId } from '../../store/appStore';
-import { serializeToRDF } from '../../lib/rdf/serializer';
+import { serializeDesignerToRDF } from '../../lib/designerRdf';
 import { parseRDF } from '../../lib/rdf/parser';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../../lib/rdf/highlighter';
 import { jaMessages } from '../../locales/ja';
@@ -238,7 +238,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
 
   let rdfOutput: string;
   try {
-    rdfOutput = serializeToRDF(ontology as Parameters<typeof serializeToRDF>[0], []);
+    rdfOutput = serializeDesignerToRDF(ontology as Parameters<typeof serializeDesignerToRDF>[0], []);
   } catch {
     rdfOutput = `<!-- ${jaMessages.designer.preview.incompleteRdf} -->`;
   }
