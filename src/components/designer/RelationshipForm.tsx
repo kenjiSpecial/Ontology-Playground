@@ -1,6 +1,7 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { useDesignerStore } from '../../store/designerStore';
 import type { Relationship } from '../../data/ontology';
+import { jaFormatters, jaMessages } from '../../locales/ja';
 
 const CARDINALITY_OPTIONS: Relationship['cardinality'][] = [
   'one-to-one', 'one-to-many', 'many-to-one', 'many-to-many',
@@ -40,22 +41,22 @@ export function RelationshipForm() {
   return (
     <div className="designer-relationship-list">
       <div className="designer-section-header">
-        <h3>Relationships ({ontology.relationships.length})</h3>
+        <h3>{jaFormatters.designerRelationshipCount(ontology.relationships.length)}</h3>
         <button
           className="designer-add-btn"
           onClick={handleAdd}
           disabled={entities.length < 1}
-          title={entities.length < 1 ? 'Create at least one entity to add a relationship' : 'Add relationship'}
+          title={entities.length < 1 ? jaMessages.designer.relationship.addRequiresEntity : jaMessages.designer.relationship.addTitle}
         >
-          <Plus size={14} /> Add
+          <Plus size={14} /> {jaMessages.designer.relationship.add}
         </button>
       </div>
 
       {ontology.relationships.length === 0 && (
         <div className="designer-empty">
           {entities.length < 1
-            ? 'Create at least one entity first.'
-            : 'No relationships yet. Click "Add" to create one.'}
+            ? jaMessages.designer.relationship.createEntityFirst
+            : jaMessages.designer.relationship.empty}
         </div>
       )}
 
@@ -79,7 +80,7 @@ export function RelationshipForm() {
               <button
                 className="designer-delete-btn"
                 onClick={(e) => { e.stopPropagation(); removeRelationship(rel.id); }}
-                title="Delete relationship"
+                title={jaMessages.designer.relationship.delete}
               >
                 <Trash2 size={14} />
               </button>
@@ -89,19 +90,19 @@ export function RelationshipForm() {
               <div className="designer-rel-body">
                 {/* Name */}
                 <label className="designer-field">
-                  <span>Name</span>
+                  <span>{jaMessages.designer.relationship.name}</span>
                   <input
                     type="text"
                     value={rel.name}
                     onChange={(e) => updateRelationship(rel.id, { name: e.target.value })}
-                    placeholder="Relationship name"
+                    placeholder={jaMessages.designer.relationship.namePlaceholder}
                   />
                 </label>
 
                 {/* Source / Target */}
                 <div className="designer-field-row">
                   <label className="designer-field">
-                    <span>From</span>
+                    <span>{jaMessages.designer.relationship.from}</span>
                     <select
                       value={rel.from}
                       onChange={(e) => updateRelationship(rel.id, { from: e.target.value })}
@@ -112,7 +113,7 @@ export function RelationshipForm() {
                     </select>
                   </label>
                   <label className="designer-field">
-                    <span>To</span>
+                    <span>{jaMessages.designer.relationship.to}</span>
                     <select
                       value={rel.to}
                       onChange={(e) => updateRelationship(rel.id, { to: e.target.value })}
@@ -126,7 +127,7 @@ export function RelationshipForm() {
 
                 {/* Cardinality */}
                 <label className="designer-field">
-                  <span>Cardinality</span>
+                  <span>{jaMessages.designer.relationship.cardinality}</span>
                   <select
                     value={rel.cardinality}
                     onChange={(e) =>
@@ -141,24 +142,24 @@ export function RelationshipForm() {
 
                 {/* Description */}
                 <label className="designer-field">
-                  <span>Description</span>
+                  <span>{jaMessages.designer.relationship.description}</span>
                   <textarea
                     rows={2}
                     value={rel.description ?? ''}
                     onChange={(e) => updateRelationship(rel.id, { description: e.target.value })}
-                    placeholder="Describe this relationship"
+                    placeholder={jaMessages.designer.relationship.descriptionPlaceholder}
                   />
                 </label>
 
                 {/* Attributes */}
                 <div className="designer-field">
                   <div className="designer-section-header">
-                    <span>Attributes ({rel.attributes?.length ?? 0})</span>
+                    <span>{jaFormatters.designerAttributeCount(rel.attributes?.length ?? 0)}</span>
                     <button
                       className="designer-add-btn small"
                       onClick={() => addRelationshipAttribute(rel.id)}
                     >
-                      <Plus size={12} /> Add
+                      <Plus size={12} /> {jaMessages.designer.relationship.add}
                     </button>
                   </div>
                   {(rel.attributes ?? []).map((attr, idx) => (
@@ -170,7 +171,7 @@ export function RelationshipForm() {
                         onChange={(e) =>
                           updateRelationshipAttribute(rel.id, idx, { name: e.target.value })
                         }
-                        placeholder="Attribute name"
+                        placeholder={jaMessages.designer.relationship.attributeNamePlaceholder}
                       />
                       <input
                         className="designer-prop-type"
@@ -179,12 +180,12 @@ export function RelationshipForm() {
                         onChange={(e) =>
                           updateRelationshipAttribute(rel.id, idx, { type: e.target.value })
                         }
-                        placeholder="Type"
+                        placeholder={jaMessages.designer.relationship.typePlaceholder}
                       />
                       <button
                         className="designer-delete-btn small"
                         onClick={() => removeRelationshipAttribute(rel.id, idx)}
-                        title="Remove attribute"
+                        title={jaMessages.designer.relationship.removeAttribute}
                       >
                         <Trash2 size={12} />
                       </button>

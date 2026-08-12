@@ -7,6 +7,7 @@ import { useAppStore, type ThemeId } from '../../store/appStore';
 import { serializeToRDF } from '../../lib/rdf/serializer';
 import { parseRDF } from '../../lib/rdf/parser';
 import { highlightRdf, RDF_HIGHLIGHT_DARK, RDF_HIGHLIGHT_LIGHT } from '../../lib/rdf/highlighter';
+import { jaMessages } from '../../locales/ja';
 
 cytoscape.use(fcose);
 
@@ -22,13 +23,13 @@ export function DesignerPreview() {
           className={`designer-tab ${activeTab === 'graph' ? 'active' : ''}`}
           onClick={() => setActiveTab('graph')}
         >
-          Graph
+          {jaMessages.designer.preview.graph}
         </button>
         <button
           className={`designer-tab ${activeTab === 'rdf' ? 'active' : ''}`}
           onClick={() => setActiveTab('rdf')}
         >
-          RDF
+          {jaMessages.terms.rdf}
         </button>
       </div>
 
@@ -239,7 +240,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
   try {
     rdfOutput = serializeToRDF(ontology as Parameters<typeof serializeToRDF>[0], []);
   } catch {
-    rdfOutput = '<!-- Ontology is incomplete or invalid; fix errors to see RDF output -->';
+    rdfOutput = `<!-- ${jaMessages.designer.preview.incompleteRdf} -->`;
   }
 
   const darkMode = useAppStore((s) => s.darkMode);
@@ -256,7 +257,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
   const handleImport = () => {
     const trimmed = importText.trim();
     if (!trimmed) {
-      setImportError('Paste RDF/XML content first');
+      setImportError(jaMessages.designer.preview.pasteFirst);
       return;
     }
     try {
@@ -267,7 +268,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
       setImportError(null);
       onImported();
     } catch (err) {
-      setImportError(err instanceof Error ? err.message : 'Failed to parse RDF');
+      setImportError(err instanceof Error ? err.message : jaMessages.designer.preview.parseFailed);
     }
   };
 
@@ -283,19 +284,19 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
         {importMode ? (
           <>
             <button className="designer-add-btn small" onClick={handleImport}>
-              Load into Designer
+              {jaMessages.designer.preview.loadIntoDesigner}
             </button>
             <button className="designer-add-btn small secondary" onClick={handleCancel}>
-              Cancel
+              {jaMessages.common.cancel}
             </button>
           </>
         ) : (
           <>
             <button className="designer-add-btn small" onClick={() => { setImportMode(true); setImportText(rdfOutput); }}>
-              Edit RDF
+              {jaMessages.designer.preview.editRdf}
             </button>
             <button className="designer-add-btn small" onClick={handleCopy}>
-              {copied ? 'Copied!' : 'Copy RDF'}
+              {copied ? jaMessages.designer.preview.copied : jaMessages.designer.preview.copyRdf}
             </button>
           </>
         )}
@@ -308,7 +309,7 @@ function RdfPreview({ ontology, onImported }: RdfPreviewProps) {
           className="designer-rdf-source designer-rdf-textarea"
           value={importText}
           onChange={(e) => { setImportText(e.target.value); setImportError(null); }}
-          placeholder="Paste or edit RDF/XML content here…"
+          placeholder={jaMessages.designer.preview.rdfPlaceholder}
           autoFocus
           spellCheck={false}
         />

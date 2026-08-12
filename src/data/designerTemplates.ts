@@ -17,8 +17,8 @@ export interface DesignerTemplate {
 export const designerTemplates: DesignerTemplate[] = [
   {
     id: 'retail',
-    label: 'Retail',
-    description: 'Customers, products, and orders',
+    label: '小売',
+    description: '顧客、製品、注文',
     icon: '🛒',
     ontology: {
       name: 'Retail Ontology',
@@ -71,8 +71,8 @@ export const designerTemplates: DesignerTemplate[] = [
   },
   {
     id: 'healthcare',
-    label: 'Healthcare',
-    description: 'Patients, providers, and encounters',
+    label: 'ヘルスケア',
+    description: '患者、医療提供者、診療',
     icon: '🏥',
     ontology: {
       name: 'Healthcare Ontology',
@@ -124,8 +124,8 @@ export const designerTemplates: DesignerTemplate[] = [
   },
   {
     id: 'finance',
-    label: 'Finance',
-    description: 'Accounts, transactions, and parties',
+    label: '金融',
+    description: '口座、取引、取引主体',
     icon: '💰',
     ontology: {
       name: 'Finance Ontology',
@@ -179,7 +179,7 @@ export const designerTemplates: DesignerTemplate[] = [
   {
     id: 'iot',
     label: 'IoT',
-    description: 'Devices, sensors, and readings',
+    description: 'デバイス、センサー、測定値',
     icon: '📡',
     ontology: {
       name: 'IoT Ontology',
@@ -231,8 +231,8 @@ export const designerTemplates: DesignerTemplate[] = [
   },
   {
     id: 'education',
-    label: 'Education',
-    description: 'Students, courses, and enrollments',
+    label: '教育',
+    description: '学生、講座、履修',
     icon: '🎓',
     ontology: {
       name: 'Education Ontology',
