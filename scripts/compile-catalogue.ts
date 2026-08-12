@@ -7,20 +7,24 @@
  * Usage: npx tsx scripts/compile-catalogue.ts
  */
 import { readFileSync, writeFileSync, existsSync, readdirSync, lstatSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { join, basename, relative } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { JSDOM } from 'jsdom';
 import { parseRDF } from '../src/lib/rdf/parser.js';
 import { serializeToRDF } from '../src/lib/rdf/serializer.js';
+import {
+  applyCatalogueLocalization,
+  parseCatalogueLocalization,
+} from '../src/lib/catalogueLocalization.js';
 import { validateOntologyStyle } from './style-validator.js';
 import type { CatalogueEntry, Catalogue } from '../src/types/catalogue.js';
+import type { DataBinding, Ontology } from '../src/data/ontology.js';
 
 // Provide DOMParser for the RDF parser (browser API not available in Node)
 const dom = new JSDOM('');
 globalThis.DOMParser = dom.window.DOMParser;
 
-const ROOT = join(import.meta.dirname, '..');
-const CATALOGUE_DIR = join(ROOT, 'catalogue');
-const OUTPUT_PATH = join(ROOT, 'public', 'catalogue.json');
+const DEFAULT_ROOT = join(import.meta.dirname, '..');
 
 // ------------------------------------------------------------------
 // Types
@@ -33,6 +37,17 @@ interface CatalogueMetadata {
   category: string;
   tags?: string[];
   author?: string;
+}
+
+interface CompileLogger {
+  log(message: string): void;
+  warn(message: string): void;
+  error(message: string): void;
+}
+
+export interface CompileCatalogueOptions {
+  rootDir?: string;
+  logger?: CompileLogger;
 }
 
 // ------------------------------------------------------------------
@@ -87,17 +102,44 @@ function discoverOntologyDirs(baseDir: string): string[] {
   return dirs;
 }
 
+function discoverLocalizationFiles(baseDir: string): string[] {
+  if (!existsSync(baseDir)) return [];
+
+  const files: string[] = [];
+  const visit = (dir: string): void => {
+    for (const entry of readdirSync(dir)) {
+      const fullPath = join(dir, entry);
+      const stat = lstatSync(fullPath);
+      if (stat.isSymbolicLink()) {
+        throw new Error(`${fullPath}: symlinks are not allowed in catalogue localization overlays`);
+      }
+      if (stat.isDirectory()) {
+        visit(fullPath);
+      } else if (entry.endsWith('.json')) {
+        files.push(fullPath);
+      }
+    }
+  };
+
+  visit(baseDir);
+  return files.sort();
+}
+
 // ------------------------------------------------------------------
 // Main
 // ------------------------------------------------------------------
 
-function compile(): Catalogue {
-  const entries: CatalogueEntry[] = [];
+export function compileCatalogue(options: CompileCatalogueOptions = {}): Catalogue {
+  const rootDir = options.rootDir ?? DEFAULT_ROOT;
+  const logger = options.logger ?? console;
+  const catalogueDir = join(rootDir, 'catalogue');
+  const localizationDir = join(rootDir, 'content', 'ja', 'catalogue');
+  let entries: CatalogueEntry[] = [];
   const seenIds = new Set<string>();
   let errors = 0;
 
   for (const tier of ['official', 'community', 'external'] as const) {
-    const tierDir = join(CATALOGUE_DIR, tier);
+    const tierDir = join(catalogueDir, tier);
     // For community and external, ontologies are nested one level deeper:
     // community/<user>/<slug>/  or  external/<source-name>/<slug>/
     const ontologyDirs: { dir: string; source: typeof tier }[] = [];
@@ -121,12 +163,12 @@ function compile(): Catalogue {
       const rdfFiles = readdirSync(dir).filter((f) => f.endsWith('.rdf') || f.endsWith('.owl'));
 
       if (rdfFiles.length === 0) {
-        console.error(`✘ ${dir}: no .rdf or .owl file found`);
+        logger.error(`✘ ${dir}: no .rdf or .owl file found`);
         errors++;
         continue;
       }
       if (!existsSync(metadataPath)) {
-        console.error(`✘ ${dir}: missing metadata.json`);
+        logger.error(`✘ ${dir}: missing metadata.json`);
         errors++;
         continue;
       }
@@ -137,7 +179,7 @@ function compile(): Catalogue {
         const raw = JSON.parse(readFileSync(metadataPath, 'utf-8'));
         metadata = validateMetadata(raw, metadataPath);
       } catch (e) {
-        console.error(`✘ ${metadataPath}: ${(e as Error).message}`);
+        logger.error(`✘ ${metadataPath}: ${(e as Error).message}`);
         errors++;
         continue;
       }
@@ -148,7 +190,7 @@ function compile(): Catalogue {
       const entryId = `${source}/${relPath}`;
 
       if (seenIds.has(entryId)) {
-        console.error(`✘ ${dir}: duplicate catalogue path "${entryId}"`);
+        logger.error(`✘ ${dir}: duplicate catalogue path "${entryId}"`);
         errors++;
         continue;
       }
@@ -163,7 +205,7 @@ function compile(): Catalogue {
         ontology = parsed.ontology;
         bindings = parsed.bindings;
       } catch (e) {
-        console.error(`✘ ${rdfPath}: ${(e as Error).message}`);
+        logger.error(`✘ ${rdfPath}: ${(e as Error).message}`);
         errors++;
         continue;
       }
@@ -173,7 +215,7 @@ function compile(): Catalogue {
         const reserialized = serializeToRDF(ontology, bindings);
         parseRDF(reserialized);
       } catch (e) {
-        console.error(`✘ ${rdfPath}: round-trip verification failed — ${(e as Error).message}`);
+        logger.error(`✘ ${rdfPath}: round-trip verification failed — ${(e as Error).message}`);
         errors++;
         continue;
       }
@@ -183,10 +225,10 @@ function compile(): Catalogue {
       if (styleErrors.length > 0) {
         for (const styleError of styleErrors) {
           if (styleError.severity === 'error') {
-            console.error(`✘ ${rdfPath}: ${styleError.message} (in "${styleError.label}")`);
+            logger.error(`✘ ${rdfPath}: ${styleError.message} (in "${styleError.label}")`);
             errors++;
           } else {
-            console.warn(`⚠ ${rdfPath}: ${styleError.message} (in "${styleError.label}")`);
+            logger.warn(`⚠ ${rdfPath}: ${styleError.message} (in "${styleError.label}")`);
           }
         }
         if (styleErrors.some(e => e.severity === 'error')) {
@@ -208,13 +250,33 @@ function compile(): Catalogue {
         bindings,
       });
 
-      console.log(`✔ ${source}/${slug}`);
+      logger.log(`✔ ${source}/${slug}`);
     }
   }
 
   if (errors > 0) {
     throw new Error(`Catalogue compilation failed with ${errors} error(s)`);
   }
+
+  const entriesById = new Map(entries.map((entry) => [entry.id, entry]));
+  for (const overlayPath of discoverLocalizationFiles(localizationDir)) {
+    const relativePath = relative(localizationDir, overlayPath).replace(/\\/g, '/');
+    if (relativePath === 'schema.json') continue;
+
+    const entryId = relativePath.replace(/\.json$/, '');
+    const entry = entriesById.get(entryId);
+    if (!entry) {
+      throw new Error(`${overlayPath}: unknown catalogue entry "${entryId}"`);
+    }
+
+    const overlay = parseCatalogueLocalization(
+      readFileSync(overlayPath, 'utf-8'),
+      entry,
+      overlayPath,
+    );
+    entriesById.set(entryId, applyCatalogueLocalization(entry, overlay));
+  }
+  entries = entries.map((entry) => entriesById.get(entry.id)!);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -227,11 +289,14 @@ function compile(): Catalogue {
 // Run
 // ------------------------------------------------------------------
 
-try {
-  const catalogue = compile();
-  writeFileSync(OUTPUT_PATH, JSON.stringify(catalogue, null, 2) + '\n', 'utf-8');
-  console.log(`\n✔ Wrote ${catalogue.count} entries to ${OUTPUT_PATH}`);
-} catch (e) {
-  console.error(`\n${(e as Error).message}`);
-  process.exit(1);
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const outputPath = join(DEFAULT_ROOT, 'public', 'catalogue.json');
+  try {
+    const catalogue = compileCatalogue();
+    writeFileSync(outputPath, JSON.stringify(catalogue, null, 2) + '\n', 'utf-8');
+    console.log(`\n✔ Wrote ${catalogue.count} entries to ${outputPath}`);
+  } catch (e) {
+    console.error(`\n${(e as Error).message}`);
+    process.exit(1);
+  }
 }

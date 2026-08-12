@@ -4,10 +4,13 @@ import { jaMessages } from '../locales/ja';
 export interface CatalogueEntry {
   id: string;
   name: string;
+  displayName?: string;
   description: string;
+  displayDescription?: string;
   icon?: string;
   category: string;
   tags: string[];
+  displayTags?: string[];
   author: string;
   source: 'official' | 'community' | 'external';
   ontology: Ontology;

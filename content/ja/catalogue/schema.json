@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/kenjiSpecial/Ontology-Playground/blob/main/content/ja/catalogue/schema.json",
+  "title": "Japanese catalogue display overlay",
+  "description": "Display-only Japanese text keyed by the immutable identifiers in a catalogue entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "entry",
+    "ontology",
+    "entities",
+    "properties",
+    "relationships",
+    "relationshipAttributes",
+    "enumValues"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "version": { "const": 1 },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["displayName", "displayDescription", "displayTags"],
+      "properties": {
+        "displayName": { "$ref": "#/definitions/displayText" },
+        "displayDescription": { "$ref": "#/definitions/displayText" },
+        "displayTags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["tag", "displayName"],
+            "properties": {
+              "tag": { "type": "string", "minLength": 1 },
+              "displayName": { "$ref": "#/definitions/displayText" }
+            }
+          }
+        }
+      }
+    },
+    "ontology": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": { "$ref": "#/definitions/displayText" },
+        "displayDescription": { "$ref": "#/definitions/displayText" }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "displayName"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "displayName": { "$ref": "#/definitions/displayText" },
+          "displayDescription": { "$ref": "#/definitions/displayText" }
+        }
+      }
+    },
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["entityId", "propertyName", "displayName"],
+        "properties": {
+          "entityId": { "type": "string", "minLength": 1 },
+          "propertyName": { "type": "string", "minLength": 1 },
+          "displayName": { "$ref": "#/definitions/displayText" },
+          "displayDescription": { "$ref": "#/definitions/displayText" }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "displayName"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "displayName": { "$ref": "#/definitions/displayText" },
+          "displayDescription": { "$ref": "#/definitions/displayText" }
+        }
+      }
+    },
+    "relationshipAttributes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["relationshipId", "attributeName", "displayName"],
+        "properties": {
+          "relationshipId": { "type": "string", "minLength": 1 },
+          "attributeName": { "type": "string", "minLength": 1 },
+          "displayName": { "$ref": "#/definitions/displayText" }
+        }
+      }
+    },
+    "enumValues": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["entityId", "propertyName", "value", "displayValue"],
+        "properties": {
+          "entityId": { "type": "string", "minLength": 1 },
+          "propertyName": { "type": "string", "minLength": 1 },
+          "value": { "type": "string", "minLength": 1 },
+          "displayValue": { "$ref": "#/definitions/displayText" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "displayText": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "[ぁ-んァ-ヶ一-龠ｦ-ﾟ]"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text", "technicalTokenReason"],
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[^ぁ-んァ-ヶ一-龠ｦ-ﾟ]+$"
+            },
+            "technicalTokenReason": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "[ぁ-んァ-ヶ一-龠ｦ-ﾟ]"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
