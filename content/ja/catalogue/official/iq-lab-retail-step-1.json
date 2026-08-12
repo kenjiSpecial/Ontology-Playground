@@ -1,0 +1,128 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "小売サプライチェーン — ステップ1：コマースの中核",
+    "displayDescription": "Customer、Order、Productという基礎となるエンティティを扱います。",
+    "displayTags": [
+      {
+        "tag": "retail",
+        "displayName": "小売"
+      },
+      {
+        "tag": "supply-chain",
+        "displayName": "サプライチェーン"
+      },
+      {
+        "tag": "lab",
+        "displayName": "ラボ"
+      },
+      {
+        "tag": "step-1",
+        "displayName": "ステップ1"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "小売サプライチェーン — ステップ1：コマースの中核",
+    "displayDescription": "Customer、Order、Productという基礎となるエンティティを扱います。"
+  },
+  "entities": [
+    {
+      "id": "customer",
+      "displayName": "顧客",
+      "displayDescription": "注文に関連する購入者を表します。"
+    },
+    {
+      "id": "order",
+      "displayName": "注文",
+      "displayDescription": "顧客が行った購入取引を表します。"
+    },
+    {
+      "id": "product",
+      "displayName": "商品",
+      "displayDescription": "販売可能な商品を表します。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "customer",
+      "propertyName": "customerId",
+      "displayName": "顧客ID"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "email",
+      "displayName": "メールアドレス"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "loyaltyTier",
+      "displayName": "ロイヤルティ階層"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "lifetimeValue",
+      "displayName": "顧客生涯価値"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderId",
+      "displayName": "注文ID"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderDate",
+      "displayName": "注文日"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "status",
+      "displayName": "状態"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "totalAmount",
+      "displayName": "合計金額"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "productId",
+      "displayName": "商品ID"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "unitCost",
+      "displayName": "単価"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "discountPercent",
+      "displayName": "割引率"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "order-placedby-customer",
+      "displayName": "顧客が行う注文",
+      "displayDescription": "注文を行った顧客を表します。"
+    },
+    {
+      "id": "order-contains-product",
+      "displayName": "注文に含まれる商品",
+      "displayDescription": "注文に含まれる商品を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

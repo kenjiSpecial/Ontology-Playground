@@ -1,0 +1,227 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "Zava：果樹園から店頭まで — ステップ2：収穫と品質",
+    "displayDescription": "HarvestLotとQualityCheckを追加し、すべての収穫イベントと4段階の品質管理体制を記録します。",
+    "displayTags": [
+      {
+        "tag": "zava",
+        "displayName": "Zava（ブランド）"
+      },
+      {
+        "tag": "food",
+        "displayName": "食品"
+      },
+      {
+        "tag": "supply-chain",
+        "displayName": "サプライチェーン"
+      },
+      {
+        "tag": "lab",
+        "displayName": "ラボ"
+      },
+      {
+        "tag": "step-2",
+        "displayName": "ステップ2"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "Zava：果樹園から店頭まで — ステップ2：収穫と品質",
+    "displayDescription": "HarvestLotとQualityCheckを追加し、すべての収穫イベントと4段階の品質管理体制を記録します。"
+  },
+  "entities": [
+    {
+      "id": "grower",
+      "displayName": "生産者",
+      "displayDescription": "生鮮果物・野菜の提携生産者を表します。"
+    },
+    {
+      "id": "farm",
+      "displayName": "農園",
+      "displayDescription": "生産者が所有または契約する地理的な農園を表します。"
+    },
+    {
+      "id": "plot",
+      "displayName": "区画",
+      "displayDescription": "1品種を植えた農園内の管理区画を表します。"
+    },
+    {
+      "id": "fruitvariety",
+      "displayName": "果実品種",
+      "displayDescription": "商業用の果物または野菜の品種を表します。"
+    },
+    {
+      "id": "harvestlot",
+      "displayName": "収穫ロット",
+      "displayDescription": "特定日に1つの区画から生じた追跡可能な収穫イベントを表します。"
+    },
+    {
+      "id": "qualitycheck",
+      "displayName": "品質検査",
+      "displayDescription": "4段階の品質検査（圃場、選果梱包施設、物流センター、店舗）の1つを表します。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "grower",
+      "propertyName": "growerId",
+      "displayName": "生産者ID"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "country",
+      "displayName": "国"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "isMasterGrower",
+      "displayName": "マスター生産者"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "farmId",
+      "displayName": "農園ID"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "country",
+      "displayName": "国"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "region",
+      "displayName": "地域"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "hectares",
+      "displayName": "面積"
+    },
+    {
+      "entityId": "plot",
+      "propertyName": "plotId",
+      "displayName": "区画ID"
+    },
+    {
+      "entityId": "plot",
+      "propertyName": "hectares",
+      "displayName": "面積"
+    },
+    {
+      "entityId": "plot",
+      "propertyName": "plantingYear",
+      "displayName": "植付年"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "varietyId",
+      "displayName": "品種ID"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "commercialName",
+      "displayName": "商品名"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "category",
+      "displayName": "カテゴリー"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "shelfLifeDays",
+      "displayName": "日持ち日数"
+    },
+    {
+      "entityId": "harvestlot",
+      "propertyName": "lotId",
+      "displayName": "ロットID"
+    },
+    {
+      "entityId": "harvestlot",
+      "propertyName": "harvestDate",
+      "displayName": "収穫日"
+    },
+    {
+      "entityId": "harvestlot",
+      "propertyName": "kilograms",
+      "displayName": "重量"
+    },
+    {
+      "entityId": "harvestlot",
+      "propertyName": "qcGrade",
+      "displayName": "品質等級"
+    },
+    {
+      "entityId": "qualitycheck",
+      "propertyName": "checkId",
+      "displayName": "検査ID"
+    },
+    {
+      "entityId": "qualitycheck",
+      "propertyName": "stage",
+      "displayName": "検査段階"
+    },
+    {
+      "entityId": "qualitycheck",
+      "propertyName": "passed",
+      "displayName": "合格"
+    },
+    {
+      "entityId": "qualitycheck",
+      "propertyName": "defectRate",
+      "displayName": "不良率"
+    },
+    {
+      "entityId": "qualitycheck",
+      "propertyName": "checkedAt",
+      "displayName": "検査日時"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "grower-owns-farm",
+      "displayName": "生産者が所有する農園",
+      "displayDescription": "生産者が所有または運営する1つ以上の農園を表します。"
+    },
+    {
+      "id": "farm-contains-plot",
+      "displayName": "農園が含む区画",
+      "displayDescription": "農園に含まれる複数の区画を表します。"
+    },
+    {
+      "id": "plot-grows-fruitvariety",
+      "displayName": "区画で栽培する品種",
+      "displayDescription": "各区画では、1つの栽培サイクルにつき1種類の果実品種を栽培します。"
+    },
+    {
+      "id": "harvestlot-fromplot-plot",
+      "displayName": "区画からの収穫ロット",
+      "displayDescription": "各収穫ロットは1つの区画を起点とします。"
+    },
+    {
+      "id": "harvestlot-ofvariety-fruitvariety",
+      "displayName": "収穫ロットの品種",
+      "displayDescription": "各収穫ロットには1つの果実品種が含まれます。"
+    },
+    {
+      "id": "qualitycheck-checks-harvestlot",
+      "displayName": "収穫ロットの品質検査",
+      "displayDescription": "各品質検査は、特定段階の1つの収穫ロットを対象とします。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

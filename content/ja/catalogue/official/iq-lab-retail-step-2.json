@@ -1,0 +1,178 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "小売サプライチェーン — ステップ2：注文明細とカテゴリー",
+    "displayDescription": "OrderLineとProductCategoryを追加して、明細と分類を表します。",
+    "displayTags": [
+      {
+        "tag": "retail",
+        "displayName": "小売"
+      },
+      {
+        "tag": "supply-chain",
+        "displayName": "サプライチェーン"
+      },
+      {
+        "tag": "lab",
+        "displayName": "ラボ"
+      },
+      {
+        "tag": "step-2",
+        "displayName": "ステップ2"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "小売サプライチェーン — ステップ2：注文明細とカテゴリー",
+    "displayDescription": "OrderLineとProductCategoryを追加し、注文の明細と商品分類を表します。"
+  },
+  "entities": [
+    {
+      "id": "customer",
+      "displayName": "顧客",
+      "displayDescription": "注文に関連する購入者を表します。"
+    },
+    {
+      "id": "order",
+      "displayName": "注文",
+      "displayDescription": "顧客が行った購入取引を表します。"
+    },
+    {
+      "id": "product",
+      "displayName": "商品",
+      "displayDescription": "販売可能な商品を表します。"
+    },
+    {
+      "id": "orderline",
+      "displayName": "注文明細",
+      "displayDescription": "注文内の個々の明細項目を表します。"
+    },
+    {
+      "id": "productcategory",
+      "displayName": "商品カテゴリー",
+      "displayDescription": "関連する商品をまとめたグループを表します。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "customer",
+      "propertyName": "customerId",
+      "displayName": "顧客ID"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "email",
+      "displayName": "メールアドレス"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "loyaltyTier",
+      "displayName": "ロイヤルティ階層"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "lifetimeValue",
+      "displayName": "顧客生涯価値"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderId",
+      "displayName": "注文ID"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderDate",
+      "displayName": "注文日"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "status",
+      "displayName": "状態"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "totalAmount",
+      "displayName": "合計金額"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "productId",
+      "displayName": "商品ID"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "unitCost",
+      "displayName": "単価"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "discountPercent",
+      "displayName": "割引率"
+    },
+    {
+      "entityId": "orderline",
+      "propertyName": "orderLineId",
+      "displayName": "注文明細ID"
+    },
+    {
+      "entityId": "orderline",
+      "propertyName": "quantity",
+      "displayName": "数量"
+    },
+    {
+      "entityId": "orderline",
+      "propertyName": "lineTotal",
+      "displayName": "明細合計"
+    },
+    {
+      "entityId": "productcategory",
+      "propertyName": "categoryId",
+      "displayName": "カテゴリーID"
+    },
+    {
+      "entityId": "productcategory",
+      "propertyName": "categoryName",
+      "displayName": "カテゴリー名"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "order-placedby-customer",
+      "displayName": "顧客が行う注文",
+      "displayDescription": "注文を行った顧客を表します。"
+    },
+    {
+      "id": "order-contains-product",
+      "displayName": "注文に含まれる商品",
+      "displayDescription": "注文に含まれる商品を表します。"
+    },
+    {
+      "id": "order-has-lineitem",
+      "displayName": "注文に含まれる明細",
+      "displayDescription": "注文内の明細項目を表します。"
+    },
+    {
+      "id": "orderline-refs-product",
+      "displayName": "明細が参照する商品",
+      "displayDescription": "この明細項目が参照する商品を表します。"
+    },
+    {
+      "id": "product-in-category",
+      "displayName": "商品が属するカテゴリー",
+      "displayDescription": "商品が属するカテゴリーを表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

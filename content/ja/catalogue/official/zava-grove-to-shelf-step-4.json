@@ -1,0 +1,314 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "Zava：果樹園から店頭まで — ステップ4：小売フルフィルメント",
+    "displayDescription": "RetailDC、Store、Orderを追加し、サプライチェーンを小売パートナーと売上へ接続します。",
+    "displayTags": [
+      {
+        "tag": "zava",
+        "displayName": "Zava（ブランド）"
+      },
+      {
+        "tag": "food",
+        "displayName": "食品"
+      },
+      {
+        "tag": "supply-chain",
+        "displayName": "サプライチェーン"
+      },
+      {
+        "tag": "lab",
+        "displayName": "ラボ"
+      },
+      {
+        "tag": "step-4",
+        "displayName": "ステップ4"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "Zava：果樹園から店頭まで — ステップ4：小売フルフィルメント",
+    "displayDescription": "RetailDC、Store、Orderを追加し、サプライチェーンを小売パートナーと売上へ接続します。"
+  },
+  "entities": [
+    {
+      "id": "grower",
+      "displayName": "生産者",
+      "displayDescription": "提携生産者を表します。"
+    },
+    {
+      "id": "farm",
+      "displayName": "農園",
+      "displayDescription": "生産者が所有または契約する地理的な農園を表します。"
+    },
+    {
+      "id": "plot",
+      "displayName": "区画",
+      "displayDescription": "農園内の管理区画を表します。"
+    },
+    {
+      "id": "fruitvariety",
+      "displayName": "果実品種",
+      "displayDescription": "商業用の果物または野菜の品種を表します。"
+    },
+    {
+      "id": "harvestlot",
+      "displayName": "収穫ロット",
+      "displayDescription": "追跡可能な収穫イベントを表します。"
+    },
+    {
+      "id": "qualitycheck",
+      "displayName": "品質検査",
+      "displayDescription": "4段階品質管理の1つを表します。"
+    },
+    {
+      "id": "shipment",
+      "displayName": "出荷",
+      "displayDescription": "収穫ロットを小売物流センターへ運ぶ冷蔵コンテナまたはトラックを表します。"
+    },
+    {
+      "id": "coldchainsensor",
+      "displayName": "コールドチェーンセンサー",
+      "displayDescription": "出荷上の温度と湿度を計測するセンサーを表します。"
+    },
+    {
+      "id": "retaildc",
+      "displayName": "小売物流センター",
+      "displayDescription": "出荷を受け取る小売業者の物流センターを表します。"
+    },
+    {
+      "id": "store",
+      "displayName": "店舗",
+      "displayDescription": "注文が発生する小売拠点を表します。"
+    },
+    {
+      "id": "order",
+      "displayName": "注文",
+      "displayDescription": "顧客が行った購入取引を表します。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "grower",
+      "propertyName": "growerId",
+      "displayName": "生産者ID"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "farmId",
+      "displayName": "農園ID"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "plot",
+      "propertyName": "plotId",
+      "displayName": "区画ID"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "varietyId",
+      "displayName": "品種ID"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "commercialName",
+      "displayName": "商品名"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "maxStorageTempC",
+      "displayName": "最高保管温度"
+    },
+    {
+      "entityId": "harvestlot",
+      "propertyName": "lotId",
+      "displayName": "ロットID"
+    },
+    {
+      "entityId": "harvestlot",
+      "propertyName": "kilograms",
+      "displayName": "重量"
+    },
+    {
+      "entityId": "harvestlot",
+      "propertyName": "qcGrade",
+      "displayName": "品質等級"
+    },
+    {
+      "entityId": "qualitycheck",
+      "propertyName": "checkId",
+      "displayName": "検査ID"
+    },
+    {
+      "entityId": "qualitycheck",
+      "propertyName": "stage",
+      "displayName": "検査段階"
+    },
+    {
+      "entityId": "shipment",
+      "propertyName": "shipmentId",
+      "displayName": "出荷ID"
+    },
+    {
+      "entityId": "shipment",
+      "propertyName": "modality",
+      "displayName": "輸送手段"
+    },
+    {
+      "entityId": "coldchainsensor",
+      "propertyName": "sensorId",
+      "displayName": "センサーID"
+    },
+    {
+      "entityId": "coldchainsensor",
+      "propertyName": "temperatureC",
+      "displayName": "温度"
+    },
+    {
+      "entityId": "retaildc",
+      "propertyName": "dcId",
+      "displayName": "物流センターID"
+    },
+    {
+      "entityId": "retaildc",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "retaildc",
+      "propertyName": "country",
+      "displayName": "国"
+    },
+    {
+      "entityId": "retaildc",
+      "propertyName": "city",
+      "displayName": "市区町村"
+    },
+    {
+      "entityId": "retaildc",
+      "propertyName": "retailerCode",
+      "displayName": "小売業者コード"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "storeId",
+      "displayName": "店舗ID"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "retailerName",
+      "displayName": "小売業者名"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "country",
+      "displayName": "国"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "city",
+      "displayName": "市区町村"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderId",
+      "displayName": "注文ID"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "kilograms",
+      "displayName": "重量"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderDate",
+      "displayName": "注文日"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "deliveryDate",
+      "displayName": "配送日"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "status",
+      "displayName": "状態"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "unitPriceEur",
+      "displayName": "単価（EUR）"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "grower-owns-farm",
+      "displayName": "生産者が所有する農園"
+    },
+    {
+      "id": "farm-contains-plot",
+      "displayName": "農園が含む区画"
+    },
+    {
+      "id": "plot-grows-fruitvariety",
+      "displayName": "区画で栽培する品種"
+    },
+    {
+      "id": "harvestlot-fromplot-plot",
+      "displayName": "区画からの収穫ロット"
+    },
+    {
+      "id": "harvestlot-ofvariety-fruitvariety",
+      "displayName": "収穫ロットの品種"
+    },
+    {
+      "id": "qualitycheck-checks-harvestlot",
+      "displayName": "収穫ロットの品質検査"
+    },
+    {
+      "id": "shipment-carries-harvestlot",
+      "displayName": "出荷が運ぶ収穫ロット"
+    },
+    {
+      "id": "shipment-monitoredby-coldchainsensor",
+      "displayName": "出荷を監視するセンサー"
+    },
+    {
+      "id": "shipment-deliveredto-retaildc",
+      "displayName": "小売物流センターへの出荷",
+      "displayDescription": "出荷は1つの小売物流センターへ配送されます。"
+    },
+    {
+      "id": "retaildc-supplies-store",
+      "displayName": "物流センターが供給する店舗",
+      "displayDescription": "物流センターは複数の小売店舗へ供給します。"
+    },
+    {
+      "id": "store-places-order",
+      "displayName": "店舗が行う注文",
+      "displayDescription": "店舗は1つ以上の注文を行います。"
+    },
+    {
+      "id": "order-forvariety-fruitvariety",
+      "displayName": "品種向け注文",
+      "displayDescription": "各注文は特定の果実品種向けです。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

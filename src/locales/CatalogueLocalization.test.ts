@@ -89,6 +89,20 @@ const BUSINESS_DOMAIN_ENTRIES = [
   'university-step-3',
   'university',
 ] as const;
+const SUPPLY_CHAIN_ENTRIES = [
+  'iq-lab-retail-step-1',
+  'iq-lab-retail-step-2',
+  'iq-lab-retail-step-3',
+  'iq-lab-retail-step-4',
+  'iq-lab-retail-step-5',
+  'iq-lab-retail-step-6',
+  'zava-grove-to-shelf',
+  'zava-grove-to-shelf-step-1',
+  'zava-grove-to-shelf-step-2',
+  'zava-grove-to-shelf-step-3',
+  'zava-grove-to-shelf-step-4',
+  'zava-grove-to-shelf-step-5',
+] as const;
 const JAPANESE_DISPLAY_TEXT_RE = /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/u;
 
 function stripDisplayFields(value: unknown): unknown {
@@ -519,6 +533,18 @@ describe('catalogue localization integration', () => {
     const catalogue = compileCatalogue({ rootDir: REPOSITORY_ROOT, logger: quietLogger });
 
     for (const slug of BUSINESS_DOMAIN_ENTRIES) {
+      const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
+      expect(entry, `official/${slug}`).toBeDefined();
+      const sourceEntry = readSourceEntry(slug);
+      expectLocalizedEntry(entry!, sourceEntry, `official/${slug}`);
+      expect(normalizedInternalValue(entry)).toEqual(normalizedInternalValue(sourceEntry));
+    }
+  });
+
+  it('localizes every supply-chain entry while preserving source keys and internal values', () => {
+    const catalogue = compileCatalogue({ rootDir: REPOSITORY_ROOT, logger: quietLogger });
+
+    for (const slug of SUPPLY_CHAIN_ENTRIES) {
       const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
       expect(entry, `official/${slug}`).toBeDefined();
       const sourceEntry = readSourceEntry(slug);
