@@ -1,0 +1,162 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "Zava：果樹園から店頭まで — ステップ1：果樹園の基礎",
+    "displayDescription": "Grower、Farm、Plot、FruitVarietyを使い、複数産地からの調達を表す基礎エンティティを定義します。",
+    "displayTags": [
+      {
+        "tag": "zava",
+        "displayName": "Zava（ブランド）"
+      },
+      {
+        "tag": "food",
+        "displayName": "食品"
+      },
+      {
+        "tag": "supply-chain",
+        "displayName": "サプライチェーン"
+      },
+      {
+        "tag": "lab",
+        "displayName": "ラボ"
+      },
+      {
+        "tag": "step-1",
+        "displayName": "ステップ1"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "Zava：果樹園から店頭まで — ステップ1：果樹園の基礎",
+    "displayDescription": "Grower、Farm、Plot、FruitVarietyという、複数産地調達の基礎エンティティを扱います。"
+  },
+  "entities": [
+    {
+      "id": "grower",
+      "displayName": "生産者",
+      "displayDescription": "生鮮果物・野菜の提携生産者を表します。"
+    },
+    {
+      "id": "farm",
+      "displayName": "農園",
+      "displayDescription": "生産者が所有または契約する地理的な農園を表します。"
+    },
+    {
+      "id": "plot",
+      "displayName": "区画",
+      "displayDescription": "1品種を植えた農園内の管理区画を表します。"
+    },
+    {
+      "id": "fruitvariety",
+      "displayName": "果実品種",
+      "displayDescription": "商業用の果物または野菜の品種を表します。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "grower",
+      "propertyName": "growerId",
+      "displayName": "生産者ID"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "country",
+      "displayName": "国"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "partnerSince",
+      "displayName": "提携開始日"
+    },
+    {
+      "entityId": "grower",
+      "propertyName": "isMasterGrower",
+      "displayName": "マスター生産者"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "farmId",
+      "displayName": "農園ID"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "country",
+      "displayName": "国"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "region",
+      "displayName": "地域"
+    },
+    {
+      "entityId": "farm",
+      "propertyName": "hectares",
+      "displayName": "面積"
+    },
+    {
+      "entityId": "plot",
+      "propertyName": "plotId",
+      "displayName": "区画ID"
+    },
+    {
+      "entityId": "plot",
+      "propertyName": "hectares",
+      "displayName": "面積"
+    },
+    {
+      "entityId": "plot",
+      "propertyName": "plantingYear",
+      "displayName": "植付年"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "varietyId",
+      "displayName": "品種ID"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "commercialName",
+      "displayName": "商品名"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "category",
+      "displayName": "カテゴリー"
+    },
+    {
+      "entityId": "fruitvariety",
+      "propertyName": "shelfLifeDays",
+      "displayName": "日持ち日数"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "grower-owns-farm",
+      "displayName": "生産者が所有する農園",
+      "displayDescription": "生産者が所有または運営する1つ以上の農園を表します。"
+    },
+    {
+      "id": "farm-contains-plot",
+      "displayName": "農園が含む区画",
+      "displayDescription": "農園に含まれる複数の区画を表します。"
+    },
+    {
+      "id": "plot-grows-fruitvariety",
+      "displayName": "区画で栽培する品種",
+      "displayDescription": "各区画では、1つの栽培サイクルにつき1種類の果実品種を栽培します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

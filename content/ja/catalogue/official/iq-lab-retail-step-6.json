@@ -1,0 +1,453 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "小売サプライチェーン — ステップ6：完全なモデル",
+    "displayDescription": "PromotionとReturnを追加して、小売サプライチェーン全体を完成させます。",
+    "displayTags": [
+      {
+        "tag": "retail",
+        "displayName": "小売"
+      },
+      {
+        "tag": "supply-chain",
+        "displayName": "サプライチェーン"
+      },
+      {
+        "tag": "lab",
+        "displayName": "ラボ"
+      },
+      {
+        "tag": "step-6",
+        "displayName": "ステップ6"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "小売サプライチェーン — ステップ6：完全なモデル",
+    "displayDescription": "PromotionとReturnを加えた、小売サプライチェーン全体の完成モデルです。"
+  },
+  "entities": [
+    {
+      "id": "customer",
+      "displayName": "顧客",
+      "displayDescription": "注文に関連する購入者を表します。"
+    },
+    {
+      "id": "order",
+      "displayName": "注文",
+      "displayDescription": "顧客が行った購入取引を表します。"
+    },
+    {
+      "id": "product",
+      "displayName": "商品",
+      "displayDescription": "販売可能な商品を表します。"
+    },
+    {
+      "id": "orderline",
+      "displayName": "注文明細",
+      "displayDescription": "注文内の個々の明細項目を表します。"
+    },
+    {
+      "id": "productcategory",
+      "displayName": "商品カテゴリー",
+      "displayDescription": "関連する商品をまとめたグループを表します。"
+    },
+    {
+      "id": "region",
+      "displayName": "地域",
+      "displayDescription": "店舗や倉庫を含む地理的な区域を表します。"
+    },
+    {
+      "id": "store",
+      "displayName": "店舗",
+      "displayDescription": "注文が発生する小売拠点を表します。"
+    },
+    {
+      "id": "shipment",
+      "displayName": "出荷",
+      "displayDescription": "注文と配送業者を結び付ける配送記録を表します。"
+    },
+    {
+      "id": "carrier",
+      "displayName": "配送業者",
+      "displayDescription": "出荷を扱う物流事業者を表します。"
+    },
+    {
+      "id": "warehouse",
+      "displayName": "倉庫",
+      "displayDescription": "注文を出荷するフルフィルメントセンターを表します。"
+    },
+    {
+      "id": "inventory",
+      "displayName": "在庫",
+      "displayDescription": "倉庫における在庫水準を表します。"
+    },
+    {
+      "id": "forecast",
+      "displayName": "需要予測",
+      "displayDescription": "商品の予測需要を表します。"
+    },
+    {
+      "id": "demandsignal",
+      "displayName": "需要シグナル",
+      "displayDescription": "顧客需要を示すリアルタイム指標を表します。"
+    },
+    {
+      "id": "promotion",
+      "displayName": "プロモーション",
+      "displayDescription": "商品の販売に影響するマーケティングキャンペーンを表します。"
+    },
+    {
+      "id": "return",
+      "displayName": "返品",
+      "displayDescription": "注文にひも付いた返品商品を表します。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "customer",
+      "propertyName": "customerId",
+      "displayName": "顧客ID"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "email",
+      "displayName": "メールアドレス"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "loyaltyTier",
+      "displayName": "ロイヤルティ階層"
+    },
+    {
+      "entityId": "customer",
+      "propertyName": "lifetimeValue",
+      "displayName": "顧客生涯価値"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderId",
+      "displayName": "注文ID"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "orderDate",
+      "displayName": "注文日"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "status",
+      "displayName": "状態"
+    },
+    {
+      "entityId": "order",
+      "propertyName": "totalAmount",
+      "displayName": "合計金額"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "productId",
+      "displayName": "商品ID"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "unitCost",
+      "displayName": "単価"
+    },
+    {
+      "entityId": "product",
+      "propertyName": "discountPercent",
+      "displayName": "割引率"
+    },
+    {
+      "entityId": "orderline",
+      "propertyName": "orderLineId",
+      "displayName": "注文明細ID"
+    },
+    {
+      "entityId": "orderline",
+      "propertyName": "quantity",
+      "displayName": "数量"
+    },
+    {
+      "entityId": "orderline",
+      "propertyName": "lineTotal",
+      "displayName": "明細合計"
+    },
+    {
+      "entityId": "productcategory",
+      "propertyName": "categoryId",
+      "displayName": "カテゴリーID"
+    },
+    {
+      "entityId": "productcategory",
+      "propertyName": "categoryName",
+      "displayName": "カテゴリー名"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "regionId",
+      "displayName": "地域ID"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "regionName",
+      "displayName": "地域名"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "timezone",
+      "displayName": "タイムゾーン"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "coldChainRequired",
+      "displayName": "冷蔵輸送必須"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "storeId",
+      "displayName": "店舗ID"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "storeName",
+      "displayName": "店舗名"
+    },
+    {
+      "entityId": "store",
+      "propertyName": "address",
+      "displayName": "住所"
+    },
+    {
+      "entityId": "shipment",
+      "propertyName": "shipmentId",
+      "displayName": "出荷ID"
+    },
+    {
+      "entityId": "shipment",
+      "propertyName": "shipDate",
+      "displayName": "出荷日"
+    },
+    {
+      "entityId": "shipment",
+      "propertyName": "deliveryDate",
+      "displayName": "配送日"
+    },
+    {
+      "entityId": "shipment",
+      "propertyName": "status",
+      "displayName": "状態"
+    },
+    {
+      "entityId": "carrier",
+      "propertyName": "carrierId",
+      "displayName": "配送業者ID"
+    },
+    {
+      "entityId": "carrier",
+      "propertyName": "carrierName",
+      "displayName": "配送業者名"
+    },
+    {
+      "entityId": "carrier",
+      "propertyName": "serviceType",
+      "displayName": "サービス種別"
+    },
+    {
+      "entityId": "warehouse",
+      "propertyName": "warehouseId",
+      "displayName": "倉庫ID"
+    },
+    {
+      "entityId": "warehouse",
+      "propertyName": "warehouseName",
+      "displayName": "倉庫名"
+    },
+    {
+      "entityId": "warehouse",
+      "propertyName": "capacity",
+      "displayName": "保管容量"
+    },
+    {
+      "entityId": "inventory",
+      "propertyName": "inventoryId",
+      "displayName": "在庫ID"
+    },
+    {
+      "entityId": "inventory",
+      "propertyName": "stockLevel",
+      "displayName": "在庫水準"
+    },
+    {
+      "entityId": "inventory",
+      "propertyName": "reorderPoint",
+      "displayName": "再発注点"
+    },
+    {
+      "entityId": "forecast",
+      "propertyName": "forecastId",
+      "displayName": "予測ID"
+    },
+    {
+      "entityId": "forecast",
+      "propertyName": "forecastDate",
+      "displayName": "予測日"
+    },
+    {
+      "entityId": "forecast",
+      "propertyName": "predictedDemand",
+      "displayName": "予測需要"
+    },
+    {
+      "entityId": "demandsignal",
+      "propertyName": "signalId",
+      "displayName": "シグナルID"
+    },
+    {
+      "entityId": "demandsignal",
+      "propertyName": "signalDate",
+      "displayName": "シグナル日"
+    },
+    {
+      "entityId": "demandsignal",
+      "propertyName": "signalStrength",
+      "displayName": "シグナル強度"
+    },
+    {
+      "entityId": "promotion",
+      "propertyName": "promotionId",
+      "displayName": "プロモーションID"
+    },
+    {
+      "entityId": "promotion",
+      "propertyName": "promotionName",
+      "displayName": "プロモーション名"
+    },
+    {
+      "entityId": "promotion",
+      "propertyName": "isActivePromotion",
+      "displayName": "プロモーション実施中"
+    },
+    {
+      "entityId": "return",
+      "propertyName": "returnId",
+      "displayName": "返品ID"
+    },
+    {
+      "entityId": "return",
+      "propertyName": "returnDate",
+      "displayName": "返品日"
+    },
+    {
+      "entityId": "return",
+      "propertyName": "reason",
+      "displayName": "返品理由"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "order-placedby-customer",
+      "displayName": "顧客が行う注文",
+      "displayDescription": "注文を行った顧客を表します。"
+    },
+    {
+      "id": "order-contains-product",
+      "displayName": "注文に含まれる商品",
+      "displayDescription": "注文に含まれる商品を表します。"
+    },
+    {
+      "id": "order-has-lineitem",
+      "displayName": "注文に含まれる明細",
+      "displayDescription": "注文内の明細項目を表します。"
+    },
+    {
+      "id": "orderline-refs-product",
+      "displayName": "明細が参照する商品",
+      "displayDescription": "この明細項目が参照する商品を表します。"
+    },
+    {
+      "id": "product-in-category",
+      "displayName": "商品が属するカテゴリー",
+      "displayDescription": "商品が属するカテゴリーを表します。"
+    },
+    {
+      "id": "order-to-region",
+      "displayName": "注文の履行地域",
+      "displayDescription": "注文が履行された地域を表します。"
+    },
+    {
+      "id": "store-in-region",
+      "displayName": "店舗が属する地域",
+      "displayDescription": "店舗が所在する地域を表します。"
+    },
+    {
+      "id": "shipment-fulfills-order",
+      "displayName": "出荷が履行する注文",
+      "displayDescription": "出荷が履行する注文を表します。"
+    },
+    {
+      "id": "shipment-by-carrier",
+      "displayName": "配送業者が扱う出荷",
+      "displayDescription": "出荷を扱う配送業者を表します。"
+    },
+    {
+      "id": "shipment-from-warehouse",
+      "displayName": "倉庫からの出荷",
+      "displayDescription": "出荷元の倉庫を表します。"
+    },
+    {
+      "id": "inventory-for-product",
+      "displayName": "商品の在庫",
+      "displayDescription": "特定商品の在庫水準を表します。"
+    },
+    {
+      "id": "inventory-at-warehouse",
+      "displayName": "倉庫の在庫",
+      "displayDescription": "特定の倉庫に保管される在庫を表します。"
+    },
+    {
+      "id": "forecast-for-product",
+      "displayName": "商品の需要予測",
+      "displayDescription": "商品の需要予測を表します。"
+    },
+    {
+      "id": "signal-for-product",
+      "displayName": "商品の需要シグナル",
+      "displayDescription": "商品の需要シグナルを表します。"
+    },
+    {
+      "id": "signal-in-region",
+      "displayName": "地域の需要シグナル",
+      "displayDescription": "需要シグナルが発生した地域を表します。"
+    },
+    {
+      "id": "promotion-for-product",
+      "displayName": "商品の販促",
+      "displayDescription": "プロモーションの対象商品を表します。"
+    },
+    {
+      "id": "return-for-order",
+      "displayName": "注文に対する返品",
+      "displayDescription": "返品がひも付く注文を表します。"
+    },
+    {
+      "id": "return-of-product",
+      "displayName": "返品された商品",
+      "displayDescription": "返品された商品を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}
