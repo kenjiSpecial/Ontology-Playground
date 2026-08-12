@@ -1,44 +1,44 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Meet the HR System scenario and the cross-functional questions your ontology must answer."
+description: "人事システムのシナリオと、オントロジーで答えるべき部門横断の問いを確認します。"
 order: 1
 ---
 
-## The scenario
+## シナリオ
 
-You are designing a **human resources ontology** for a growing organization. The business needs a shared model for:
+成長中の組織に向けて、**人事オントロジー**を設計します。事業では、次の情報を扱う共通モデルが必要です。
 
-- **Employees** and their lifecycle status
-- **Departments** and budget ownership
-- **Positions** and role hierarchy
-- **Assignments** that place employees into departments and positions over time
-- **Performance reviews** used for development and compensation discussions
+- **従業員（Employee）**とその在籍状況
+- **部門（Department）**と予算の責任範囲
+- **役職（Position）**と役割の階層
+- 従業員を一定期間、部門と役職に結び付ける**配属（Assignment）**
+- 育成や報酬の検討に用いる**業績評価（PerformanceReview）**
 
-Data currently lives across payroll tools, HRIS, spreadsheets, and manager notes.
+現在、データは給与計算ツール、人事情報システム（HRIS）、スプレッドシート、管理職のメモに分散しています。
 
-## Why an ontology?
+## なぜオントロジーを使うのか
 
-A question like **"Which departments have the highest number of senior employees rated outstanding in the last review cycle?"** crosses employee records, org structure, role definitions, and review outcomes.
+**「直近の評価期間で最高評価を受けた上級従業員が最も多い部門はどこか」**という問いに答えるには、従業員記録、組織構造、役割の定義、評価結果を横断する必要があります。
 
-With an ontology, this becomes a connected graph query instead of manual joins across disconnected systems.
+オントロジーを使えば、分断されたシステムを手作業で結合する代わりに、接続されたグラフへクエリを実行して答えを得られます。
 
-## What we'll build
+## 構築するもの
 
-| Step | Entities in focus | What you'll learn |
+| ステップ | 対象エンティティ | 学ぶこと |
 |---|---|---|
-| 1 | Employee, Department, Position | Organizational foundation and identifiers |
-| 2 | + Assignment | Junction entity pattern for staffing history |
-| 3 | + PerformanceReview | Review cycles, ratings, and people analytics |
-| 4 | Complete model | End-to-end HR questions and graph reasoning |
+| 1 | Employee、Department、Position | 組織の基盤と識別子 |
+| 2 | + Assignment | 人員配置履歴を表す中間エンティティのパターン |
+| 3 | + PerformanceReview | 評価期間、評価値、ピープルアナリティクス |
+| 4 | 完成したモデル | 人事に関する一連の問いとグラフ推論 |
 
-By the end, you'll understand how to model a practical HR domain with clear governance-ready structure.
+最後まで進めると、ガバナンスに対応できる明確な構造で、実用的な人事ドメインをモデル化する方法を理解できます。
 
-## Key concepts
+## 主要な概念
 
-- **Stable identifiers** for every entity
-- **Junction entities** for many-to-many staffing scenarios
-- **Temporal properties** (startDate, reviewDate) for time-aware analysis
-- **Enum values** for controlled statuses and ratings
+- すべてのエンティティに設定する**安定した識別子**
+- 多対多の人員配置を表す**中間エンティティ**
+- 時系列分析に使う**時間プロパティ**（startDate、reviewDate）
+- 状態と評価値を統制する**列挙値**
 
-Let's start with the organization core.
+まず、組織の中核から始めましょう。

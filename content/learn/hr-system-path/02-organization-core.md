@@ -1,25 +1,25 @@
 ---
-title: "Organization Core"
+title: "組織の中核"
 slug: organization-core
-description: "Define Employee, Department, and Position to model core organizational structure."
+description: "Employee、Department、Positionを定義し、組織の中核構造をモデル化します。"
 order: 2
 ---
 
-## Building the organizational backbone
+## 組織構造の基盤を構築する
 
-Every HR ontology starts with three core entities:
+人事オントロジーは、次の3つの中核エンティティから始まります。
 
-- **Employee** — the person in your workforce
-- **Department** — the business unit where work is organized
-- **Position** — the role definition that describes responsibility and level
+- **Employee（従業員）** — 組織で働く人
+- **Department（部門）** — 業務を編成する事業単位
+- **Position（役職）** — 責任範囲と職位を表す役割の定義
 
-These three entities provide the minimum structure for hiring, reporting, and workforce planning.
+この3つのエンティティが、採用、報告、人員計画に必要な最小限の構造になります。
 
-## Entity design
+## エンティティ設計
 
 ### Employee
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `employeeId` | string | ✓ |
 | `name` | string | |
@@ -27,47 +27,47 @@ These three entities provide the minimum structure for hiring, reporting, and wo
 | `employmentStatus` | enum | |
 | `jobLevel` | enum | |
 
-`employeeId` is a stable business identifier. Avoid using mutable attributes like email as the primary key.
+`employeeId` は、安定した業務上の識別子です。メールアドレスのように変更される可能性がある属性を主キーに使わないでください。
 
 ### Department
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `departmentId` | string | ✓ |
 | `name` | string | |
 | `budget` | decimal | |
 | `status` | enum | |
 
-Department budgets allow resource planning and cost center analysis from the same graph.
+部門予算を含めることで、同じグラフからリソース計画とコストセンター分析を行えます。
 
 ### Position
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `positionId` | string | ✓ |
 | `title` | string | |
 | `level` | enum | |
 | `salaryBand` | string | |
 
-Position separates role definition from the person currently assigned to it.
+Positionは、役割の定義と、その役割に現在配属されている人を分離します。
 
-## Why this separation matters
+## 分離が重要な理由
 
-If you collapse these concepts into one "EmployeeProfile" entity, you lose flexibility for:
+これらの概念を1つの「EmployeeProfile」エンティティにまとめると、次のような場面に柔軟に対応できなくなります。
 
-- historical staffing changes
-- role transitions
-- open positions that exist before a hire
+- 過去の人員配置の変更
+- 役割の異動
+- 採用前から存在する空き役職
 
-Separate entities keep the model clean and extensible.
+エンティティを分けることで、モデルを明快かつ拡張可能に保てます。
 
 ```quiz
-Q: Why model Position as its own entity instead of storing role fields directly on Employee only?
-- Because ontology tools require at least three entities
-- Because Position is a reusable role definition that can exist independently of a specific employee [correct]
-- To reduce the number of relationships
-- To avoid using identifier properties
-> Position represents the role itself (title, level, salary band), while Employee represents a person. Separating them supports open roles, transitions, and cleaner staffing analytics.
+Q: 役割のフィールドをEmployeeだけに直接保存せず、Positionを独立したエンティティとしてモデル化するのはなぜですか？
+- オントロジーツールでは3つ以上のエンティティが必要だから
+- Positionは、特定の従業員から独立して存在できる再利用可能な役割の定義だから [correct]
+- リレーションシップの数を減らすため
+- 識別子プロパティを使わないようにするため
+> Positionは役割自体（役職名、職位、給与等級）を表し、Employeeは人を表します。両者を分離することで、空き役職、異動、明快な人員配置分析に対応できます。
 ```
 
-Next, we add Assignment to capture who filled which role, where, and when.
+次にAssignmentを追加し、誰が、どこで、どの役割を、いつ担ったかを記録します。

@@ -295,7 +295,7 @@ These enhance the overall experience for a community learning resource.
 - [x] Japanese localization for learning navigation, presentation, quizzes,
   and embedded graph controls
 - [ ] Japanese translations for course metadata and all 61 learning articles
-      (14/61 articles complete; 47 remaining)
+      (34/61 articles complete; 27 remaining)
 
 ---
 

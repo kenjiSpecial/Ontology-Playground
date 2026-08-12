@@ -84,6 +84,16 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '04-complete-university.md',
     ],
   },
+  {
+    directory: 'hr-system-path',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-organization-core.md',
+      '03-assignments.md',
+      '04-complete-model.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {
