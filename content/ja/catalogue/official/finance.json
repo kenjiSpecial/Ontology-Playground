@@ -8,7 +8,7 @@
   },
   "ontology": {
     "displayName": "銀行・金融",
-    "displayDescription": "口座、取引、投資を扱う金融サービスのモデルです。"
+    "displayDescription": "顧客、口座、取引、ローン、投資を扱う金融サービス全体のモデルです。"
   },
   "entities": [
     {
@@ -92,7 +92,7 @@
     },
     {
       "id": "account_linked",
-      "displayName": "関連付く",
+      "displayName": "関連する",
       "displayDescription": "口座と投資の関連を表します。"
     }
   ],
