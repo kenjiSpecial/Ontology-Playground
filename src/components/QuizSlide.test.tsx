@@ -41,24 +41,24 @@ describe('QuizSlide', () => {
 
   it('does not show result or explanation before answering', () => {
     render(<QuizSlide quiz={sampleQuiz} />);
-    expect(screen.queryByText('Correct!')).toBeNull();
-    expect(screen.queryByText('Not quite')).toBeNull();
+    expect(screen.queryByText('正解です！')).toBeNull();
+    expect(screen.queryByText('惜しいです')).toBeNull();
     expect(screen.queryByText(sampleQuiz.explanation)).toBeNull();
   });
 
-  it('shows "Correct!" when clicking the right answer', async () => {
+  it('shows Japanese success feedback when clicking the right answer', async () => {
     const user = userEvent.setup();
     render(<QuizSlide quiz={sampleQuiz} />);
     await user.click(screen.getByText('A formal model of a domain'));
-    expect(screen.getByText('Correct!')).toBeTruthy();
+    expect(screen.getByText('正解です！')).toBeTruthy();
     expect(screen.getByText(sampleQuiz.explanation)).toBeTruthy();
   });
 
-  it('shows "Not quite" when clicking a wrong answer', async () => {
+  it('shows Japanese retry feedback when clicking a wrong answer', async () => {
     const user = userEvent.setup();
     render(<QuizSlide quiz={sampleQuiz} />);
     await user.click(screen.getByText('A database schema'));
-    expect(screen.getByText('Not quite')).toBeTruthy();
+    expect(screen.getByText('惜しいです')).toBeTruthy();
     expect(screen.getByText(sampleQuiz.explanation)).toBeTruthy();
   });
 
@@ -93,7 +93,7 @@ describe('QuizSlide', () => {
     const noExplanation: QuizData = { ...sampleQuiz, explanation: '' };
     render(<QuizSlide quiz={noExplanation} />);
     await user.click(screen.getByText('A formal model of a domain'));
-    expect(screen.getByText('Correct!')).toBeTruthy();
+    expect(screen.getByText('正解です！')).toBeTruthy();
     expect(screen.queryByText(sampleQuiz.explanation)).toBeNull();
   });
 });
