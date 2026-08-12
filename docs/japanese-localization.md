@@ -30,16 +30,23 @@ catalogue/external/fibo/loans/               → content/ja/catalogue/external/f
 `schema.json` in `content/ja/catalogue/` is documentation/schema metadata and
 is skipped by the compiler. The overlay file itself does not contain a mutable
 catalogue ID; the compiler derives it from the relative path and rejects an
-unknown path. The `$schema` value in the template is repository-root-relative
-(`content/ja/catalogue/schema.json`), so it resolves to the same file for
-official, community, and external entry depths; it is not a file-relative
-`./schema.json` reference.
+unknown path. The `$schema` value is resolved relative to the overlay file, so
+the reference must match the source directory depth:
+
+| Overlay JSON path | `$schema` reference |
+|---|---|
+| `content/ja/catalogue/official/<entry>.json` | `../schema.json` |
+| `content/ja/catalogue/community/<author>/<entry>.json` | `../../schema.json` |
+| `content/ja/catalogue/external/<source>/<entry>.json` | `../../schema.json` |
+
+The template below is a concrete official-entry example. Community and
+external overlays use the corresponding deeper reference from the table.
 
 Start from this shape and fill every source key:
 
 ```json
 {
-  "$schema": "content/ja/catalogue/schema.json",
+  "$schema": "../schema.json",
   "version": 1,
   "entry": {
     "displayName": "日本語のカタログ名",

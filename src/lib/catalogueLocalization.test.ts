@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import Ajv from 'ajv';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import type { CatalogueEntry } from '../types/catalogue';
 import type { CatalogueLocalizationOverlay } from '../types/catalogueLocalization';
 import {
@@ -338,15 +338,69 @@ describe('parseCatalogueLocalization', () => {
     }
   });
 
-  it('documents and resolves the repository-root-relative schema reference', () => {
+  it('resolves documented schema references from each overlay path', () => {
     const documentation = readFileSync(
       join(process.cwd(), 'docs', 'japanese-localization.md'),
       'utf8',
     );
-    const schemaReference = 'content/ja/catalogue/schema.json';
+    const schemaPath = join(process.cwd(), 'content', 'ja', 'catalogue', 'schema.json');
+    const samples = [
+      {
+        source: 'official',
+        overlayPath: join(
+          process.cwd(),
+          'content',
+          'ja',
+          'catalogue',
+          'official',
+          'example.json',
+        ),
+        schemaReference: '../schema.json',
+      },
+      {
+        source: 'community',
+        overlayPath: join(
+          process.cwd(),
+          'content',
+          'ja',
+          'catalogue',
+          'community',
+          'alice',
+          'retail.json',
+        ),
+        schemaReference: '../../schema.json',
+      },
+      {
+        source: 'external',
+        overlayPath: join(
+          process.cwd(),
+          'content',
+          'ja',
+          'catalogue',
+          'external',
+          'fibo',
+          'loans.json',
+        ),
+        schemaReference: '../../schema.json',
+      },
+    ];
 
-    expect(documentation).toContain(`"$schema": "${schemaReference}"`);
-    expect(existsSync(join(process.cwd(), schemaReference))).toBe(true);
+    for (const sample of samples) {
+      expect(
+        resolve(dirname(sample.overlayPath), sample.schemaReference),
+        sample.source,
+      ).toBe(schemaPath);
+    }
+    expect(documentation).toContain('"$schema": "../schema.json"');
+    expect(documentation).toContain(
+      '| `content/ja/catalogue/official/<entry>.json` | `../schema.json` |',
+    );
+    expect(documentation).toContain(
+      '| `content/ja/catalogue/community/<author>/<entry>.json` | `../../schema.json` |',
+    );
+    expect(documentation).toContain(
+      '| `content/ja/catalogue/external/<source>/<entry>.json` | `../../schema.json` |',
+    );
   });
 
   it('lets Ajv uniqueItems remain structural while runtime rejects semantic duplicate keys', () => {
