@@ -1,18 +1,18 @@
 ---
-title: "Complete Platform"
+title: "完全なプラットフォーム"
 slug: complete-platform
-description: "Add Review to close the buyer feedback loop and complete the e-commerce ontology."
+description: "Reviewを追加して購入者のフィードバックループを閉じ、Eコマースのオントロジーを完成させます。"
 order: 4
 embed: official/ecommerce-step-3
 ---
 
-## Closing the feedback loop
+## フィードバックループを閉じる
 
-The final piece of the e-commerce puzzle is **customer reviews**. Reviews connect buyers back to products, creating a feedback loop that influences future purchases.
+Eコマースのパズルを完成させる最後のピースは、**カスタマーレビュー**です。レビューは購入者と商品を再びつなぎ、将来の購入に影響するフィードバックループを作ります。
 
-## Review entity
+## Reviewエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `reviewId` | string | ✓ |
 | `rating` | integer | |
@@ -20,36 +20,36 @@ The final piece of the e-commerce puzzle is **customer reviews**. Reviews connec
 | `body` | string | |
 | `verified` | boolean | |
 
-The `verified` boolean indicates whether the reviewer actually purchased the product — a critical trust signal for other buyers and for analytics.
+`verified` のboolean値は、レビュアーが実際に商品を購入したかどうかを示します。これは他の購入者にとっても分析にとっても重要な信頼シグナルです。
 
-## New relationships
+## 新しいリレーションシップ
 
-- **writes** — `Buyer` → `Review` (one-to-many)
-  A buyer can write many reviews over time.
+- **writes** — `Buyer` → `Review`（一対多）
+  購入者は時間の経過とともに複数のレビューを書けます。
 
-- **reviews** — `Review` → `Product` (many-to-one)
-  Each review is about exactly one product, but a product can have many reviews.
+- **reviews** — `Review` → `Product`（多対一）
+  各レビューはちょうど1つの商品についてのものですが、1つの商品には複数のレビューが付くことがあります。
 
-> **Feedback loop:** The path `Buyer → writes → Review → reviews → Product` creates a cycle back to Product — buyers consume products, then review them, influencing other buyers.
+> **フィードバックループ:** `Buyer → writes → Review → reviews → Product` のパスがProductへ戻るサイクルを作ります。購入者は商品を利用した後にレビューを書き、それが他の購入者に影響を与えます。
 
-## The complete graph
+## 完成したグラフ
 
 <ontology-embed id="official/ecommerce-step-3" diff="official/ecommerce-step-2" height="500px"></ontology-embed>
 
-*The complete E-Commerce ontology: 5 entities, 6 relationships. Review closes the buyer feedback loop.*
+*Eコマースオントロジーの全体像です。5つのエンティティと6つのリレーションシップからなり、Reviewが購入者のフィードバックループを閉じます。*
 
-## What the complete model enables
+## 完成したモデルでできること
 
-| Question | Graph path |
+| 質問 | グラフパス |
 |---|---|
-| Which products have the highest-rated verified reviews? | Review (verified=true) → Product |
-| Which buyers have full carts but no orders? | Buyer → Cart (itemCount > 0) with no Buyer → Order |
-| What's the average rating for products in a category? | Review → Product (group by category) |
-| Which loyal buyers write the most reviews? | Buyer (loyaltyTier=Gold) → Review (count) |
+| 最も評価の高い認証済みレビューが付いている商品はどれか？ | Review (verified=true) → Product |
+| カートが満杯なのに注文がない購入者は誰か？ | Buyer → Cart (itemCount > 0)、Buyer → Orderなし |
+| あるカテゴリの商品に対する平均評価はいくつか？ | Review → Product（カテゴリでグループ化） |
+| ロイヤルティの高い購入者のうち、最も多くレビューを書くのは誰か？ | Buyer (loyaltyTier=Gold) → Review (件数) |
 
-## GQL query example
+## GQLクエリの例
 
-Find verified reviews for products currently in someone's cart:
+誰かのカートに現在入っている商品について、認証済みのレビューを検索します。
 
 ```gql
 MATCH (b:Buyer)-[:has_cart]->(c:Cart)-[:contains]->(p:Product)<-[:reviews]-(r:Review)
@@ -57,29 +57,29 @@ WHERE r.verified = true
 RETURN p.name, r.rating, r.title
 ```
 
-## What we built
+## 構築したもの
 
-| Step | Entities added | Cumulative | Key concept |
+| ステップ | 追加したエンティティ | 累計 | 主要概念 |
 |---|---|---|---|
-| 1 | Buyer, Product, Order | 3 | Purchase flow, SKU identifiers |
-| 2 | Shopping-Cart | 4 | Session entities, one-to-one |
-| 3 | Review | 5 | Feedback loops, verified trust |
+| 1 | Buyer, Product, Order | 3 | 購入フロー、SKU識別子 |
+| 2 | Shopping-Cart | 4 | セッションエンティティ、一対一 |
+| 3 | Review | 5 | フィードバックループ、認証による信頼 |
 
-## Key takeaways
+## 重要なポイント
 
-1. **Session entities** (Cart) capture in-progress state
-2. **One-to-one** relationships model exclusive ownership
-3. **Boolean properties** (verified) enable trust-based filtering
-4. **Feedback loops** create richer query paths than linear chains
-5. The complete graph enables **funnel analysis** from browsing to reviewing
+1. **セッションエンティティ**（Cart）は進行中の状態を捉えます
+2. **一対一**のリレーションシップは、排他的な所有関係をモデル化します
+3. **booleanプロパティ**（verified）によって、信頼性に基づくフィルタリングができます
+4. **フィードバックループ**は、直線的な連鎖より豊かなクエリパスを作ります
+5. 完成したグラフによって、閲覧からレビューまでの**ファネル分析**が可能になります
 
 ```quiz
-Q: What makes the Review entity create a "feedback loop" in this ontology?
-- It connects to every other entity in the graph
-- It creates a path from Buyer back to Product through a different route than the purchase path [correct]
-- It has the most properties of any entity
-- It uses a boolean verified property
-> Without Review, the path from Buyer to Product only goes through Order. Review creates a second path — Buyer → Review → Product — forming a loop. This dual-path structure enables comparative queries (e.g. "bought but didn't review" vs "reviewed but didn't buy").
+Q: このオントロジーでReviewエンティティが「フィードバックループ」を作るのはなぜですか？
+- グラフ内の他のすべてのエンティティとつながるため
+- 購入パスとは異なる経路でBuyerからProductへ戻るパスを作るため [correct]
+- どのエンティティよりも多くのプロパティを持つため
+- boolean型のverifiedプロパティを使うため
+> Reviewがなければ、BuyerからProductへのパスはOrderだけを通ります。Reviewは2つ目のパス、つまりBuyer → Review → Productを作り、ループを形成します。この2経路の構造によって、「購入したがレビューしていない」と「レビューしたが購入していない」を比較するクエリが可能になります。
 ```
 
-You've completed the E-Commerce Platform learning path! Load any step from the [catalogue](#/catalogue) to explore it interactively.
+Eコマースプラットフォームの学習パスを完了しました！[カタログ](#/catalogue)から任意のステップを読み込んで、インタラクティブに探索してみましょう。

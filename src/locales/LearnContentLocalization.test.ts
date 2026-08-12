@@ -34,6 +34,16 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '04-complete-supply-chain.md',
     ],
   },
+  {
+    directory: 'ecommerce-path',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-core-marketplace.md',
+      '03-shopping-carts.md',
+      '04-complete-platform.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {
