@@ -562,11 +562,13 @@ function validateCoverage(
 
 class DuplicateJsonKeyScanner {
   private index = 0;
+  private readonly text: string;
+  private readonly filePath: string;
 
-  constructor(
-    private readonly text: string,
-    private readonly filePath: string,
-  ) {}
+  constructor(text: string, filePath: string) {
+    this.text = text;
+    this.filePath = filePath;
+  }
 
   scan(): void {
     this.skipWhitespace();
