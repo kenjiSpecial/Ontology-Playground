@@ -89,9 +89,10 @@ load live graphs from the catalogue with optional diff highlighting.
 
 In the Japanese fork, the Ontology School navigation, presentation controls,
 quiz feedback, and embedded graph controls are displayed in Japanese. Course
-metadata and all 14 articles across Ontology Fundamentals, Fourth Coffee, and
-E-Commerce are now available in Japanese; the remaining 47 of 61 learning
-articles are being translated in separate localization phases.
+metadata and all 34 articles across Ontology Fundamentals, Fourth Coffee,
+E-Commerce, Finance, Healthcare, Manufacturing, University, and HR System are
+now available in Japanese; the remaining 27 of 61 learning articles are being
+translated in separate localization phases.
 
 ### Quest System
 

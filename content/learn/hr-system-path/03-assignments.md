@@ -1,57 +1,57 @@
 ---
-title: "Assignments"
+title: "配属"
 slug: assignments
-description: "Add Assignment as a junction entity to model staffing history across employees, departments, and positions."
+description: "Assignmentを中間エンティティとして追加し、従業員、部門、役職にまたがる人員配置履歴をモデル化します。"
 order: 3
 ---
 
-## The staffing history problem
+## 人員配置履歴の課題
 
-An employee can move between departments or positions over time. A department can host many employees. A position can be filled by different people over time.
+従業員は時間の経過とともに、部門間を異動したり、役職を変更したりします。1つの部門には多数の従業員が所属でき、1つの役職を時期によって異なる人が担当することもあります。
 
-This is not a simple one-to-one structure.
+これは単純な一対一の構造ではありません。
 
-## Assignment as a junction entity
+## 中間エンティティとしてのAssignment
 
-Create **Assignment** to connect:
+次のエンティティを接続する**Assignment（配属）**を作成します。
 
-- `Employee` -> `Assignment` (one-to-many)
-- `Assignment` -> `Department` (many-to-one)
-- `Assignment` -> `Position` (many-to-one)
+- `Employee` -> `Assignment`（一対多）
+- `Assignment` -> `Department`（多対一）
+- `Assignment` -> `Position`（多対一）
 
-Assignment holds the context of the relationship.
+Assignmentは、これらのリレーションシップの文脈を保持します。
 
-### Assignment properties
+### Assignmentのプロパティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `assignmentId` | string | ✓ |
 | `startDate` | date | |
 | `endDate` | date | |
 | `isPrimary` | boolean | |
 
-With `startDate` and `endDate`, you can answer historical questions like:
+`startDate` と `endDate` があれば、次のような過去に関する問いに答えられます。
 
-- "Who was in Finance during Q2?"
-- "Which employees changed departments this year?"
+- 「第2四半期に財務部門に所属していたのは誰か」
+- 「今年、部門を異動した従業員は誰か」
 
-## Design pattern in action
+## 設計パターンの実践
 
-This is the same general pattern used in many domains:
+これは、多くのドメインで使われる共通のパターンです。
 
-- Student-Course via Enrollment
-- Customer-Product via Order line items
-- Employee-Department-Position via Assignment
+- Enrollmentを介したStudentとCourse
+- Orderの明細項目を介したCustomerとProduct
+- Assignmentを介したEmployee、Department、Position
 
-Use junction entities when relationships need their own attributes.
+リレーションシップ自体に属性が必要な場合は、中間エンティティを使います。
 
 ```quiz
-Q: What is the main reason Assignment should be its own entity?
-- It improves icon choices in the graph
-- It carries relationship-specific attributes like startDate and endDate [correct]
-- It removes the need for identifiers
-- It prevents many-to-one relationships
-> Assignment stores the context of staffing over time. Those properties belong to the relationship, not to Employee, Department, or Position alone.
+Q: Assignmentを独立したエンティティにする主な理由は何ですか？
+- グラフで選べるアイコンが増えるから
+- startDateやendDateなど、リレーションシップ固有の属性を保持するから [correct]
+- 識別子が不要になるから
+- 多対一のリレーションシップを防ぐから
+> Assignmentには、時間に伴う人員配置の文脈を保存します。これらのプロパティはEmployee、Department、Positionのいずれか1つではなく、エンティティ間のリレーションシップに属します。
 ```
 
-Next, we add performance reviews to complete the HR analytics model.
+次に業績評価を追加し、人事分析モデルを完成させます。

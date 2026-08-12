@@ -1,7 +1,7 @@
 ---
-title: "Smart Manufacturing"
+title: "スマート製造"
 slug: manufacturing-path
-description: "Model an IoT-enabled factory — machines, sensors, work orders, parts, and quality checks."
+description: "機械、センサー、作業指示、部品、品質検査からなるIoT対応工場をモデル化します。"
 type: path
 icon: 🏭
 ---

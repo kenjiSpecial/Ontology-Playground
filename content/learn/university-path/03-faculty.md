@@ -1,23 +1,23 @@
 ---
-title: "Faculty"
+title: "教員"
 slug: faculty
-description: "Add Professor to track who teaches what — connecting faculty to courses and students through teaching assignments."
+description: "Professorを追加して誰が何を教えるかを追跡し、授業担当を介して教員を科目や学生につなぎます。"
 order: 3
 embed: official/university-step-2
 ---
 
-## Adding faculty
+## 教員の追加
 
-Who teaches the courses? The **Professor** entity adds the teaching dimension — connecting faculty to courses and, transitively, to students.
+科目を担当するのは誰でしょうか？**Professor**エンティティによって授業という観点が加わり、教員を科目に、さらに科目を介して学生につなげられます。
 
-Adding Professor enables:
-- "Which professor teaches the most 400-level courses?"
-- "What is the average GPA in Professor Smith's courses?"
-- "Which tenured faculty teach introductory courses?"
+Professorを追加すると、次の問いに答えられます。
+- 「400レベルの科目を最も多く担当している教授は誰か？」
+- 「Smith教授の担当科目における平均GPAはいくらか？」
+- 「入門科目を担当しているテニュア保有教員は誰か？」
 
-## Professor entity
+## Professorエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `professorId` | string | ✓ |
 | `name` | string | |
@@ -25,38 +25,38 @@ Adding Professor enables:
 | `tenured` | boolean | |
 | `officeHours` | string | |
 
-The `rank` property (Assistant, Associate, Full) reflects academic hierarchy. The `tenured` boolean enables queries about job security and institutional investment.
+`rank` プロパティ（Assistant、Associate、Full）は、大学教員の職位階層を表します。真偽値型の `tenured` によって、雇用の安定性や教育機関による長期的な人材投資についてクエリを実行できます。
 
-## New relationships
+## 新しいリレーションシップ
 
-- **teaches** — `Professor` → `Course` (one-to-many)
-  A professor teaches one or more courses per semester.
+- **teaches** — `Professor` → `Course`（一対多）
+  1人の教授は、学期ごとに1つ以上の科目を担当します。
 
-- **advises** — `Professor` → `Student` (one-to-many)
-  A professor advises students in their academic program.
+- **advises** — `Professor` → `Student`（一対多）
+  1人の教授は、所属する教育課程の学生を指導します。
 
-> **Transitive queries:** With Professor → Course ← Enrollment ← Student, you can now ask questions that cross the teaching relationship: "Which students are taking courses from tenured professors?" This requires traversing Professor → Course → Enrollment → Student.
+> **複数ホップのクエリ：** Professor → Course ← Enrollment ← Studentという経路を使うと、「テニュア保有教授の科目を履修している学生は誰か？」という、授業担当のリレーションシップを横断する問いに答えられます。そのためには、Professor → Course → Enrollment → Studentとたどる必要があります。
 
-## The growing graph
+## 拡張されたグラフ
 
 <ontology-embed id="official/university-step-2" diff="official/university-step-1" height="400px"></ontology-embed>
 
-*Professor joins with teaching and advising relationships. The diff highlights what's new.*
+*Professorが授業担当と学生指導のリレーションシップとともに加わりました。差分には新しい要素が強調表示されます。*
 
-## What we learned
+## 学んだこと
 
-- **Boolean properties** (tenured) create yes/no categorizations for filtering
-- **Transitive queries** traverse multiple relationships to connect distant entities
-- **Academic rank** follows a defined hierarchy (Assistant → Associate → Full)
-- The graph now supports both student-centric and faculty-centric queries
+- **真偽値型のプロパティ**（tenured）は、「はい」か「いいえ」で分類して絞り込めるようにします
+- **複数ホップのクエリ**は、複数のリレーションシップをたどって離れたエンティティをつなぎます
+- **大学教員の職位**には、定義された階層（Assistant → Associate → Full）があります
+- このグラフでは、学生中心と教員中心のどちらのクエリも実行できます
 
 ```quiz
-Q: What does a transitive query across the university ontology look like?
-- Querying a single entity's properties
-- Traversing multiple relationships like Professor → Course → Enrollment → Student to connect distant entities [correct]
-- Looking up a professor by their ID
-- Counting the number of courses in the system
-> Transitive queries are one of the greatest strengths of graph-based ontologies. By traversing Professor → Course → Enrollment → Student, you can answer questions like "Which students are in tenured professors' classes?" — connecting entities that have no direct relationship but are linked through intermediate nodes.
+Q: 大学オントロジーを横断する複数ホップのクエリは、どのようなものですか？
+- 1つのエンティティのプロパティを問い合わせるもの
+- Professor → Course → Enrollment → Studentのように複数のリレーションシップをたどり、離れたエンティティをつなぐもの [correct]
+- 教授をIDで検索するもの
+- システム内の科目数を数えるもの
+> 複数ホップのクエリは、グラフベースのオントロジーが持つ大きな強みの1つです。Professor → Course → Enrollment → Studentとたどることで、「テニュア保有教授の授業を履修している学生は誰か？」といった問いに答えられます。これは、直接のリレーションシップはないものの、中間ノードを介してつながるエンティティ同士を結び付けるものです。
 ```
 
-Next, we'll add Department to organize the academic structure.
+次はDepartmentを追加して、教育組織の構造を表します。

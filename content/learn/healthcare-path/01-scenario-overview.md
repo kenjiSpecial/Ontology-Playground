@@ -1,43 +1,43 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Meet the Healthcare System — a patient care platform that needs an ontology to connect patients, providers, diagnoses, and treatments."
+description: "患者、医療提供者、診断、治療をつなぐオントロジーを必要とする、患者診療プラットフォームである「医療システム」について学びます。"
 order: 1
 ---
 
-## The scenario
+## シナリオ
 
-You are designing the data model for a **healthcare management system**. The hospital network tracks:
+あなたは**医療管理システム**のデータモデルを設計しています。この病院ネットワークでは、次の情報を追跡します。
 
-- **Patients** with medical records, blood types, and allergy information
-- **Providers** (doctors, specialists) with licenses and departmental affiliations
-- **Appointments** scheduling patient visits with specific providers
-- **Diagnoses** recording medical conditions with ICD codes and severity levels
-- **Prescriptions** tracking medication orders, dosages, and refills
+- 診療記録、血液型、アレルギー情報を持つ**患者（Patient）**
+- 免許情報と所属診療科を持つ**医療提供者（Provider）**（医師、専門医）
+- 患者が特定の医療提供者を受診する日時を管理する**予約（Appointment）**
+- ICDコードと重症度を用いて病状を記録する**診断（Diagnosis）**
+- 薬剤の指示、用量、再調剤を追跡する**処方箋（Prescription）**
 
-Data is spread across electronic health records (EHR), scheduling systems, pharmacy databases, and billing platforms.
+データは電子健康記録（EHR）、予約システム、薬局データベース、請求プラットフォームに分散しています。
 
-## Why an ontology?
+## オントロジーが必要な理由
 
-A clinical question like **"Which patients diagnosed with severe conditions by cardiology providers still have prescriptions with zero refills remaining?"** crosses patient records, diagnosis history, provider specialties, and pharmacy data.
+**「循環器科の医療提供者から重症と診断された患者のうち、再調剤の残り回数が0回の処方箋を持つのは誰か？」**という臨床上の問いに答えるには、患者記録、診断履歴、医療提供者の専門分野、薬局データを横断する必要があります。
 
-With an ontology, this maps to: `Patient → Diagnosis (severity=severe) ← Provider (specialty=Cardiology)` and `Diagnosis → Prescription (refillsRemaining=0)`.
+オントロジーを使えば、この問いを `Patient → Diagnosis (severity=severe) ← Provider (specialty=Cardiology)` と `Diagnosis → Prescription (refillsRemaining=0)` に対応付けられます。
 
-## What we'll build
+## 構築するもの
 
-| Step | Entities | What you'll learn |
+| ステップ | エンティティ | 学ぶこと |
 |---|---|---|
-| 1 | Patient, Provider, Appointment | Core clinical entities, scheduling relationships |
-| 2 | + Diagnosis | Medical conditions, multi-source relationships |
-| 3 | + Prescription | Treatment chain, completing the care cycle |
+| 1 | Patient, Provider, Appointment | 中核となる臨床エンティティ、予約のリレーションシップ |
+| 2 | + Diagnosis | 病状、複数ソースをつなぐリレーションシップ |
+| 3 | + Prescription | 治療の連鎖、診療サイクルの完成 |
 
-By the end, you'll have a 5-entity, 6-relationship ontology covering the complete patient care journey from appointment to treatment.
+最後には、予約から治療までの患者診療の全過程を網羅する、5つのエンティティと6つのリレーションシップを持つオントロジーが完成します。
 
-## Key concepts
+## 重要な概念
 
-- **Clinical workflows** — appointment scheduling, diagnosis, treatment
-- **Shared relationships** — both Patient and Provider connect to Appointment
-- **Care chains** — Patient → Diagnosis → Prescription
-- **Standardized identifiers** — MRN (Medical Record Number), ICD codes, Rx numbers
+- **臨床ワークフロー** — 予約、診断、治療
+- **共有されるリレーションシップ** — PatientとProviderの両方がAppointmentにつながる構造
+- **診療の連鎖** — Patient → Diagnosis → Prescription
+- **標準化された識別子** — MRN（診療録番号）、ICDコード、Rx番号
 
-Let's start with the care delivery foundation.
+診療提供の基盤から始めましょう。
