@@ -1,6 +1,8 @@
+import { Fragment } from 'react';
 import { motion } from 'framer-motion';
 import { X, Database, Table, BarChart3, Cloud } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 interface DataSourcesModalProps {
   onClose: () => void;
@@ -27,12 +29,12 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <div>
-            <h2 style={{ fontSize: 24, fontWeight: 600 }}>Data Sources</h2>
+            <h2 style={{ fontSize: 24, fontWeight: 600 }}>{jaMessages.dataExchange.dataSources.title}</h2>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 4 }}>
-              How the Fourth Coffee ontology binds to a Data Lakehouse
+              {jaFormatters.dataExchangeSourceDescription(currentOntology.name)}
             </p>
           </div>
-          <button className="icon-btn" onClick={onClose}>
+          <button className="icon-btn" onClick={onClose} aria-label={jaMessages.common.close}>
             <X size={20} />
           </button>
         </div>
@@ -59,9 +61,9 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
             <Cloud size={28} color="white" />
           </div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>Data Lakehouse</div>
+            <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{jaMessages.dataExchange.dataSources.lakehouse}</div>
             <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              Unified storage layer for analytics. The ontology binds entity types to lakehouse tables and semantic models.
+              {jaMessages.dataExchange.dataSources.overview}
             </div>
           </div>
         </div>
@@ -95,7 +97,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                     <div>
                       <div style={{ fontSize: 16, fontWeight: 600 }}>{entity.name}</div>
                       <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-                        {entity.properties.length} properties mapped
+                        {jaFormatters.dataExchangePropertiesMapped(entity.properties.length)}
                       </div>
                     </div>
                   </div>
@@ -111,7 +113,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                     color: isLakehouse ? 'var(--ms-blue)' : 'var(--ms-yellow)'
                   }}>
                     {isSemanticModel ? <BarChart3 size={14} /> : <Table size={14} />}
-                    {isSemanticModel ? 'Semantic model' : 'Lakehouse'}
+                    {isSemanticModel ? jaMessages.dataExchange.dataSources.semanticModel : jaMessages.dataExchange.dataSources.lakehouse}
                   </div>
                 </div>
 
@@ -123,7 +125,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <Database size={14} color="var(--text-tertiary)" />
-                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Source Table:</span>
+                    <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{jaMessages.dataExchange.dataSources.sourceTable}</span>
                   </div>
                   <code style={{ 
                     fontSize: 13, 
@@ -136,18 +138,18 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                 </div>
 
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 8, textTransform: 'uppercase', fontWeight: 600 }}>
-                  Column Mappings
+                  {jaMessages.dataExchange.dataSources.columnMappings}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '8px 12px', fontSize: 13 }}>
-                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600 }}>Property</div>
+                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600 }}>{jaMessages.dataExchange.dataSources.property}</div>
                   <div></div>
-                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600, textAlign: 'right' }}>Column</div>
+                  <div style={{ color: 'var(--text-tertiary)', fontWeight: 600, textAlign: 'right' }}>{jaMessages.dataExchange.dataSources.column}</div>
                   {Object.entries(binding.columnMappings).map(([prop, column]) => (
-                    <>
-                      <div key={`${prop}-prop`} style={{ color: 'var(--text-primary)' }}>{prop}</div>
-                      <div key={`${prop}-arrow`} style={{ color: 'var(--text-tertiary)' }}>→</div>
-                      <div key={`${prop}-col`} style={{ color: 'var(--ms-cyan)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{column}</div>
-                    </>
+                    <Fragment key={prop}>
+                      <div style={{ color: 'var(--text-primary)' }}>{prop}</div>
+                      <div style={{ color: 'var(--text-tertiary)' }}>→</div>
+                      <div style={{ color: 'var(--ms-cyan)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>{column}</div>
+                    </Fragment>
                   ))}
                 </div>
               </div>
@@ -162,18 +164,18 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
             textAlign: 'center'
           }}>
             <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 4 }}>
-              <strong>Other Entity Types:</strong> Store, Supplier, Shipment
+              <strong>{jaMessages.dataExchange.dataSources.otherEntities}</strong> Store、Supplier、Shipment
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-              In this demo, bindings are shown for Customer, Order, and Product. 
-              In a real deployment, all entities would be bound to data platform sources.
+              {jaMessages.dataExchange.dataSources.demoBindingsBeforeValues}Customer、Order、Product
+              {jaMessages.dataExchange.dataSources.demoBindingsAfterValues}
             </div>
           </div>
         </div>
 
         <div style={{ marginTop: 24, textAlign: 'center' }}>
           <button className="btn btn-primary" onClick={onClose}>
-            Close
+            {jaMessages.common.close}
           </button>
         </div>
       </motion.div>
