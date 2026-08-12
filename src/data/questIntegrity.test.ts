@@ -6,6 +6,18 @@ import type { Quest, QuestStep } from './quests';
 import { quests as defaultQuests } from './quests';
 import { cosmicCoffeeOntology } from './ontology';
 import { generateQuestsForOntology } from './questGenerator';
+import { validateQueryQuestSteps } from './questQueryValidator';
+
+const JAPANESE_TEXT = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u;
+
+function authoredQuestValues(quests: Quest[]): string[] {
+  return quests.flatMap((quest) => [
+    quest.title,
+    quest.description,
+    quest.reward.badge,
+    ...quest.steps.flatMap((step) => [step.instruction, ...(step.hint ? [step.hint] : [])]),
+  ]);
+}
 
 interface CatalogueEntry {
   id: string;
@@ -102,6 +114,16 @@ describe('quest target integrity', () => {
   it('keeps default Fourth Coffee quest targets valid', () => {
     const errors = validateQuestTargets(defaultQuests, cosmicCoffeeOntology, 'default Fourth Coffee quests');
     expect(errors).toEqual([]);
+  });
+
+  it('keeps every default user-visible quest field in Japanese', () => {
+    for (const value of authoredQuestValues(defaultQuests)) {
+      expect(value).toMatch(JAPANESE_TEXT);
+    }
+  });
+
+  it('keeps Japanese default query quests executable', () => {
+    expect(validateQueryQuestSteps(defaultQuests, cosmicCoffeeOntology)).toEqual([]);
   });
 
   it('keeps generated quests valid for every catalogue ontology', () => {

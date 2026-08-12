@@ -218,6 +218,15 @@ export const jaMessages = {
     conceptEntityResult: '**エンティティ型**は、顧客、製品、注文など、現実世界の概念を表す再利用可能な論理モデルです。オントロジーでは次の項目を標準化します:\n\n• **名前と説明** - 共通の用語\n• **プロパティ** - 型や単位を持つ属性\n• **識別子** - 各インスタンスを一意に特定するキー\n\nエンティティ型により、組織全体で一貫した定義を利用できます。',
     conceptRelationshipResult: '**リレーションシップ**は、エンティティ型を結ぶ、型と方向を持つリンクです。次の項目を定義します:\n\n• **名前** - 動作を表す語\n• **方向** - あるエンティティから別のエンティティへの向き\n• **カーディナリティ** - 一対一、一対多など\n• **属性** - 接続に付与する任意のプロパティ\n\nリレーションシップをたどることで、複雑な質問に回答できます。',
   },
+  quests: {
+    title: 'クエスト',
+    abandon: '中止',
+    difficulty: {
+      beginner: '初級',
+      intermediate: '中級',
+      advanced: '上級',
+    },
+  },
 } as const satisfies MessageTree;
 
 export type JapaneseMessages = typeof jaMessages;
@@ -279,4 +288,8 @@ export const jaFormatters = {
   queryCountProductionNote: (entityName: string): string => `_実際の環境では、データプラットフォームから${entityName}レコード件数を取得します。_`,
   querySchemaTotal: (entities: number, relationships: number): string => `合計: ${entities}個のエンティティ、${relationships}個のリレーションシップ`,
   queryFallback: (query: string, ontologyName: string, suggestions: readonly string[]): string => `「${query}」は**${ontologyName}**では解釈できませんでした。\n\n質問例:\n${suggestions.map(suggestion => `• 「${suggestion}」`).join('\n')}\n\nグラフの要素を選択して、オントロジーを視覚的に探索することもできます。`,
+  questProgress: (current: number, total: number): string => `${current}/${total}ステップ`,
+  questRewardPoints: (points: number): string => `+${points}ポイント`,
+  earnedBadges: (count: number): string => `獲得バッジ（${count}）`,
+  totalPoints: (points: number): string => `合計: ${points}ポイント`,
 } as const;

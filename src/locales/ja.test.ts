@@ -30,5 +30,9 @@ describe('Japanese message catalog', () => {
     expect(jaFormatters.queryDetectedEntityDefinition('Problem')).toBe('エンティティ定義の質問として解釈: Problem');
     expect(jaFormatters.queryPropertiesHeading(3)).toBe('プロパティ（3件）:');
     expect(jaFormatters.querySchemaTotal(3, 1)).toBe('合計: 3個のエンティティ、1個のリレーションシップ');
+    expect(jaFormatters.questProgress(1, 3)).toBe('1/3ステップ');
+    expect(jaFormatters.questRewardPoints(100)).toBe('+100ポイント');
+    expect(jaFormatters.earnedBadges(2)).toBe('獲得バッジ（2）');
+    expect(jaFormatters.totalPoints(350)).toBe('合計: 350ポイント');
   });
 });

@@ -15,7 +15,11 @@ const ontology: Ontology = {
       description: 'A service.',
       icon: '⚙️',
       color: '#E74C3C',
-      properties: [{ name: 'serviceId', type: 'string', isIdentifier: true }],
+      properties: [
+        { name: 'serviceId', type: 'string', isIdentifier: true },
+        { name: 'name', type: 'string' },
+        { name: 'status', type: 'string' },
+      ],
     },
     {
       id: 'configurationitem',
@@ -37,6 +41,8 @@ const ontology: Ontology = {
   ],
 };
 
+const JAPANESE_TEXT = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u;
+
 describe('generateQuestsForOntology', () => {
   it('keeps default Fourth Coffee query quests executable in the live query engine', () => {
     const issues = validateQueryQuestSteps(defaultQuests, cosmicCoffeeOntology);
@@ -51,13 +57,31 @@ describe('generateQuestsForOntology', () => {
     expect(issues).toEqual([]);
   });
 
-  it('uses entity-based traversal wording for query steps', () => {
+  it('uses Japanese entity-based traversal wording for query steps', () => {
     const quests = generateQuestsForOntology(ontology);
     const queryQuest = quests.find((quest) => quest.id === 'quest-5');
     const traversalStep = queryQuest?.steps.find((step) => step.id === 'step-5-3');
 
-    expect(traversalStep?.instruction).toBe('Try a traversal query: "How does Service connect to ConfigurationItem?"');
+    expect(traversalStep?.instruction).toBe('「ServiceはConfigurationItemとどうつながりますか？」と質問してください');
     expect(traversalStep?.instruction).not.toContain('Show me all is supported by connections');
+  });
+
+  it('generates Japanese authored quest content while preserving ontology values', () => {
+    const generatedQuests = generateQuestsForOntology(ontology);
+    const values = generatedQuests.flatMap((quest) => [
+      quest.title,
+      quest.description,
+      quest.reward.badge,
+      ...quest.steps.flatMap((step) => [step.instruction, ...(step.hint ? [step.hint] : [])]),
+    ]);
+
+    for (const value of values) {
+      expect(value).toMatch(JAPANESE_TEXT);
+    }
+    expect(values.some((value) => value.includes('Service'))).toBe(true);
+    expect(values.some((value) => value.includes('ConfigurationItem'))).toBe(true);
+    expect(values.some((value) => value.includes('is supported by'))).toBe(true);
+    expect(values.some((value) => value.includes('serviceId'))).toBe(true);
   });
 
   it('extracts queries enclosed in Japanese corner quotes', () => {
