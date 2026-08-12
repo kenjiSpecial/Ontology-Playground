@@ -43,7 +43,7 @@ Eコマースのパズルを完成させる最後のピースは、**カスタ�
 | 質問 | グラフパス |
 |---|---|
 | 最も評価の高い認証済みレビューが付いている商品はどれか？ | Review (verified=true) → Product |
-| カートが満杯なのに注文がない購入者は誰か？ | Buyer → Cart (itemCount > 0)、Buyer → Orderなし |
+| 商品が入ったカートを持っているのに注文がない購入者は誰か？ | Buyer → Cart (itemCount > 0)、Buyer → Orderなし |
 | あるカテゴリの商品に対する平均評価はいくつか？ | Review → Product（カテゴリでグループ化） |
 | ロイヤルティの高い購入者のうち、最も多くレビューを書くのは誰か？ | Buyer (loyaltyTier=Gold) → Review (件数) |
 
