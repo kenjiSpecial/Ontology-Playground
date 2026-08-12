@@ -181,12 +181,12 @@ into a static JSON file.
   failures, graph/inspector/search/query/quest behavior, and export boundaries.
 - [x] Document Japanese text and justified technical-token validation in
   [docs/japanese-localization.md](docs/japanese-localization.md).
-- [ ] Translate the real catalogue entries. Issues #27–#29 cover 36/71
+- [ ] Translate the real catalogue entries. Issues #27–#30 cover 44/71
   entries (the four Cosmic Coffee, four E-commerce, 16 Banking & Finance,
-  Healthcare, Smart Manufacturing, and University entries, plus six IQ Lab
-  Retail Supply Chain and six Zava Grove-to-Shelf entries); the remaining 35
-  entries are tracked in Issues #30–#33. The full catalogue translation is not
-  complete.
+  Healthcare, Smart Manufacturing, and University entries, six IQ Lab Retail
+  Supply Chain, six Zava Grove-to-Shelf, and eight FIBO Loans and Risk Lab
+  entries); the remaining 27 entries are tracked in Issues #31–#33. The full
+  catalogue translation is not complete.
 
 ---
 

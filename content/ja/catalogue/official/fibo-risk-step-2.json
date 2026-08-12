@@ -1,0 +1,237 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "FIBOリスクラボ — ステップ2：地理的階層",
+    "displayDescription": "地理的リスク分析のため、地域、国、災害地域フラグを持つ管轄区域を追加します。",
+    "displayTags": [
+      {
+        "tag": "fibo",
+        "displayName": "FIBO（金融業界ビジネスオントロジー）"
+      },
+      {
+        "tag": "risk",
+        "displayName": "リスク"
+      },
+      {
+        "tag": "geography",
+        "displayName": "地理"
+      },
+      {
+        "tag": "school",
+        "displayName": "学習"
+      },
+      {
+        "tag": "step-2",
+        "displayName": "ステップ2"
+      }
+    ]
+  },
+  "ontology": {
+    "displayName": "FIBOリスクラボ — ステップ2：地理的階層",
+    "displayDescription": "産業分類に、災害地域リスクフラグを持つ地理的階層を加えたモデルです。"
+  },
+  "entities": [
+    {
+      "id": "sector",
+      "displayName": "セクター",
+      "displayDescription": "幅広い機能によって産業をまとめる経済分類の最上位区分です。"
+    },
+    {
+      "id": "subsector",
+      "displayName": "サブセクター",
+      "displayDescription": "経済セクターをより細かく分類した下位区分です。"
+    },
+    {
+      "id": "industryGroup",
+      "displayName": "産業グループ",
+      "displayDescription": "リスク分析のため、NAICSで符号化し気候感応度と景気循環性を持つ産業グループです。"
+    },
+    {
+      "id": "region",
+      "displayName": "地域",
+      "displayDescription": "マクロ経済分析のため、大陸または地理的地域をまとめる区分です。"
+    },
+    {
+      "id": "country",
+      "displayName": "国",
+      "displayDescription": "経済区分、通貨、規制フレームワークの属性を持つ国家です。"
+    },
+    {
+      "id": "jurisdiction",
+      "displayName": "管轄区域",
+      "displayDescription": "ハリケーン、洪水、地震、山火事のリスク地域フラグを持つ、国より下位の管轄区域です。"
+    }
+  ],
+  "properties": [
+    {
+      "entityId": "sector",
+      "propertyName": "sectorCode",
+      "displayName": "セクターコード"
+    },
+    {
+      "entityId": "sector",
+      "propertyName": "sectorName",
+      "displayName": "セクター名"
+    },
+    {
+      "entityId": "sector",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "subsector",
+      "propertyName": "subsectorCode",
+      "displayName": "サブセクターコード"
+    },
+    {
+      "entityId": "subsector",
+      "propertyName": "subsectorName",
+      "displayName": "サブセクター名"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "naicsCode",
+      "displayName": "NAICSコード"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "cyclicality",
+      "displayName": "景気循環性"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "climateSensitivity",
+      "displayName": "気候感応度"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "essentialServices",
+      "displayName": "必須サービス"
+    },
+    {
+      "entityId": "industryGroup",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "regionCode",
+      "displayName": "地域コード"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "regionName",
+      "displayName": "地域名"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "description",
+      "displayName": "説明"
+    },
+    {
+      "entityId": "region",
+      "propertyName": "disasterProfile",
+      "displayName": "災害プロファイル"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "countryCode",
+      "displayName": "国コード"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "countryName",
+      "displayName": "国名"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "economicZone",
+      "displayName": "経済区分"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "currency",
+      "displayName": "通貨コード"
+    },
+    {
+      "entityId": "country",
+      "propertyName": "regulatoryFramework",
+      "displayName": "規制フレームワーク"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "code",
+      "displayName": "管轄区域コード"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "name",
+      "displayName": "名称"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "hurricaneZone",
+      "displayName": "ハリケーン地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "floodZone",
+      "displayName": "洪水地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "earthquakeZone",
+      "displayName": "地震地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "wildfireZone",
+      "displayName": "山火事地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "coastal",
+      "displayName": "沿岸地域"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "latitude",
+      "displayName": "緯度"
+    },
+    {
+      "entityId": "jurisdiction",
+      "propertyName": "longitude",
+      "displayName": "経度"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "partOfSector",
+      "displayName": "セクターに属する",
+      "displayDescription": "サブセクターを親の経済セクターへ関連付けます。"
+    },
+    {
+      "id": "belongsToSubsector",
+      "displayName": "サブセクターに属する",
+      "displayDescription": "産業グループを親のサブセクターへ関連付けます。"
+    },
+    {
+      "id": "inCountry",
+      "displayName": "国に属する",
+      "displayDescription": "管轄区域を所属する国へ関連付けます。"
+    },
+    {
+      "id": "inRegion",
+      "displayName": "地域に属する",
+      "displayDescription": "管轄区域を地理的地域へ関連付けます。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import {
+  existsSync,
   mkdtempSync,
   mkdirSync,
   rmSync,
@@ -144,6 +145,8 @@ const quietLogger = {
   error: () => undefined,
 };
 
+const ROOT = join(import.meta.dirname, '..');
+
 function recordingLogger() {
   const errors: string[] = [];
   return {
@@ -157,6 +160,41 @@ function recordingLogger() {
 }
 
 describe('compileCatalogue localization integration', () => {
+  it('compiles Japanese overlays for every FIBO Loans and Risk lab stage', () => {
+    const catalogue = compileCatalogue({ rootDir: ROOT, logger: quietLogger });
+    const expectedCounts = {
+      'official/fibo-loans-step-1': { entities: 3, properties: 9, relationships: 2 },
+      'official/fibo-loans-step-2': { entities: 5, properties: 10, relationships: 4 },
+      'official/fibo-loans-step-3': { entities: 8, properties: 12, relationships: 7 },
+      'official/fibo-loans-step-4': { entities: 10, properties: 13, relationships: 9 },
+      'official/fibo-risk-step-1': { entities: 3, properties: 11, relationships: 2 },
+      'official/fibo-risk-step-2': { entities: 6, properties: 29, relationships: 4 },
+      'official/fibo-risk-step-3': { entities: 9, properties: 43, relationships: 7 },
+      'official/fibo-risk-step-4': { entities: 11, properties: 55, relationships: 9 },
+    } as const;
+
+    for (const [id, counts] of Object.entries(expectedCounts)) {
+      const overlayPath = join(ROOT, 'content', 'ja', 'catalogue', `${id}.json`);
+      expect(existsSync(overlayPath), `${id} overlay is missing`).toBe(true);
+
+      const entry = catalogue.entries.find((candidate) => candidate.id === id);
+      expect(entry, `${id} source entry is missing`).toBeTruthy();
+      expect(entry?.displayName, `${id} is not localized by the compiler`).toMatch(
+        /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/u,
+      );
+      expect(entry?.ontology.entityTypes, `${id} entity step diff is wrong`).toHaveLength(
+        counts.entities,
+      );
+      expect(
+        entry?.ontology.entityTypes.reduce((total, entity) => total + entity.properties.length, 0),
+        `${id} property step diff is wrong`,
+      ).toBe(counts.properties);
+      expect(entry?.ontology.relationships, `${id} relationship step diff is wrong`).toHaveLength(
+        counts.relationships,
+      );
+    }
+  });
+
   it('loads an overlay from content/ja/catalogue/<source>/<entry>.json', () => {
     const root = createFixture(true);
 

@@ -105,12 +105,12 @@ preserving RDF/OWL source data, stable IDs, bindings, query matching, and
 export compatibility. See the [Japanese localization guide](docs/japanese-localization.md)
 for the schema, complete-coverage rules, and validation procedure.
 
-Japanese display overlays currently cover 36 of the 71 real catalogue entries
-(36/71): the four Cosmic Coffee and four E-commerce entries from Issue #27,
+Japanese display overlays currently cover 44 of the 71 real catalogue entries
+(44/71): the four Cosmic Coffee and four E-commerce entries from Issue #27,
 the 16 Banking & Finance, Healthcare, Smart Manufacturing, and University
-entries from Issue #28, plus the six IQ Lab Retail Supply Chain and six Zava
-Grove-to-Shelf entries from Issue #29. The remaining 35 entries are tracked in
-Issues #30–#33.
+entries from Issue #28, the six IQ Lab Retail Supply Chain and six Zava
+Grove-to-Shelf entries from Issue #29, plus the eight FIBO Loans and Risk Lab
+entries from Issue #30. The remaining 27 entries are tracked in Issues #31–#33.
 The full catalogue is not yet translated.
 
 ### Quest System
