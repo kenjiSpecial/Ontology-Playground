@@ -403,6 +403,19 @@ describe('parseCatalogueLocalization', () => {
     );
   });
 
+  it('treats $schema as opaque tooling metadata while enforcing runtime semantics', () => {
+    const overlay = makeOverlay();
+    overlay.$schema = 'https://example.invalid/catalogue-schema.json';
+
+    expect(parse(overlay).$schema).toBe(overlay.$schema);
+
+    const invalid = makeOverlay();
+    invalid.$schema = 'not-a-resolvable-schema';
+    invalid.entry.displayName = 'Customer';
+
+    expect(() => parse(invalid)).toThrow(/entry\.displayName.*Japanese/i);
+  });
+
   it('lets Ajv uniqueItems remain structural while runtime rejects semantic duplicate keys', () => {
     const overlay = makeOverlay();
     overlay.entities.push({ ...overlay.entities[0], displayName: '別の顧客' });

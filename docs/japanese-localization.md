@@ -30,8 +30,11 @@ catalogue/external/fibo/loans/               → content/ja/catalogue/external/f
 `schema.json` in `content/ja/catalogue/` is documentation/schema metadata and
 is skipped by the compiler. The overlay file itself does not contain a mutable
 catalogue ID; the compiler derives it from the relative path and rejects an
-unknown path. The `$schema` value is resolved relative to the overlay file, so
-the reference must match the source directory depth:
+unknown path. `$schema` is an opaque, non-empty hint for editors and other
+external schema tooling. The runtime parser and compiler never resolve, fetch,
+or trust that value; they always perform their own structural and semantic
+validation. For external tooling, keep the reference at the source directory
+depth shown below:
 
 | Overlay JSON path | `$schema` reference |
 |---|---|

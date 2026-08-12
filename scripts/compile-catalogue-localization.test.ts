@@ -144,6 +144,18 @@ const quietLogger = {
   error: () => undefined,
 };
 
+function recordingLogger() {
+  const errors: string[] = [];
+  return {
+    logger: {
+      log: () => undefined,
+      warn: () => undefined,
+      error: (message: string) => errors.push(message),
+    },
+    errors,
+  };
+}
+
 describe('compileCatalogue localization integration', () => {
   it('loads an overlay from content/ja/catalogue/<source>/<entry>.json', () => {
     const root = createFixture(true);
@@ -213,5 +225,66 @@ describe('compileCatalogue localization integration', () => {
     expect(() => compileCatalogue({ rootDir: root, logger: quietLogger })).toThrow(
       /catalogue.*localization overlay root must be a directory/i,
     );
+  });
+
+  it('rejects a source RDF symbolic link before parsing it', () => {
+    const root = createFixture(false);
+    const entryDir = join(root, 'catalogue', 'official', 'example');
+    const rdfPath = join(entryDir, 'example.rdf');
+    const target = join(root, 'outside.rdf');
+    rmSync(rdfPath);
+    writeFileSync(target, serializeToRDF(ontology), 'utf8');
+    symlinkSync(target, rdfPath, 'file');
+    const { logger, errors } = recordingLogger();
+
+    expect(() => compileCatalogue({ rootDir: root, logger })).toThrow(
+      /Catalogue compilation failed with 1 error\(s\)/i,
+    );
+    expect(errors.some((message) =>
+      message.includes(rdfPath) && /symbolic link|symlink/i.test(message),
+    )).toBe(true);
+  });
+
+  it('rejects source metadata symbolic links before parsing them', () => {
+    const root = createFixture(false);
+    const entryDir = join(root, 'catalogue', 'official', 'example');
+    const metadataPath = join(entryDir, 'metadata.json');
+    const target = join(root, 'outside-metadata.json');
+    rmSync(metadataPath);
+    writeFileSync(
+      target,
+      JSON.stringify({
+        name: 'Example catalogue entry',
+        description: 'An example entry used by the catalogue.',
+        category: 'general',
+        tags: ['demo'],
+        author: 'Example Author',
+      }),
+      'utf8',
+    );
+    symlinkSync(target, metadataPath, 'file');
+    const { logger, errors } = recordingLogger();
+
+    expect(() => compileCatalogue({ rootDir: root, logger })).toThrow(
+      /Catalogue compilation failed with 1 error\(s\)/i,
+    );
+    expect(errors.some((message) =>
+      message.includes(metadataPath) && /symbolic link|symlink/i.test(message),
+    )).toBe(true);
+  });
+
+  it('rejects a source RDF path that is not a regular file', () => {
+    const root = createFixture(false);
+    const rdfPath = join(root, 'catalogue', 'official', 'example', 'example.rdf');
+    rmSync(rdfPath);
+    mkdirSync(rdfPath);
+    const { logger, errors } = recordingLogger();
+
+    expect(() => compileCatalogue({ rootDir: root, logger })).toThrow(
+      /Catalogue compilation failed with 1 error\(s\)/i,
+    );
+    expect(errors.some((message) =>
+      message.includes(rdfPath) && /regular file|non-regular/i.test(message),
+    )).toBe(true);
   });
 });

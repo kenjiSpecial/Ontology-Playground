@@ -75,6 +75,16 @@ function validateMetadata(meta: unknown, filePath: string): CatalogueMetadata {
   return meta as CatalogueMetadata;
 }
 
+function assertRegularFile(filePath: string, context: string): void {
+  const stat = lstatSync(filePath);
+  if (stat.isSymbolicLink()) {
+    throw new Error(`${context} must be a regular file; symlinks are not allowed`);
+  }
+  if (!stat.isFile()) {
+    throw new Error(`${context} must be a regular file`);
+  }
+}
+
 // ------------------------------------------------------------------
 // Discover ontology directories
 // ------------------------------------------------------------------
@@ -179,19 +189,19 @@ export function compileCatalogue(options: CompileCatalogueOptions = {}): Catalog
         errors++;
         continue;
       }
-      if (!existsSync(metadataPath)) {
-        logger.error(`✘ ${dir}: missing metadata.json`);
-        errors++;
-        continue;
-      }
 
       // Parse metadata
       let metadata: CatalogueMetadata;
       try {
+        assertRegularFile(metadataPath, 'metadata.json');
         const raw = JSON.parse(readFileSync(metadataPath, 'utf-8'));
         metadata = validateMetadata(raw, metadataPath);
       } catch (e) {
-        logger.error(`✘ ${metadataPath}: ${(e as Error).message}`);
+        if ((e as NodeJS.ErrnoException).code === 'ENOENT') {
+          logger.error(`✘ ${dir}: missing metadata.json`);
+        } else {
+          logger.error(`✘ ${metadataPath}: ${(e as Error).message}`);
+        }
         errors++;
         continue;
       }
@@ -212,6 +222,9 @@ export function compileCatalogue(options: CompileCatalogueOptions = {}): Catalog
       let ontology: Ontology;
       let bindings: DataBinding[];
       try {
+        for (const rdfFile of rdfFiles) {
+          assertRegularFile(join(dir, rdfFile), 'source RDF/OWL');
+        }
         const rdfXml = readFileSync(rdfPath, 'utf-8');
         const parsed = parseRDF(rdfXml);
         ontology = parsed.ontology;
