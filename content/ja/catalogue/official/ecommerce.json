@@ -1,0 +1,100 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "Eコマースプラットフォーム",
+    "displayDescription": "購入者、商品、ショッピングカート、注文、レビューを扱うオンライン小売モデルです。",
+    "displayTags": []
+  },
+  "ontology": {
+    "displayName": "Eコマースプラットフォーム",
+    "displayDescription": "購入者、商品、注文を扱うオンライン小売のビジネスモデルです。"
+  },
+  "entities": [
+    {
+      "id": "buyer",
+      "displayName": "購入者",
+      "displayDescription": "登録済みで購入を行う顧客を表します。"
+    },
+    {
+      "id": "product",
+      "displayName": "商品",
+      "displayDescription": "購入できる商品を表します。"
+    },
+    {
+      "id": "cart",
+      "displayName": "ショッピングカート",
+      "displayDescription": "現在のショッピングセッションを表します。"
+    },
+    {
+      "id": "order",
+      "displayName": "注文",
+      "displayDescription": "完了した購入取引を表します。"
+    },
+    {
+      "id": "review",
+      "displayName": "レビュー",
+      "displayDescription": "顧客による商品の評価とレビューを表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "buyer", "propertyName": "buyerId", "displayName": "購入者ID" },
+    { "entityId": "buyer", "propertyName": "email", "displayName": "メールアドレス" },
+    { "entityId": "buyer", "propertyName": "memberSince", "displayName": "会員登録日" },
+    { "entityId": "buyer", "propertyName": "loyaltyTier", "displayName": "ロイヤルティランク" },
+    { "entityId": "buyer", "propertyName": "totalSpent", "displayName": "累計利用額" },
+    { "entityId": "product", "propertyName": "sku", "displayName": "商品コード（SKU）" },
+    { "entityId": "product", "propertyName": "name", "displayName": "商品名" },
+    { "entityId": "product", "propertyName": "category", "displayName": "商品カテゴリ" },
+    { "entityId": "product", "propertyName": "price", "displayName": "価格" },
+    { "entityId": "product", "propertyName": "stockQty", "displayName": "在庫数" },
+    { "entityId": "cart", "propertyName": "cartId", "displayName": "カートID" },
+    { "entityId": "cart", "propertyName": "createdAt", "displayName": "作成日時" },
+    { "entityId": "cart", "propertyName": "itemCount", "displayName": "商品点数" },
+    { "entityId": "cart", "propertyName": "subtotal", "displayName": "小計" },
+    { "entityId": "order", "propertyName": "orderId", "displayName": "注文ID" },
+    { "entityId": "order", "propertyName": "orderDate", "displayName": "注文日" },
+    { "entityId": "order", "propertyName": "status", "displayName": "注文状態" },
+    { "entityId": "order", "propertyName": "total", "displayName": "注文合計" },
+    { "entityId": "order", "propertyName": "shippingMethod", "displayName": "配送方法" },
+    { "entityId": "review", "propertyName": "reviewId", "displayName": "レビューID" },
+    { "entityId": "review", "propertyName": "rating", "displayName": "評価" },
+    { "entityId": "review", "propertyName": "title", "displayName": "タイトル" },
+    { "entityId": "review", "propertyName": "body", "displayName": "本文" },
+    { "entityId": "review", "propertyName": "verified", "displayName": "購入確認済み" }
+  ],
+  "relationships": [
+    {
+      "id": "buyer_has_cart",
+      "displayName": "カートを持つ",
+      "displayDescription": "購入者が現在のショッピングカートを持つことを表します。"
+    },
+    {
+      "id": "cart_contains",
+      "displayName": "商品を含む",
+      "displayDescription": "ショッピングカートに商品が入っていることを表します。"
+    },
+    {
+      "id": "buyer_places",
+      "displayName": "注文する",
+      "displayDescription": "購入者が行った注文を表します。"
+    },
+    {
+      "id": "order_includes",
+      "displayName": "商品を含む",
+      "displayDescription": "注文に含まれる商品を表します。"
+    },
+    {
+      "id": "buyer_writes",
+      "displayName": "レビューを書く",
+      "displayDescription": "購入者が書いたレビューを表します。"
+    },
+    {
+      "id": "review_for",
+      "displayName": "商品をレビューする",
+      "displayDescription": "レビューの対象商品を表します。"
+    }
+  ],
+  "relationshipAttributes": [],
+  "enumValues": []
+}

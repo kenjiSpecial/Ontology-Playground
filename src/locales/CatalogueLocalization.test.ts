@@ -65,6 +65,12 @@ const COSMIC_COFFEE_ENTRIES = [
   'cosmic-coffee-step-3',
   'cosmic-coffee',
 ] as const;
+const ECOMMERCE_ENTRIES = [
+  'ecommerce-step-1',
+  'ecommerce-step-2',
+  'ecommerce-step-3',
+  'ecommerce',
+] as const;
 const JAPANESE_DISPLAY_TEXT_RE = /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/u;
 
 function stripDisplayFields(value: unknown): unknown {
@@ -362,6 +368,43 @@ describe('catalogue localization integration', () => {
     const catalogue = compileCatalogue({ rootDir: REPOSITORY_ROOT, logger: quietLogger });
 
     for (const slug of COSMIC_COFFEE_ENTRIES) {
+      const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
+      expect(entry, `official/${slug}`).toBeDefined();
+      expectLocalizedEntry(entry!, `official/${slug}`);
+
+      const metadata = JSON.parse(
+        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, 'metadata.json'), 'utf8'),
+      ) as {
+        name: string;
+        description: string;
+        icon?: string;
+        category: string;
+        tags?: string[];
+        author?: string;
+      };
+      const { ontology, bindings } = parseRDF(
+        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, `${slug}.rdf`), 'utf8'),
+      );
+      const sourceEntry = {
+        id: `official/${slug}`,
+        name: metadata.name,
+        description: metadata.description,
+        icon: metadata.icon,
+        category: metadata.category,
+        tags: metadata.tags ?? [],
+        author: metadata.author ?? 'unknown',
+        source: 'official' as const,
+        ontology,
+        bindings,
+      };
+      expect(normalizedInternalValue(entry)).toEqual(normalizedInternalValue(sourceEntry));
+    }
+  });
+
+  it('localizes every E-commerce entry while preserving source keys and internal values', () => {
+    const catalogue = compileCatalogue({ rootDir: REPOSITORY_ROOT, logger: quietLogger });
+
+    for (const slug of ECOMMERCE_ENTRIES) {
       const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
       expect(entry, `official/${slug}`).toBeDefined();
       expectLocalizedEntry(entry!, `official/${slug}`);
