@@ -1,229 +1,229 @@
 ---
-title: "Mitigation Execution & Automation"
+title: "緩和策の実行と自動化"
 slug: mitigation-execution
-description: "Transform your ontology into operational action — how to use it with Fabric IQ agents, real-time dashboards, and automation to reduce disruption impact from days to minutes."
+description: "オントロジーをFabric IQエージェント、リアルタイム ダッシュボード、自動化と組み合わせ、寸断への対応時間を数日から数分へ短縮する方法を学びます。"
 order: 4
 ---
 
-## From model to action
+## モデルから実行へ
 
-Your ontology is now ready to power real-time decision automation. Here's how it flows from disruption detection to mitigation execution:
+これで、オントロジーをリアルタイムな意思決定の自動化に活用する準備が整いました。寸断の検知から緩和策の実行まで、次のように進みます。
 
-### Phase 1: Detection (minute 0)
+### フェーズ1：検知（0分）
 
-**Input**: External signal (supplier goes offline, natural disaster alert, quality issue reported)
+**入力**：外部シグナル（サプライヤーの停止、自然災害アラート、品質問題の報告）
 
-**Your ontology enables**:
+**オントロジーで可能になること**：
 ```
-Data Agent Query:
-  "Which suppliers are affected by the Taiwan earthquake?"
+データ エージェントのクエリ：
+  「台湾の地震によって影響を受けるサプライヤーはどれですか？」
   ↓
-  Matches: Supplier.country="Taiwan" + DisruptionEvent.region="Taiwan" 
-           + DisruptionEvent.type="Natural Disaster"
+  照合条件：Supplier.country="Taiwan" + DisruptionEvent.region="Taiwan"
+             + DisruptionEvent.type="Natural Disaster"
   ↓
-  Result: 3 critical suppliers identified
+  結果：重要なサプライヤー3社を特定
 ```
 
-### Phase 2: Trace impact (minute 5)
+### フェーズ2：影響の追跡（5分）
 
-**Input**: List of affected suppliers
+**入力**：影響を受けるサプライヤーの一覧
 
-**Your ontology enables**:
+**オントロジーで可能になること**：
 ```
-Data Agent Query:
-  "For these 3 suppliers, show me all components they supply"
+データ エージェントのクエリ：
+  「この3社が供給する部品をすべて示してください。」
   ↓
-  Follows: Supplier → supplies → Component
+  たどる経路：Supplier → supplies → Component
   ↓
-  Result: 47 components identified
+  結果：47個の部品を特定
   
-Then: "For these 47 components, which product lines use them?"
+続けて：「この47個の部品を使用する製品ラインはどれですか？」
   ↓
-  Follows: Component → usedIn → ProductLine
+  たどる経路：Component → usedIn → ProductLine
   ↓
-  Result: 12 product lines exposed
+  結果：リスクにさらされる12の製品ラインを特定
 ```
 
-### Phase 3: Quantify impact (minute 15)
+### フェーズ3：影響の定量化（15分）
 
-**Input**: List of exposed product lines
+**入力**：リスクにさらされる製品ラインの一覧
 
-**Your ontology enables**:
+**オントロジーで可能になること**：
 ```
-Calculation Engine:
-  For each exposed ProductLine:
+計算エンジン：
+  リスクにさらされる各ProductLineについて：
     revenue_at_risk = annualRevenue / 365 * daysOfSupplyOnHand
     urgency = 100 - (daysOfSupplyOnHand * 10)
   
-  Aggregate:
+  集計：
     total_revenue_at_risk = SUM(revenue_at_risk)
     critical_product_lines = WHERE urgency > 70
     
-  Result: 
-    Total at risk: $127M
-    Critical timeline: 3 days
-    Affected customers: 450,000+
+  結果：
+    リスクにさらされる合計額：$127M
+    重大な影響まで：3日
+    影響を受ける顧客：450,000人以上
 ```
 
-### Phase 4: Recommend actions (minute 20)
+### フェーズ4：対策の提案（20分）
 
-**Input**: Risk assessment results
+**入力**：リスク評価の結果
 
-**Your ontology enables**:
+**オントロジーで可能になること**：
 ```
-Recommendation Engine:
-  For each component in each affected product line:
-    1. Find AlternativeSupplier records where:
+提案エンジン：
+  影響を受ける各製品ラインの各部品について：
+    1. 次の条件を満たすAlternativeSupplierレコードを検索：
        - qualificationStatus="Approved"
        - capacityAvailable >= demand
        - country NOT IN earthquake_region
     
-    2. Score each alternative by:
-       - Lead time saved (leadTimeSavedDays)
-       - Cost impact (pricePremiumPercent)
-       - Reliability (reliabilityScore)
+    2. 各代替先を次の基準で評価：
+       - 短縮できるリードタイム（leadTimeSavedDays）
+       - コストへの影響（pricePremiumPercent）
+       - 信頼性（reliabilityScore）
     
-    3. Recommend top 3 actions with ROI:
-       - Action A: Activate ChipX Europe (save 2 days, cost +$2M)
-       - Action B: Increase safety stock (cost $500K, cover 2 weeks)
-       - Action C: Redesign component (lead time unknown)
+    3. ROIを添えて上位3件の対策を提案：
+       - 対策A：ChipX Europeを稼働（2日短縮、追加費用$2M）
+       - 対策B：安全在庫を増加（費用$500K、2週間分を確保）
+       - 対策C：部品を再設計（リードタイム不明）
 ```
 
-### Phase 5: Execute (minute 25)
+### フェーズ5：実行（25分）
 
-**Your ontology triggers automated workflows**:
+**オントロジーが自動ワークフローを起動します**：
 
 ```
 IF RiskAssessment.revenueAtRisk > $50M AND 
    RiskAssessment.timeToImpactDays < 5:
    
    THEN:
-     1. Create PurchaseOrder for recommended AlternativeSupplier
-     2. Update ProductionSchedule with new timeline
-     3. Send email to:
-        - Procurement team (execute purchase)
-        - Operations (adjust schedules)
-        - Finance (forecast $2M additional cost)
-        - CEO/Board (update on exposure)
-     4. Create Activator alerts with escalation policy
-     5. Start monitoring MitigationAction.status
+     1. 提案されたAlternativeSupplierに対するPurchaseOrderを作成
+     2. 新しい日程でProductionScheduleを更新
+     3. 次の宛先へメールを送信：
+        - 調達チーム（購入を実行）
+        - オペレーション部門（スケジュールを調整）
+        - 財務部門（$2Mの追加費用を予測へ反映）
+        - CEO／取締役会（リスク状況を報告）
+     4. エスカレーション ポリシー付きのActivatorアラートを作成
+     5. MitigationAction.statusの監視を開始
 ```
 
-## Real-world workflow: End-to-end
+## 現実のワークフロー：エンドツーエンド
 
-### Day 1: Disruption detected
+### 1日目：寸断を検知
 
 ```
-10:30 AM: Taiwan earthquake magnitude 6.8
+10:30 AM：台湾でマグニチュード6.8の地震
           ↓
-10:45 AM: Your system detects: DisruptionEvent created
+10:45 AM：システムが検知し、DisruptionEventを作成
           ├─ type = "Natural Disaster"
           ├─ severity = "Critical"
           ├─ region = "Taiwan"
           ├─ estimatedDurationDays = 7
           
-10:46 AM: Data Agent traces impact
-          ├─ 3 critical suppliers affected
-          ├─ 47 components halted
-          ├─ 12 product lines exposed
-          ├─ $127M revenue at risk
-          ├─ 3 days to production stoppage
+10:46 AM：データ エージェントが影響を追跡
+          ├─ 重要なサプライヤー3社が影響を受ける
+          ├─ 47個の部品が供給停止
+          ├─ 12の製品ラインがリスクにさらされる
+          ├─ $127Mの売上がリスクにさらされる
+          ├─ 生産停止まで3日
           
-10:47 AM: RiskAssessment created
-          ├─ assesses impact for each product line
-          ├─ recommends actions ranked by ROI
+10:47 AM：RiskAssessmentを作成
+          ├─ 製品ラインごとの影響を評価
+          ├─ ROI順に対策を提案
           
-10:48 AM: MitigationActions auto-created
-          ├─ PO issued to ChipX Europe (approved alternative)
-          ├─ Safety stock orders placed
-          ├─ Alerts sent to procurement, ops, finance
+10:48 AM：MitigationActionを自動作成
+          ├─ 認定済み代替先ChipX Europeへ発注書を発行
+          ├─ 安全在庫を発注
+          ├─ 調達、オペレーション、財務部門へアラートを送信
           
-10:50 AM: Activator triggered
-          ├─ Real-time dashboard shows impact + actions
-          ├─ Escalation policy notifies leadership
-          ├─ Procurement team acknowledges + confirms receipt
+10:50 AM：Activatorを起動
+          ├─ リアルタイム ダッシュボードに影響と対策を表示
+          ├─ エスカレーション ポリシーに従って経営陣へ通知
+          ├─ 調達チームが通知を確認して受領
           
-11:30 AM: MitigationAction.status = "In Progress"
-          ├─ Purchase order in progress
-          ├─ ChipX Europe confirms 48-hour shipment
-          ├─ Production impact reduced from 7 days → 3 days
+11:30 AM：MitigationAction.status = "In Progress"
+          ├─ 発注処理が進行中
+          ├─ ChipX Europeが48時間以内の出荷を確約
+          ├─ 生産への影響を7日から3日へ短縮
 ```
 
-### Day 2-4: Monitoring and adjustment
+### 2〜4日目：監視と調整
 
 ```
-Every 4 hours:
-  - Check DisruptionEvent.estimatedDurationDays (update if recovery changes)
-  - Monitor MitigationAction progress
-  - Recalculate RiskAssessment with latest inventory data
-  - Alert if leadTimeSavedDays slips (alternative supplier delays)
-  - Recommend contingency actions if needed
+4時間ごと：
+  - DisruptionEvent.estimatedDurationDaysを確認（復旧見込みが変わった場合は更新）
+  - MitigationActionの進捗を監視
+  - 最新の在庫データでRiskAssessmentを再計算
+  - leadTimeSavedDaysが悪化した場合にアラート（代替サプライヤーの遅延）
+  - 必要に応じて予備の対策を提案
   
-Day 3: ChipX Europe shipment received
+3日目：ChipX Europeからの出荷を受領
   ├─ MitigationAction.status = "Completed"
-  ├─ Inventory restored for 47 components
-  ├─ Production resumes (3-day delay, not 7-day)
-  ├─ Actual cost: $2.1M (estimated $2M)
-  ├─ Revenue protected: ~$100M of $127M exposure
+  ├─ 47個の部品の在庫を回復
+  ├─ 生産を再開（7日ではなく3日の遅延）
+  ├─ 実費：$2.1M（見積もり$2M）
+  ├─ 保護できた売上：リスク額$127Mのうち約$100M
 ```
 
-## Connecting to Fabric IQ
+## Fabric IQとの接続
 
-Your ontology integrates seamlessly with Fabric IQ data agents:
+このオントロジーはFabric IQデータ エージェントとシームレスに連携します。
 
 ```
-User: "What's our supply chain risk exposure right now?"
+ユーザー：「現在、サプライチェーンでどれだけのリスクにさらされていますか？」
   ↓
-Data Agent grounds query against your ontology:
-  1. Find all Supplier records with singleSourced=true
-  2. For each, find Components they supply
-  3. Trace to ProductLines using those components
-  4. Calculate revenueAtRisk for each ProductLine
-  5. Return ranked list by revenueAtRisk
+データ エージェントがオントロジーを基にクエリをグラウンディング：
+  1. singleSourced=trueのSupplierレコードをすべて検索
+  2. 各サプライヤーが供給するComponentを検索
+  3. それらの部品を使用するProductLineまで追跡
+  4. 各ProductLineのrevenueAtRiskを計算
+  5. revenueAtRisk順の一覧を返す
   
-Agent Response:
-  "You have 3 critical single-source suppliers. 
-   If any are disrupted, you lose ~$180M in 
-   4-9 days. We recommend pre-qualifying 
-   8 alternative suppliers (list attached)."
+エージェントの応答：
+  「重要な単一調達先サプライヤーが3社あります。
+   いずれかで寸断が起きると、4〜9日以内に約$180Mの
+   損失が生じます。8社の代替サプライヤーを
+   事前認定することを推奨します（一覧を添付）。」
 
-User: "Which alternatives are approved for ChipX?"
+ユーザー：「ChipXの代替先として認定済みなのはどのサプライヤーですか？」
   ↓
-Agent Query:
+エージェントのクエリ：
   AlternativeSupplier WHERE:
     canReplace.Supplier.name = "ChipX Corp"
     AND qualificationStatus = "Approved"
   ↓
-Result:
-  - ChipX Europe (capacity: 50K/month, +12% cost)
-  - SemiCorp Japan (capacity: 30K/month, +18% cost)
-  - Semiconductor Direct USA (capacity: 25K/month, +15% cost)
+結果：
+  - ChipX Europe（供給能力：50K/月、コスト+12%）
+  - SemiCorp Japan（供給能力：30K/月、コスト+18%）
+  - Semiconductor Direct USA（供給能力：25K/月、コスト+15%）
 ```
 
-## Continuous improvement
+## 継続的な改善
 
-Track the effectiveness of your mitigation model:
+緩和モデルの有効性を追跡します。
 
-| Metric | Calculation | Goal |
+| 指標 | 計算方法 | 目標 |
 |--------|-------------|------|
-| Detection speed | Hours from disruption to RiskAssessment | < 1 hour |
-| Trace accuracy | % of actual affected components identified | > 95% |
-| Impact estimate accuracy | Estimated vs. actual revenue at risk | ±10% |
-| Time to mitigation | Hours from assessment to MitigationAction execution | < 2 hours |
-| Cost efficiency | Actual cost vs. estimated cost of actions | ±5% |
-| Revenue protection rate | % of at-risk revenue protected by actions | > 80% |
+| 検知速度 | 寸断からRiskAssessmentまでの時間 | 1時間未満 |
+| 追跡精度 | 実際に影響を受けた部品のうち特定できた割合 | 95%超 |
+| 影響見積もり精度 | リスクにさらされる売上の見積もりと実績の差 | ±10% |
+| 緩和策の実行時間 | 評価からMitigationAction実行までの時間 | 2時間未満 |
+| コスト効率 | 対策の見積もり費用と実費の差 | ±5% |
+| 売上保護率 | リスクにさらされた売上のうち対策で保護できた割合 | 80%超 |
 
-Each disruption event becomes a training opportunity. Your agents learn which alternative suppliers actually perform, which lead times hold up, and which product lines are most resilient.
+寸断イベントの一つひとつが学習の機会になります。エージェントは、実際に期待どおり対応できた代替サプライヤー、実績と一致したリードタイム、最もレジリエンスの高い製品ラインを学習します。
 
-## Summary
+## まとめ
 
-Your Supply Chain Disruption & Risk Propagation ontology is production-ready:
+「サプライチェーン寸断とリスク伝播」オントロジーは、本番運用へ移せる状態です。
 
-✅ **7 entity types** capture the full disruption lifecycle  
-✅ **40 properties** provide rich context for decision-making  
-✅ **7 relationships** model realistic impact cascades  
-✅ **Fabric IQ compatible** for natural-language agents  
-✅ **Automation-ready** with enum classifications and timestamps  
-✅ **Measurable outcomes** — reduce disruption impact from days to hours  
+- ✅ **7つのエンティティ型**で寸断のライフサイクル全体を表現
+- ✅ **40個のプロパティ**で意思決定に必要な豊富な文脈を提供
+- ✅ **7個のリレーションシップ**で現実的な影響の連鎖をモデル化
+- ✅ 自然言語エージェントで使える**Fabric IQ互換性**
+- ✅ enum分類とタイムスタンプによる**自動化対応**
+- ✅ 寸断の影響を数日から数時間へ短縮する**測定可能な成果**
 
-Deploy it, monitor it, and watch your supply chain resilience transform.
+デプロイして監視を始め、サプライチェーンのレジリエンスが変わる様子を確かめてください。

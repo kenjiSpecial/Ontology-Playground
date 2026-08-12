@@ -1,69 +1,71 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Understand the real-world challenge of supply chain resilience — when a single supplier disruption cascades into millions in lost revenue."
+description: "1社のサプライヤーで起きた寸断が連鎖し、数百万ドルの売上損失につながる、現実のサプライチェーン レジリエンスの課題を理解します。"
 order: 1
 ---
 
-## The challenge
+## 課題
 
-Your manufacturing operation depends on a complex web of suppliers. One disruption — a natural disaster, geopolitical event, quality issue, or cyber attack — doesn't just affect that one supplier. It ripples through:
+製造業務は、複雑に結び付いたサプライヤー網に依存しています。自然災害、地政学的事象、品質問題、サイバー攻撃などの寸断は、発生した1社だけの問題では終わりません。その影響は次の対象へ広がります。
 
-- **Components** that depend on that supplier
-- **Product lines** that use those components
-- **Revenue** when products can't be shipped
-- **Production timelines** that slip week by week
+- そのサプライヤーに依存する**部品**
+- それらの部品を使用する**製品ライン**
+- 製品を出荷できないことで失われる**売上**
+- 週を追うごとに遅れていく**生産スケジュール**
 
-Without visibility into these cascades, you react after the damage is done. With it, you **anticipate and act before customers are affected**.
+この連鎖を可視化できなければ、被害が出てから対応することになります。可視化できれば、**顧客に影響が及ぶ前に予測して行動**できます。
 
-## Real-world example
+## 現実の例
 
-A semiconductor supplier in Taiwan experiences a power outage lasting 48 hours:
+台湾の半導体サプライヤーで48時間にわたる停電が発生したとします。
 
 ```
-Disruption: Taiwan Supplier Outage
+寸断：台湾サプライヤーの停電
   ↓
-Affects: ChipX component supply
+影響：ChipX部品の供給
   ↓
-Impacts: 3 product lines (laptops, tablets, displays)
+波及：3つの製品ライン（ノートPC、タブレット、ディスプレイ）
   ↓
-Cascades: Production halts in 2 weeks (inventory runs out)
+連鎖：2週間後に在庫が尽き、生産停止
   ↓
-Result: $12M revenue at risk, customer orders delayed
+結果：1,200万ドルの売上がリスクにさらされ、顧客注文が遅延
   ↓
-Mitigation: Activate pre-qualified alternative supplier + safety stock
+緩和策：事前認定済みの代替サプライヤーと安全在庫を活用
 ```
 
-**Without an ontology**, this analysis takes days and manual spreadsheets.  
-**With an ontology**, an AI agent can:
-1. Identify all affected components within minutes
-2. Trace to all product lines and production timelines
-3. Recommend alternative suppliers and safety stock quantities
-4. Calculate cost-benefit of each mitigation action
-5. Trigger automated alerts and procurement workflows
+**オントロジーがなければ**、この分析には手作業のスプレッドシートと数日を要します。
+**オントロジーがあれば**、AIエージェントは次の処理を実行できます。
 
-## What you'll build
+1. 影響を受けるすべての部品を数分で特定する
+2. すべての製品ラインと生産スケジュールまでたどる
+3. 代替サプライヤーと必要な安全在庫量を提案する
+4. 各緩和策の費用対効果を計算する
+5. 自動アラートと調達ワークフローを起動する
 
-Over four steps, we'll construct a production-grade ontology that powers this intelligence:
+## 構築するもの
 
-| Step | Focus | Outcome |
+4つのステップで、このインテリジェンスを支える本番運用レベルのオントロジーを構築します。
+
+| ステップ | 焦点 | 成果 |
 |---|---|---|
-| 1 | Core entities (Supplier, Component, ProductLine, Disruption) | Vocabulary of your supply chain |
-| 2 | Entity properties and identifiers | Rich attributes for risk calculation |
-| 3 | Relationships and cascade modeling | Impact propagation graph |
-| 4 | Risk assessment and mitigation actions | Decision automation |
+| 1 | 中核エンティティ（Supplier、Component、ProductLine、DisruptionEvent） | サプライチェーンの語彙 |
+| 2 | エンティティのプロパティと識別子 | リスク計算に必要な充実した属性 |
+| 3 | リレーションシップと連鎖のモデル化 | 影響伝播グラフ |
+| 4 | リスク評価と緩和策 | 意思決定の自動化 |
 
-By the end, you'll have a 7-entity ontology with:
-- **40 properties** capturing reliability scores, inventory levels, costs, timelines
-- **7 relationships** modeling the disruption cascade
-- **Fabric IQ compatibility** for data agent grounding and real-time alerting
+最後には、次の要素を備えた7エンティティのオントロジーが完成します。
 
-## Key concepts
+- 信頼性スコア、在庫水準、コスト、期間を表す**40個のプロパティ**
+- 寸断の連鎖をモデル化する**7個のリレーションシップ**
+- データ エージェントのグラウンディングとリアルタイム アラートに使える**Fabric IQ互換性**
 
-- **Disruption events** — the trigger (natural disaster, cyber attack, financial failure)
-- **Impact propagation** — how disruptions cascade through dependencies
-- **Risk assessment** — calculating revenue at risk and time to impact
-- **Mitigation actions** — concrete steps to reduce or eliminate impact
-- **Alternative suppliers** — pre-qualified backups with capacity and cost trade-offs
+## 主要な概念
 
-Let's start by understanding the core entities and relationships that make resilience decisions possible.
+- **寸断イベント** — 自然災害、サイバー攻撃、経営破綻などの引き金
+- **影響伝播** — 寸断が依存関係を通じて連鎖する仕組み
+- **リスク評価** — リスクにさらされる売上と影響発生までの日数の計算
+- **緩和策** — 影響を軽減または解消する具体的な手段
+- **代替サプライヤー** — 供給能力とコストのトレードオフが分かっている事前認定済みの代替先
+
+まず、レジリエンスに関する意思決定を可能にする中核エンティティとリレーションシップを理解しましょう。
