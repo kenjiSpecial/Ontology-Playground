@@ -25,179 +25,179 @@ export interface QuestStep {
 export const quests: Quest[] = [
   {
     id: "quest-1",
-    title: "Meet the Entities",
-    description: "Discover the core building blocks of the Fourth Coffee ontology by exploring entity types.",
+    title: "エンティティとの出会い",
+    description: "Fourth Coffeeオントロジーの中核となるエンティティ型を探索します。",
     difficulty: "beginner",
     category: "exploration",
     steps: [
       {
         id: "step-1-1",
-        instruction: "Click on the Customer entity to learn about customers",
+        instruction: "Customerエンティティを選択して顧客について学びましょう",
         targetType: "entity",
         targetId: "customer",
-        hint: "Look for the 👤 icon in the graph"
+        hint: "グラフで👤アイコンを探してください"
       },
       {
         id: "step-1-2",
-        instruction: "Now explore the Product entity",
+        instruction: "次にProductエンティティを探索しましょう",
         targetType: "entity",
         targetId: "product",
-        hint: "Find the ☕ coffee cup icon"
+        hint: "☕コーヒーカップのアイコンを探してください"
       },
       {
         id: "step-1-3",
-        instruction: "Finally, check out the Store entity",
+        instruction: "最後にStoreエンティティを確認しましょう",
         targetType: "entity",
         targetId: "store",
-        hint: "Locate the 🏪 store icon"
+        hint: "🏪店舗アイコンを見つけてください"
       }
     ],
     reward: {
-      badge: "Entity Explorer",
+      badge: "エンティティ探検家",
       badgeIcon: "🎖️",
       points: 100
     }
   },
   {
     id: "quest-2",
-    title: "The Bean Trail",
-    description: "Trace the journey of a coffee bean from supplier to customer by following relationships.",
+    title: "コーヒー豆の道のり",
+    description: "リレーションシップをたどり、コーヒー豆がサプライヤーから顧客へ届くまでを追跡します。",
     difficulty: "intermediate",
     category: "traversal",
     steps: [
       {
         id: "step-2-1",
-        instruction: "Start at the Supplier entity - this is where beans originate",
+        instruction: "豆の出発点となるSupplierエンティティから始めましょう",
         targetType: "entity",
         targetId: "supplier",
-        hint: "Find the 🚚 truck icon"
+        hint: "🚚トラックのアイコンを探してください"
       },
       {
         id: "step-2-2",
-        instruction: "Follow the 'sourcedFrom' relationship to Product",
+        instruction: "sourcedFromリレーションシップをたどってProductへ進みましょう",
         targetType: "relationship",
         targetId: "product_sourced_from_supplier",
-        hint: "Click the line connecting Supplier to Product"
+        hint: "SupplierとProductを結ぶ線を選択してください"
       },
       {
         id: "step-2-3",
-        instruction: "Explore the 'contains' relationship to see how products appear in orders",
+        instruction: "containsリレーションシップを探索し、製品が注文に含まれる仕組みを確認しましょう",
         targetType: "relationship",
         targetId: "order_contains_product",
-        hint: "Look at the connection between Order and Product"
+        hint: "OrderとProductの接続を確認してください"
       },
       {
         id: "step-2-4",
-        instruction: "Finally, see the 'places' relationship showing who placed the order",
+        instruction: "最後にplacesリレーションシップで誰が注文したか確認しましょう",
         targetType: "relationship",
         targetId: "customer_places_order",
-        hint: "Find the relationship from Customer to Order"
+        hint: "CustomerからOrderへのリレーションシップを探してください"
       }
     ],
     reward: {
-      badge: "Bean Detective",
+      badge: "豆の探偵",
       badgeIcon: "🔍",
       points: 250
     }
   },
   {
     id: "quest-3",
-    title: "Supply Chain Navigator",
-    description: "Understand how shipments connect suppliers to stores.",
+    title: "サプライチェーン案内人",
+    description: "出荷がサプライヤーと店舗をどのようにつなぐか理解します。",
     difficulty: "intermediate",
     category: "traversal",
     steps: [
       {
         id: "step-3-1",
-        instruction: "Click on the Shipment entity",
+        instruction: "Shipmentエンティティを選択してください",
         targetType: "entity",
         targetId: "shipment",
-        hint: "Find the 📦 package icon"
+        hint: "📦荷物のアイコンを探してください"
       },
       {
         id: "step-3-2",
-        instruction: "Explore the 'sentBy' relationship to Supplier",
+        instruction: "SupplierへのsentByリレーションシップを探索しましょう",
         targetType: "relationship",
         targetId: "shipment_from_supplier",
-        hint: "See where shipments come from"
+        hint: "出荷元を確認してください"
       },
       {
         id: "step-3-3",
-        instruction: "Follow the 'deliveredTo' relationship to Store",
+        instruction: "StoreへのdeliveredToリレーションシップをたどりましょう",
         targetType: "relationship",
         targetId: "shipment_to_store",
-        hint: "See where shipments go"
+        hint: "出荷先を確認してください"
       }
     ],
     reward: {
-      badge: "Supply Chain Master",
+      badge: "サプライチェーンの達人",
       badgeIcon: "🌐",
       points: 200
     }
   },
   {
     id: "quest-4",
-    title: "Query Explorer",
-    description: "Learn to ask questions using natural language queries.",
+    title: "クエリ探検家",
+    description: "自然言語クエリで質問する方法を学びます。",
     difficulty: "advanced",
     category: "query",
     steps: [
       {
         id: "step-4-1",
-        instruction: "Try asking: 'Show me all Gold tier customers'",
+        instruction: "「ゴールド会員の顧客を表示して」と質問してください",
         targetType: "query",
-        hint: "Type in the query playground"
+        hint: "クエリ入力欄に入力してください"
       },
       {
         id: "step-4-2",
-        instruction: "Now ask: 'Which products come from Ethiopia?'",
+        instruction: "次に「エチオピア産の製品はどれですか」と質問してください",
         targetType: "query",
-        hint: "Use natural language to filter by origin"
+        hint: "自然な言葉で原産地を指定してください"
       },
       {
         id: "step-4-3",
-        instruction: "Try a traversal query: 'What orders did Arif Ramadhan place?'",
+        instruction: "「Arif Ramadhanが行った注文は何ですか」とたどる質問をしてください",
         targetType: "query",
-        hint: "This follows the Customer → Order relationship"
+        hint: "Customer → Orderリレーションシップをたどります"
       }
     ],
     reward: {
-      badge: "Query Wizard",
+      badge: "クエリの魔法使い",
       badgeIcon: "🧙",
       points: 300
     }
   },
   {
     id: "quest-5",
-    title: "Data Binding Discovery",
-    description: "Learn how ontology concepts connect to real data platform sources.",
+    title: "データ バインディングの発見",
+    description: "オントロジーの概念と実際のデータプラットフォームの接続を学びます。",
     difficulty: "advanced",
     category: "exploration",
     steps: [
       {
         id: "step-5-1",
-        instruction: "Select the Customer entity and view its data bindings",
+        instruction: "Customerエンティティを選択してデータ バインディングを確認してください",
         targetType: "entity",
         targetId: "customer",
-        hint: "Look for the 'Data Bindings' section in the inspector"
+        hint: "インスペクターの「データ バインディング」セクションを探してください"
       },
       {
         id: "step-5-2",
-        instruction: "Examine how Customer properties map to source columns",
+        instruction: "Customerのプロパティとソース列の対応を確認してください",
         targetType: "property",
         targetId: "name",
-        hint: "Notice how 'name' maps to 'full_name' in the source"
+        hint: "ソースでnameがfull_nameに対応する点に注目してください"
       },
       {
         id: "step-5-3",
-        instruction: "Check the Product entity's binding and note the source and table",
+        instruction: "Productエンティティのバインディングを確認し、ソースとテーブルを把握してください",
         targetType: "entity",
         targetId: "product",
-        hint: "Look at the Data Bindings card under Product"
+        hint: "Productの「データ バインディング」カードを確認してください"
       }
     ],
     reward: {
-      badge: "Binding Expert",
+      badge: "バインディングの専門家",
       badgeIcon: "🔗",
       points: 350
     }

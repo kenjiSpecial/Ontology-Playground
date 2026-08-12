@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
 import { Trophy, Star, X, CheckCircle, Lightbulb, Target } from 'lucide-react';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 export function QuestPanel() {
   const {
@@ -19,7 +20,7 @@ export function QuestPanel() {
       <div className="panel-header">
         <h3 className="panel-title">
           <Target size={16} style={{ marginRight: 8 }} />
-          Quests
+          {jaMessages.quests.title}
         </h3>
       </div>
 
@@ -47,7 +48,7 @@ export function QuestPanel() {
                 />
               </div>
               <span className="progress-text">
-                {currentStepIndex + 1} / {activeQuest.steps.length}
+                {jaFormatters.questProgress(currentStepIndex + 1, activeQuest.steps.length)}
               </span>
             </div>
 
@@ -71,7 +72,7 @@ export function QuestPanel() {
             <div className="quest-actions">
               <button className="btn btn-secondary" onClick={abandonQuest}>
                 <X size={16} />
-                Abandon
+                {jaMessages.quests.abandon}
               </button>
             </div>
           </motion.div>
@@ -98,14 +99,14 @@ export function QuestPanel() {
                   {quest.title}
                 </span>
                 <span className={`quest-badge ${quest.difficulty}`}>
-                  {quest.difficulty}
+                  {jaMessages.quests.difficulty[quest.difficulty]}
                 </span>
               </div>
               <p className="quest-description">{quest.description}</p>
               <div className="quest-reward">
                 <Trophy size={14} />
                 <span>{quest.reward.badgeIcon} {quest.reward.badge}</span>
-                <span className="quest-points">+{quest.reward.points} pts</span>
+                <span className="quest-points">{jaFormatters.questRewardPoints(quest.reward.points)}</span>
               </div>
             </motion.div>
           );
@@ -117,7 +118,7 @@ export function QuestPanel() {
         <div className="badges-panel">
           <div className="section-title">
             <Star size={14} />
-            Earned Badges ({earnedBadges.length})
+            {jaFormatters.earnedBadges(earnedBadges.length)}
           </div>
           <div className="badges-grid">
             {earnedBadges.map((badge, index) => (
@@ -134,7 +135,7 @@ export function QuestPanel() {
             ))}
           </div>
           <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ms-yellow)', fontWeight: 600 }}>
-            Total: {totalPoints} points
+            {jaFormatters.totalPoints(totalPoints)}
           </div>
         </div>
       )}
