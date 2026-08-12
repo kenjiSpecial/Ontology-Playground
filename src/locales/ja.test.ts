@@ -34,5 +34,12 @@ describe('Japanese message catalog', () => {
     expect(jaFormatters.questRewardPoints(100)).toBe('+100ポイント');
     expect(jaFormatters.earnedBadges(2)).toBe('獲得バッジ（2）');
     expect(jaFormatters.totalPoints(350)).toBe('合計: 350ポイント');
+    expect(jaFormatters.learnLoadFailed(503)).toBe('学習コンテンツの読み込みに失敗しました（503）');
+    expect(jaFormatters.learnBackTo('コース')).toBe('「コース」へ戻る');
+    expect(jaFormatters.learnArticleCount(6)).toBe('6件の記事');
+    expect(jaFormatters.learnStepCount(4)).toBe('4ステップ');
+    expect(jaFormatters.learnLabStep(2)).toBe('ステップ2');
+    expect(jaFormatters.learnOntologyNotFound('official/example')).toBe('カタログにオントロジー「official/example」が見つかりません。');
+    expect(jaFormatters.learnAddedCount(3)).toBe('3件追加');
   });
 });

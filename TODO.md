@@ -292,6 +292,9 @@ These enhance the overall experience for a community learning resource.
 - [x] Presentation mode (slides split at `##` headings)
 - [x] Progressive ontology catalogue entries for step-by-step learning (18
   school entries + 6 IQ Lab entries)
+- [x] Japanese localization for learning navigation, presentation, quizzes,
+  and embedded graph controls
+- [ ] Japanese translations for course metadata and all 61 learning articles
 
 ---
 

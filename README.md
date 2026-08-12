@@ -87,6 +87,10 @@ Every article supports **presentation mode** (slides split at `##` headings)
 and includes **interactive quizzes** with instant feedback. Ontology embeds
 load live graphs from the catalogue with optional diff highlighting.
 
+In the Japanese fork, the Ontology School navigation, presentation controls,
+quiz feedback, and embedded graph controls are displayed in Japanese. Course
+metadata and article translations are delivered in separate localization phases.
+
 ### Quest System
 
 Five progressive quests that guide users through ontology concepts with
