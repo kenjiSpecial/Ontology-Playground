@@ -1,0 +1,156 @@
+{
+  "$schema": "../schema.json",
+  "version": 1,
+  "entry": {
+    "displayName": "フォース・コーヒー",
+    "displayDescription": "仕入先、商品、店舗、顧客、注文を含む現代的なコーヒーチェーンを表すサンプルオントロジーです。",
+    "displayTags": [
+      { "tag": "coffee", "displayName": "コーヒー" },
+      { "tag": "supply-chain", "displayName": "サプライチェーン" },
+      { "tag": "fabric-iq", "displayName": "Fabric IQ連携" },
+      { "tag": "demo", "displayName": "デモ" }
+    ]
+  },
+  "ontology": {
+    "displayName": "フォース・コーヒー",
+    "displayDescription": "仕入先、商品、店舗、顧客、注文を含む現代的なコーヒーチェーンを表すサンプルオントロジーです。"
+  },
+  "entities": [
+    {
+      "id": "customer",
+      "displayName": "顧客",
+      "displayDescription": "店舗でコーヒー商品を購入する顧客を表します。"
+    },
+    {
+      "id": "order",
+      "displayName": "注文",
+      "displayDescription": "店舗で行われる顧客の購入取引を表します。"
+    },
+    {
+      "id": "product",
+      "displayName": "商品",
+      "displayDescription": "販売可能なコーヒー商品または商品アイテムを表します。"
+    },
+    {
+      "id": "store",
+      "displayName": "店舗",
+      "displayDescription": "実店舗のコーヒーショップ拠点を表します。"
+    },
+    {
+      "id": "supplier",
+      "displayName": "仕入先",
+      "displayDescription": "コーヒー豆または商品の供給パートナーを表します。"
+    },
+    {
+      "id": "shipment",
+      "displayName": "出荷",
+      "displayDescription": "仕入先から店舗へ商品を届ける配送を表します。"
+    }
+  ],
+  "properties": [
+    { "entityId": "customer", "propertyName": "customerId", "displayName": "顧客ID", "displayDescription": "顧客を一意に識別するIDです。" },
+    { "entityId": "customer", "propertyName": "name", "displayName": "氏名", "displayDescription": "顧客のフルネームです。" },
+    { "entityId": "customer", "propertyName": "email", "displayName": "メールアドレス", "displayDescription": "連絡先のメールアドレスです。" },
+    { "entityId": "customer", "propertyName": "loyaltyTier", "displayName": "ロイヤルティランク", "displayDescription": "ロイヤルティプログラムのランクです。" },
+    { "entityId": "customer", "propertyName": "joinDate", "displayName": "登録日", "displayDescription": "顧客が登録した日付です。" },
+    { "entityId": "customer", "propertyName": "totalSpend", "displayName": "累計利用額", "displayDescription": "生涯の利用金額です。" },
+    { "entityId": "order", "propertyName": "orderId", "displayName": "注文ID", "displayDescription": "注文を一意に識別するIDです。" },
+    { "entityId": "order", "propertyName": "timestamp", "displayName": "注文日時", "displayDescription": "注文が行われた日時です。" },
+    { "entityId": "order", "propertyName": "total", "displayName": "注文合計", "displayDescription": "注文の合計金額です。" },
+    { "entityId": "order", "propertyName": "status", "displayName": "注文状態", "displayDescription": "現在の注文状態です。" },
+    { "entityId": "order", "propertyName": "paymentMethod", "displayName": "支払方法", "displayDescription": "利用した支払方法です。" },
+    { "entityId": "product", "propertyName": "productId", "displayName": "商品ID", "displayDescription": "商品を一意に識別するIDです。" },
+    { "entityId": "product", "propertyName": "name", "displayName": "商品名", "displayDescription": "商品の名称です。" },
+    { "entityId": "product", "propertyName": "category", "displayName": "商品カテゴリ", "displayDescription": "商品のカテゴリです。" },
+    { "entityId": "product", "propertyName": "price", "displayName": "単価", "displayDescription": "商品の単価です。" },
+    { "entityId": "product", "propertyName": "origin", "displayName": "原産国", "displayDescription": "コーヒー豆の原産国です。" },
+    { "entityId": "product", "propertyName": "isOrganic", "displayName": "有機認証済み", "displayDescription": "商品が有機認証を受けているかを示します。" },
+    { "entityId": "store", "propertyName": "storeId", "displayName": "店舗ID", "displayDescription": "店舗を一意に識別するIDです。" },
+    { "entityId": "store", "propertyName": "name", "displayName": "店舗名", "displayDescription": "店舗の名称です。" },
+    { "entityId": "store", "propertyName": "city", "displayName": "市区町村", "displayDescription": "店舗の所在都市です。" },
+    { "entityId": "store", "propertyName": "state", "displayName": "州・地域", "displayDescription": "州または地域です。" },
+    { "entityId": "store", "propertyName": "openDate", "displayName": "開店日", "displayDescription": "店舗を開店した日付です。" },
+    { "entityId": "store", "propertyName": "capacity", "displayName": "座席数", "displayDescription": "座席数です。" },
+    { "entityId": "supplier", "propertyName": "supplierId", "displayName": "仕入先ID", "displayDescription": "仕入先を一意に識別するIDです。" },
+    { "entityId": "supplier", "propertyName": "name", "displayName": "仕入先名", "displayDescription": "仕入先の会社名です。" },
+    { "entityId": "supplier", "propertyName": "country", "displayName": "所在国", "displayDescription": "事業を行う国です。" },
+    { "entityId": "supplier", "propertyName": "certification", "displayName": "認証", "displayDescription": "持続可能性に関する認証です。" },
+    { "entityId": "supplier", "propertyName": "rating", "displayName": "評価", "displayDescription": "品質評価（1〜5）です。" },
+    { "entityId": "shipment", "propertyName": "shipmentId", "displayName": "出荷ID", "displayDescription": "出荷を一意に識別するIDです。" },
+    { "entityId": "shipment", "propertyName": "dispatchDate", "displayName": "出荷日", "displayDescription": "仕入先から発送した日付です。" },
+    { "entityId": "shipment", "propertyName": "arrivalDate", "displayName": "到着日", "displayDescription": "店舗に到着した日付です。" },
+    { "entityId": "shipment", "propertyName": "status", "displayName": "出荷状態", "displayDescription": "出荷の状態です。" },
+    { "entityId": "shipment", "propertyName": "weight", "displayName": "重量", "displayDescription": "出荷全体の重量です。" }
+  ],
+  "relationships": [
+    {
+      "id": "customer_places_order",
+      "displayName": "注文する",
+      "displayDescription": "顧客が1件以上の注文を行うことを表します。"
+    },
+    {
+      "id": "order_contains_product",
+      "displayName": "商品を含む",
+      "displayDescription": "注文が1つ以上の商品を含むことを表します。"
+    },
+    {
+      "id": "order_processed_at_store",
+      "displayName": "店舗で処理する",
+      "displayDescription": "注文が特定の店舗で処理されることを表します。"
+    },
+    {
+      "id": "product_sourced_from_supplier",
+      "displayName": "仕入先から調達",
+      "displayDescription": "商品の原材料が仕入先から調達されることを表します。"
+    },
+    {
+      "id": "shipment_from_supplier",
+      "displayName": "仕入先が発送",
+      "displayDescription": "出荷が仕入先から発送されることを表します。"
+    },
+    {
+      "id": "shipment_to_store",
+      "displayName": "店舗へ配送",
+      "displayDescription": "出荷が店舗へ届けられることを表します。"
+    },
+    {
+      "id": "shipment_contains_product",
+      "displayName": "商品を積載する",
+      "displayDescription": "出荷が商品を運ぶことを表します。"
+    }
+  ],
+  "relationshipAttributes": [
+    { "relationshipId": "order_contains_product", "attributeName": "quantity", "displayName": "数量" },
+    { "relationshipId": "order_contains_product", "attributeName": "customizations", "displayName": "カスタマイズ内容" },
+    { "relationshipId": "shipment_contains_product", "attributeName": "quantity", "displayName": "数量" }
+  ],
+  "enumValues": [
+    { "entityId": "customer", "propertyName": "loyaltyTier", "value": "Bronze", "displayValue": "ブロンズ" },
+    { "entityId": "customer", "propertyName": "loyaltyTier", "value": "Silver", "displayValue": "シルバー" },
+    { "entityId": "customer", "propertyName": "loyaltyTier", "value": "Gold", "displayValue": "ゴールド" },
+    { "entityId": "customer", "propertyName": "loyaltyTier", "value": "Platinum", "displayValue": "プラチナ" },
+    { "entityId": "order", "propertyName": "status", "value": "Pending", "displayValue": "保留中" },
+    { "entityId": "order", "propertyName": "status", "value": "Preparing", "displayValue": "準備中" },
+    { "entityId": "order", "propertyName": "status", "value": "Ready", "displayValue": "提供準備完了" },
+    { "entityId": "order", "propertyName": "status", "value": "Completed", "displayValue": "完了" },
+    { "entityId": "order", "propertyName": "status", "value": "Cancelled", "displayValue": "キャンセル" },
+    { "entityId": "order", "propertyName": "paymentMethod", "value": "Card", "displayValue": "カード" },
+    { "entityId": "order", "propertyName": "paymentMethod", "value": "Cash", "displayValue": "現金" },
+    { "entityId": "order", "propertyName": "paymentMethod", "value": "Mobile", "displayValue": "モバイル決済" },
+    { "entityId": "order", "propertyName": "paymentMethod", "value": "Gift Card", "displayValue": "ギフトカード" },
+    { "entityId": "product", "propertyName": "category", "value": "Espresso", "displayValue": "エスプレッソ" },
+    { "entityId": "product", "propertyName": "category", "value": "Brewed", "displayValue": "抽出コーヒー" },
+    { "entityId": "product", "propertyName": "category", "value": "Cold Brew", "displayValue": "コールドブリュー" },
+    { "entityId": "product", "propertyName": "category", "value": "Tea", "displayValue": "お茶" },
+    { "entityId": "product", "propertyName": "category", "value": "Food", "displayValue": "フード" },
+    { "entityId": "product", "propertyName": "category", "value": "Merchandise", "displayValue": "物販" },
+    { "entityId": "supplier", "propertyName": "certification", "value": "Fair Trade", "displayValue": "フェアトレード" },
+    { "entityId": "supplier", "propertyName": "certification", "value": "Rainforest Alliance", "displayValue": "レインフォレスト・アライアンス" },
+    { "entityId": "supplier", "propertyName": "certification", "value": "Organic", "displayValue": "有機" },
+    { "entityId": "supplier", "propertyName": "certification", "value": "Direct Trade", "displayValue": "ダイレクトトレード" },
+    { "entityId": "supplier", "propertyName": "certification", "value": "None", "displayValue": "なし" },
+    { "entityId": "shipment", "propertyName": "status", "value": "In Transit", "displayValue": "輸送中" },
+    { "entityId": "shipment", "propertyName": "status", "value": "Delivered", "displayValue": "配送済み" },
+    { "entityId": "shipment", "propertyName": "status", "value": "Delayed", "displayValue": "遅延" }
+  ]
+}

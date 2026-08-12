@@ -21,7 +21,9 @@ import { convertToFabricParts } from '../lib/fabric';
 import { getDisplayDescription, getDisplayName } from '../lib/displayText';
 import { processQuery } from '../data/queryEngine';
 import { generateQuestsForOntology } from '../data/questGenerator';
+import { parseRDF } from '../lib/rdf/parser';
 import { serializeToRDF } from '../lib/rdf/serializer';
+import type { CatalogueEntry } from '../types/catalogue';
 import type { CatalogueLocalizationOverlay } from '../types/catalogueLocalization';
 
 const tempRoots: string[] = [];
@@ -55,6 +57,139 @@ const quietLogger = {
   warn: () => undefined,
   error: () => undefined,
 };
+
+const REPOSITORY_ROOT = join(import.meta.dirname, '../..');
+const COSMIC_COFFEE_ENTRIES = [
+  'cosmic-coffee-step-1',
+  'cosmic-coffee-step-2',
+  'cosmic-coffee-step-3',
+  'cosmic-coffee',
+] as const;
+const JAPANESE_DISPLAY_TEXT_RE = /[\u3040-\u30ff\u3400-\u9fff\uff66-\uff9f]/u;
+
+function stripDisplayFields(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stripDisplayFields);
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([key]) => !key.startsWith('display'))
+        .map(([key, nested]) => [key, stripDisplayFields(nested)]),
+    );
+  }
+  return value;
+}
+
+function normalizedInternalValue(value: unknown): unknown {
+  return JSON.parse(JSON.stringify(stripDisplayFields(value)));
+}
+
+function expectJapaneseDisplayText(value: string, path: string): void {
+  expect(value, path).toMatch(JAPANESE_DISPLAY_TEXT_RE);
+}
+
+function expectLocalizedEntry(entry: CatalogueEntry, path: string): void {
+  expect(entry.displayName, `${path}.displayName`).toBeDefined();
+  expect(entry.displayDescription, `${path}.displayDescription`).toBeDefined();
+  expect(entry.displayTags, `${path}.displayTags`).toHaveLength(entry.tags.length);
+  expectJapaneseDisplayText(entry.displayName!, `${path}.displayName`);
+  expectJapaneseDisplayText(entry.displayDescription!, `${path}.displayDescription`);
+  entry.displayTags!.forEach((displayTag, index) => {
+    expectJapaneseDisplayText(displayTag, `${path}.displayTags[${index}]`);
+  });
+
+  const ontology = entry.ontology;
+  const propertyCount = ontology.entityTypes.reduce(
+    (count, entity) => count + entity.properties.length,
+    0,
+  );
+  const relationshipAttributeCount = ontology.relationships.reduce(
+    (count, relationship) => count + (relationship.attributes?.length ?? 0),
+    0,
+  );
+  const enumValueCount = ontology.entityTypes.reduce(
+    (count, entity) =>
+      count +
+      entity.properties.reduce(
+        (propertyCountForEntity, property) =>
+          propertyCountForEntity + (property.values?.length ?? 0),
+        0,
+      ),
+    0,
+  );
+
+  expect(ontology.displayName, `${path}.ontology.displayName`).toBeDefined();
+  expect(ontology.displayDescription, `${path}.ontology.displayDescription`).toBeDefined();
+  expect(ontology.entityTypes.every((entity) => entity.displayName !== undefined)).toBe(true);
+  expect(propertyCount).toBe(
+    ontology.entityTypes.flatMap((entity) => entity.properties).length,
+  );
+  expect(relationshipAttributeCount).toBe(
+    ontology.relationships.flatMap((relationship) => relationship.attributes ?? []).length,
+  );
+  expect(enumValueCount).toBe(
+    ontology.entityTypes.flatMap((entity) =>
+      entity.properties.flatMap((property) => property.values ?? []),
+    ).length,
+  );
+
+  expectJapaneseDisplayText(ontology.displayName!, `${path}.ontology.displayName`);
+  expectJapaneseDisplayText(ontology.displayDescription!, `${path}.ontology.displayDescription`);
+  ontology.entityTypes.forEach((entity, entityIndex) => {
+    expectJapaneseDisplayText(
+      entity.displayName!,
+      `${path}.ontology.entities[${entityIndex}].displayName`,
+    );
+    if (entity.description.trim().length > 0) {
+      expect(entity.displayDescription).toBeDefined();
+      expectJapaneseDisplayText(
+        entity.displayDescription!,
+        `${path}.ontology.entities[${entityIndex}].displayDescription`,
+      );
+    }
+    entity.properties.forEach((property, propertyIndex) => {
+      expect(property.displayName).toBeDefined();
+      expectJapaneseDisplayText(
+        property.displayName!,
+        `${path}.ontology.entities[${entityIndex}].properties[${propertyIndex}].displayName`,
+      );
+      if (property.description?.trim()) {
+        expect(property.displayDescription).toBeDefined();
+        expectJapaneseDisplayText(
+          property.displayDescription!,
+          `${path}.ontology.entities[${entityIndex}].properties[${propertyIndex}].displayDescription`,
+        );
+      }
+      if (property.values) {
+        expect(Object.keys(property.displayValues ?? {})).toEqual(property.values);
+        property.values.forEach((value) => {
+          expectJapaneseDisplayText(
+            property.displayValues![value],
+            `${path}.ontology.entities[${entityIndex}].properties.${property.name}.values.${value}`,
+          );
+        });
+      }
+    });
+  });
+  ontology.relationships.forEach((relationship, relationshipIndex) => {
+    expectJapaneseDisplayText(
+      relationship.displayName!,
+      `${path}.ontology.relationships[${relationshipIndex}].displayName`,
+    );
+    if (relationship.description?.trim()) {
+      expect(relationship.displayDescription).toBeDefined();
+      expectJapaneseDisplayText(
+        relationship.displayDescription!,
+        `${path}.ontology.relationships[${relationshipIndex}].displayDescription`,
+      );
+    }
+    relationship.attributes?.forEach((attribute, attributeIndex) => {
+      expectJapaneseDisplayText(
+        attribute.displayName!,
+        `${path}.ontology.relationships[${relationshipIndex}].attributes[${attributeIndex}]`,
+      );
+    });
+  });
+}
 
 const fixtureOntology: Ontology = {
   name: 'Example Ontology',
@@ -220,6 +355,43 @@ describe('catalogue localization integration', () => {
     });
     for (const root of tempRoots.splice(0)) {
       rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('localizes every Cosmic Coffee entry while preserving source keys and internal values', () => {
+    const catalogue = compileCatalogue({ rootDir: REPOSITORY_ROOT, logger: quietLogger });
+
+    for (const slug of COSMIC_COFFEE_ENTRIES) {
+      const entry = catalogue.entries.find((candidate) => candidate.id === `official/${slug}`);
+      expect(entry, `official/${slug}`).toBeDefined();
+      expectLocalizedEntry(entry!, `official/${slug}`);
+
+      const metadata = JSON.parse(
+        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, 'metadata.json'), 'utf8'),
+      ) as {
+        name: string;
+        description: string;
+        icon?: string;
+        category: string;
+        tags?: string[];
+        author?: string;
+      };
+      const { ontology, bindings } = parseRDF(
+        readFileSync(join(REPOSITORY_ROOT, 'catalogue', 'official', slug, `${slug}.rdf`), 'utf8'),
+      );
+      const sourceEntry = {
+        id: `official/${slug}`,
+        name: metadata.name,
+        description: metadata.description,
+        icon: metadata.icon,
+        category: metadata.category,
+        tags: metadata.tags ?? [],
+        author: metadata.author ?? 'unknown',
+        source: 'official' as const,
+        ontology,
+        bindings,
+      };
+      expect(normalizedInternalValue(entry)).toEqual(normalizedInternalValue(sourceEntry));
     }
   });
 
