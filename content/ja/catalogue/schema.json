@@ -138,16 +138,7 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 40,
-              "allOf": [
-                {
-                  "pattern": "^(?=.*[\\p{L}\\p{N}])[\\p{L}\\p{N}._:/+#%()-]+$"
-                },
-                {
-                  "not": {
-                    "pattern": "[\\u3040-\\u30ff\\u3400-\\u9fff\\uff66-\\uff9f]"
-                  }
-                }
-              ]
+              "pattern": "^[^\\s]+$"
             },
             "technicalTokenReason": {
               "type": "string",

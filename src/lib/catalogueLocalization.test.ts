@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import Ajv from 'ajv';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { CatalogueEntry } from '../types/catalogue';
 import type { CatalogueLocalizationOverlay } from '../types/catalogueLocalization';
 import {
@@ -143,6 +146,17 @@ function parse(overlay: unknown): CatalogueLocalizationOverlay {
   );
 }
 
+function validateWithSchema(overlay: unknown): boolean {
+  const schema = JSON.parse(
+    readFileSync(
+      join(process.cwd(), 'content', 'ja', 'catalogue', 'schema.json'),
+      'utf8',
+    ),
+  ) as object;
+  const ajv = new Ajv({ allErrors: true, schemaId: 'auto' });
+  return Boolean(ajv.compile(schema)(overlay));
+}
+
 describe('parseCatalogueLocalization', () => {
   it('accepts an exact Japanese overlay and an explicitly justified technical token', () => {
     expect(parse(makeOverlay())).toEqual(makeOverlay());
@@ -272,6 +286,75 @@ describe('parseCatalogueLocalization', () => {
       overlay.entry.displayName = technicalToken;
       expect(parse(overlay).entry.displayName).toEqual(technicalToken);
     }
+  });
+
+  it('keeps Ajv 6 schema validation compatible with runtime-approved ASCII technical tokens', () => {
+    for (const text of ['RDF', 'schema.org']) {
+      const overlay = makeOverlay();
+      const technicalToken = {
+        text,
+        technicalTokenReason: '標準規格の略称であるため原文を維持します。',
+      };
+      overlay.entry.displayName = technicalToken;
+
+      expect(validateWithSchema(overlay), text).toBe(true);
+      expect(parse(overlay).entry.displayName).toEqual(technicalToken);
+    }
+  });
+
+  it('uses Ajv 6 for structural constraints and runtime validation for technical-token semantics', () => {
+    const cases = [
+      {
+        name: 'English sentence',
+        text: 'This entire sentence is untranslated',
+        schemaValid: false,
+      },
+      {
+        name: 'whitespace',
+        text: 'RDF token',
+        schemaValid: false,
+      },
+      {
+        name: 'overlength',
+        text: 'A'.repeat(41),
+        schemaValid: false,
+      },
+      {
+        name: 'Japanese technical token',
+        text: 'RDF日本語',
+        schemaValid: true,
+      },
+    ];
+
+    for (const testCase of cases) {
+      const overlay = makeOverlay();
+      overlay.entry.displayName = {
+        text: testCase.text,
+        technicalTokenReason: '標準規格の略称であるため原文を維持します。',
+      };
+
+      expect(validateWithSchema(overlay), testCase.name).toBe(testCase.schemaValid);
+      expect(() => parse(overlay), testCase.name).toThrow();
+    }
+  });
+
+  it('documents and resolves the repository-root-relative schema reference', () => {
+    const documentation = readFileSync(
+      join(process.cwd(), 'docs', 'japanese-localization.md'),
+      'utf8',
+    );
+    const schemaReference = 'content/ja/catalogue/schema.json';
+
+    expect(documentation).toContain(`"$schema": "${schemaReference}"`);
+    expect(existsSync(join(process.cwd(), schemaReference))).toBe(true);
+  });
+
+  it('lets Ajv uniqueItems remain structural while runtime rejects semantic duplicate keys', () => {
+    const overlay = makeOverlay();
+    overlay.entities.push({ ...overlay.entities[0], displayName: '別の顧客' });
+
+    expect(validateWithSchema(overlay)).toBe(true);
+    expect(() => parse(overlay)).toThrow(/duplicate entity key "customer"/i);
   });
 
   it('rejects duplicate semantic keys', () => {

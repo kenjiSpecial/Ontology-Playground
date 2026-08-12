@@ -30,13 +30,16 @@ catalogue/external/fibo/loans/               → content/ja/catalogue/external/f
 `schema.json` in `content/ja/catalogue/` is documentation/schema metadata and
 is skipped by the compiler. The overlay file itself does not contain a mutable
 catalogue ID; the compiler derives it from the relative path and rejects an
-unknown path.
+unknown path. The `$schema` value in the template is repository-root-relative
+(`content/ja/catalogue/schema.json`), so it resolves to the same file for
+official, community, and external entry depths; it is not a file-relative
+`./schema.json` reference.
 
 Start from this shape and fill every source key:
 
 ```json
 {
-  "$schema": "./schema.json",
+  "$schema": "content/ja/catalogue/schema.json",
   "version": 1,
   "entry": {
     "displayName": "日本語のカタログ名",
@@ -94,9 +97,20 @@ not translation targets.
 | `relationshipAttributes` | `relationshipId` + `attributeName` | Every relationship-attribute pair exactly once |
 | `enumValues` | `entityId` + `propertyName` + `value` | Every enum value exactly once |
 
-The parser rejects missing keys, unknown keys, duplicate semantic keys, and
-duplicate JSON object fields. Arrays may be ordered differently, because the
-compiler applies entries back in source order using their stable keys.
+The JSON Schema provides structural validation (types, required fields, token
+length, no whitespace, and basic reason-string markers), while the runtime
+parser is authoritative for the technical-token semantics that portable JSON
+Schema/Ajv 6 cannot express reliably (Japanese-character detection and the
+complete allowed-character/reason-category checks). Ajv schema validation is a
+structural preflight; the compiler always invokes this runtime parser as the
+required build-time validation, and schema validation alone is not a build
+success condition. The parser rejects missing keys, unknown keys,
+duplicate semantic keys, and duplicate JSON object fields. Arrays may be
+ordered differently, because the compiler applies entries back in source order
+using their stable keys. In particular, JSON Schema `uniqueItems` only compares
+complete objects; two records with one stable key and different display text
+can pass that structural check but are rejected by the runtime semantic-key
+check.
 
 `entry.displayName` and `entry.displayDescription` are required. The ontology
 display fields are optional only when the corresponding source field is empty;

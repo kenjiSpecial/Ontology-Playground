@@ -343,6 +343,14 @@ describe('catalogue localization integration', () => {
     ).toThrow(/official\/example\.json: entities: missing entity key "customer"/i);
   });
 
+  it('fails the build on semantic duplicate stable keys even when records differ', () => {
+    expect(() =>
+      compileFixture((overlay) => {
+        overlay.entities.push({ ...overlay.entities[0], displayName: '別の顧客' });
+      }),
+    ).toThrow(/official\/example\.json: entities\[2\]: duplicate entity key "customer"/i);
+  });
+
   it('keeps the fixture contract explicit and reviewable', () => {
     const catalogue = compileFixture();
     const localized = catalogue.entries.find((entry) => entry.id === 'official/example');
