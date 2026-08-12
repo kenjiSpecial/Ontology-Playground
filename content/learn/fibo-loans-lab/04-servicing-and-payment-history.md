@@ -1,72 +1,72 @@
 ---
-title: Servicing and Payment History
+title: サービシングと支払履歴
 slug: servicing-and-payment-history
-description: Extend the model with FIBO servicing organizations and auditable payment events.
+description: FIBOのサービシング組織と監査可能な支払イベントを追加し、モデルを拡張します。
 order: 4
 embed: official/fibo-loans-step-3
 reviewStatus: under-human-review
 ---
 
-## Operational lifecycle
+## 運用ライフサイクル
 
-After origination, loans enter servicing operations. FIBO models this transition across two modules:
+組成後のローンは、サービシング業務へ移行します。FIBOでは、この移行を2つのモジュールにまたがってモデル化します。
 
-- **Servicer** — the organization collecting and processing payments (adapted from `fibo-loan-ln-ln:Servicer` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans))
-- **PaymentHistory** — the aggregate payment record (adapted from `fibo-loan-ln-ln:PaymentHistory` in [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans), which extends transaction-record patterns from [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts))
-- **PaymentTransaction** — atomic payment events (adapted from `fibo-loan-ln-ln:IndividualPaymentTransaction`, itself based on `fibo-fbc-pas-caa:IndividualTransaction`)
+- **Servicer** — 支払を回収・処理する組織（[LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)の`fibo-loan-ln-ln:Servicer`を基に翻案）
+- **PaymentHistory** — 支払記録の集合（[LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)の`fibo-loan-ln-ln:PaymentHistory`を基に翻案。この概念は[FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts)の取引記録パターンを拡張しています）
+- **PaymentTransaction** — 個々の支払イベント（`fibo-loan-ln-ln:IndividualPaymentTransaction`を基に翻案。この概念自体は`fibo-fbc-pas-caa:IndividualTransaction`を基礎としています）
 
-This mirrors how real lending platforms separate contractual intent from execution logs.
+これは、実際の融資プラットフォームが契約上の意図と実行記録を分けて扱う方法に対応しています。
 
-## New properties
+## 新しいプロパティ
 
 ### Servicer
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `servicerId` | string | Identifier |
-| `organizationName` | string | Name of the servicing organization |
+| `servicerId` | string | 識別子 |
+| `organizationName` | string | サービシング組織の名前 |
 
 ### PaymentHistory
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `paymentHistoryId` | string | Identifier |
+| `paymentHistoryId` | string | 識別子 |
 
 ### PaymentTransaction
 
-| Property | Type | Notes |
+| プロパティ | 型 | 説明 |
 |---|---|---|
-| `paymentTransactionId` | string | Identifier |
-| `amount` | decimal (USD) | Payment amount |
-| `postedAt` | datetime | When the payment was recorded |
+| `paymentTransactionId` | string | 識別子 |
+| `amount` | decimal (USD) | 支払金額 |
+| `postedAt` | datetime | 支払が記録された日時 |
 
-## New relationships
+## 新しいリレーションシップ
 
-- **servicedBy**: `Loan` → `Servicer` (`many-to-one`) — many loans can be serviced by one organization
-- **hasPaymentHistory**: `LoanPaymentSchedule` → `PaymentHistory` (`one-to-one`) — links scheduled expectations to actual records
-- **hasIndividualPayment**: `PaymentHistory` → `PaymentTransaction` (`one-to-many`) — each history contains many transaction events
+- **servicedBy**：`Loan` → `Servicer`（`many-to-one`）— 1つの組織が複数のローンをサービシングできます
+- **hasPaymentHistory**：`LoanPaymentSchedule` → `PaymentHistory`（`one-to-one`）— 予定された支払と実際の記録を結び付けます
+- **hasIndividualPayment**：`PaymentHistory` → `PaymentTransaction`（`one-to-many`）— 各支払履歴には複数の取引イベントが含まれます
 
-## The audit trail
+## 監査証跡
 
-With these links, you can trace a clear path through the model:
+これらのリンクにより、モデル内で次の明確な経路をたどれます。
 
 `Loan` → `LoanPaymentSchedule` → `PaymentHistory` → `PaymentTransaction`
 
-This path supports audit queries, delinquency analysis, and servicing quality metrics — exactly the kind of graph traversal that makes ontology-driven data integration valuable.
+この経路は、監査クエリ、延滞分析、サービシング品質の指標に対応します。まさに、オントロジー駆動のデータ統合の価値を引き出すグラフ探索です。
 
-> **FIBO reference**: In production FIBO, loan servicing and payment-history patterns bridge LOAN and FBC modules: `Loan` relates to a loan-specific account, payment history is modeled as a transaction record, and individual payment transactions capture event-level facts. Our simplified model captures this core pattern. See [LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans) and [FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts).
+> **FIBO参照**：実運用向けのFIBOでは、ローンのサービシングと支払履歴のパターンがLOANモジュールとFBCモジュールを橋渡しします。`Loan`はローン固有の口座に関連付けられ、支払履歴は取引記録としてモデル化され、個別の支払取引はイベント単位の事実を記録します。この簡略化したモデルでも、その中核パターンを表現しています。[LOAN/LoansGeneral/Loans](https://github.com/edmcouncil/fibo/tree/master/LOAN/LoansGeneral/Loans)と[FBC/ProductsAndServices/ClientsAndAccounts](https://github.com/edmcouncil/fibo/tree/master/FBC/ProductsAndServices/ClientsAndAccounts)を参照してください。
 
-## Step 3 graph (diff from Step 2)
+## ステップ3のグラフ（ステップ2との差分）
 
 <ontology-embed id="official/fibo-loans-step-3" diff="official/fibo-loans-step-2" height="420px"></ontology-embed>
 
-*Three new entities (Servicer, PaymentHistory, PaymentTransaction) create an operational layer for tracking loan lifecycle events.*
+*3つの新しいエンティティ（Servicer、PaymentHistory、PaymentTransaction）により、ローンのライフサイクルイベントを追跡する運用層を構成します。*
 
 ```quiz
-Q: Which entity should contain atomic payment events like amount and postedAt?
+Q: amountやpostedAtなど、個々の支払イベントを保持するエンティティはどれですか？
 - Loan
 - Servicer
 - PaymentHistory
 - PaymentTransaction [correct]
-> PaymentHistory is the aggregate container. Atomic events belong to PaymentTransaction, which stores event-level details used for reconciliation and audit trails. This separation follows FIBO's modeling pattern of distinguishing aggregate records from individual transactions.
+> PaymentHistoryは集合を格納するコンテナーです。個々のイベントはPaymentTransactionに属し、照合や監査証跡に使用するイベント単位の詳細を保持します。この分離は、集合的な記録と個別取引を区別するFIBOのモデリングパターンに従っています。
 ```

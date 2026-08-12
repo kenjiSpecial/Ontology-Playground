@@ -1,72 +1,72 @@
 ---
-title: Scenario Overview
+title: シナリオ概要
 slug: scenario-overview
-description: What is FIBO, where does it come from, and what we'll build in this lab.
+description: FIBOとは何か、どこから生まれたのか、このラボで何を構築するのかを説明します。
 order: 1
 reviewStatus: under-human-review
 ---
 
-## What is FIBO?
+## FIBOとは？
 
-The **Financial Industry Business Ontology** (FIBO) is an industry-standard ontology family developed by the [EDM Council](https://edmcouncil.org/) and the [Object Management Group](https://www.omg.org/) (OMG). It provides a formal, machine-readable vocabulary for financial instruments, parties, contracts, and regulatory concepts.
+**Financial Industry Business Ontology**（FIBO）は、[EDM Council](https://edmcouncil.org/)と[Object Management Group](https://www.omg.org/)（OMG）が開発する業界標準のオントロジーファミリーです。金融商品、当事者、契約、規制上の概念を表す、形式的で機械可読な語彙を提供します。
 
-FIBO is:
+FIBOには次の特徴があります。
 
-- **Open source** under the [MIT License](https://opensource.org/licenses/MIT)
-- **Hosted on GitHub** at [edmcouncil/fibo](https://github.com/edmcouncil/fibo)
-- **Published as OWL ontologies** at [spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
-- **Developed since 2012** with contributions from major financial institutions, regulators, and standards bodies
+- [MIT License](https://opensource.org/licenses/MIT)のもとで**オープンソース**として公開
+- [edmcouncil/fibo](https://github.com/edmcouncil/fibo)で**GitHubにホスト**
+- [spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)で**OWLオントロジーとして公開**
+- 大手金融機関、規制当局、標準化団体からの貢献を受けて**2012年から開発**
 
-> **Source**: Concepts in this lab are adapted primarily from `LOAN/LoansGeneral/Loans`, with supporting concepts from `FBC/DebtAndEquities/Debt`, `FBC/ProductsAndServices/ClientsAndAccounts`, and `FND/OwnershipAndControl/Ownership`. See the [FIBO GitHub repository](https://github.com/edmcouncil/fibo) for full source modules.
+> **出典**：このラボの概念は主に`LOAN/LoansGeneral/Loans`を基に翻案し、`FBC/DebtAndEquities/Debt`、`FBC/ProductsAndServices/ClientsAndAccounts`、`FND/OwnershipAndControl/Ownership`の概念で補っています。完全なソースモジュールについては、[FIBO GitHubリポジトリ](https://github.com/edmcouncil/fibo)を参照してください。
 
-## Why this lab
+## このラボに取り組む理由
 
-FIBO is large — hundreds of ontology modules covering securities, derivatives, corporate actions, indices, and more. The `LOAN` domain alone spans multiple sub-modules:
+FIBOは大規模で、証券、デリバティブ、コーポレートアクション、指数などを扱う数百のオントロジーモジュールで構成されています。`LOAN`ドメインだけでも複数のサブモジュールにまたがります。
 
-| FIBO Module | What it covers |
+| FIBOモジュール | 対象領域 |
 |---|---|
-| `LOAN/LoansGeneral/Loans` | Loan lifecycle concepts (loan, servicing, payment history, lien and ownership classifiers) |
-| `FBC/DebtAndEquities/Debt` | Borrower/lender roles, collateral, security agreements, debt terms |
-| `FBC/ProductsAndServices/ClientsAndAccounts` | Transaction records and individual transactions used by payment history |
-| `LOAN/RealEstateLoans/Mortgages` | Real-estate-specific constraints (real property collateral and mortgage constructs) |
-| `FND/OwnershipAndControl/Ownership` | Ownership semantics reused by loan ownership classifiers |
+| `LOAN/LoansGeneral/Loans` | ローンのライフサイクル概念（ローン、サービシング、支払履歴、担保権順位および所有権の分類子） |
+| `FBC/DebtAndEquities/Debt` | 借り手・貸し手のロール、担保、担保権設定契約、債務条件 |
+| `FBC/ProductsAndServices/ClientsAndAccounts` | 支払履歴で使用する取引記録と個別取引 |
+| `LOAN/RealEstateLoans/Mortgages` | 不動産固有の制約（不動産担保と住宅ローンの構成要素） |
+| `FND/OwnershipAndControl/Ownership` | ローン所有権の分類子で再利用する所有権のセマンティクス |
 
-*(Source: [FIBO ontology structure](https://github.com/edmcouncil/fibo/tree/master/LOAN))*
+*（出典：[FIBOのオントロジー構造](https://github.com/edmcouncil/fibo/tree/master/LOAN)）*
 
-This lab extracts a teachable subset focused on loan contracts and payment flows so you can learn FIBO modeling patterns without navigating the full module hierarchy.
+このラボでは、ローン契約と支払フローに焦点を当てた学習用のサブセットを取り出します。モジュール階層全体をたどらずに、FIBOのモデリングパターンを学べます。
 
-## What we'll build
+## 構築するもの
 
-Over four progressive steps, we'll model a **Loans ontology** with 10 entity types and 10 relationships:
+4つの段階を通して、10個のエンティティ型と10個のリレーションシップを持つ**ローンオントロジー**をモデル化します。
 
-1. **Core Loan Triad** — `Loan`, `Borrower`, `Lender`
-2. **Collateral & Schedules** — `Collateral`, `LoanPaymentSchedule`
-3. **Servicing & Payment History** — `Servicer`, `PaymentHistory`, `PaymentTransaction`
-4. **Risk Classifiers** — `OwnershipInterest`, `LenderLienPosition`
+1. **ローンの中核三者** — `Loan`、`Borrower`、`Lender`
+2. **担保と返済予定** — `Collateral`、`LoanPaymentSchedule`
+3. **サービシングと支払履歴** — `Servicer`、`PaymentHistory`、`PaymentTransaction`
+4. **リスク分類子** — `OwnershipInterest`、`LenderLienPosition`
 
-## Real questions this model supports
+## このモデルで答えられる実務上の問い
 
-- Which collateralized loans have subordinate lien positions?
-- Which borrowers have interest-only loans above a principal threshold?
-- How do payment transaction patterns vary by servicer?
-- Which ownership structures correlate with repayment issues?
+- 担保付ローンのうち、担保権順位が劣後しているものはどれですか？
+- 元本金額が一定額を超える利息のみ返済型ローンを持つ借り手は誰ですか？
+- 支払取引の傾向はサービサーごとにどう異なりますか？
+- 返済上の問題と相関する所有構造はどれですか？
 
-## Licensing and attribution
+## ライセンスと帰属表示
 
-This lab is adapted from the EDM Council FIBO ontology:
+このラボは、EDM CouncilのFIBOオントロジーを基に翻案しています。
 
-- **Copyright**: EDM Council, Inc. and Object Management Group, Inc. (see module headers for exact year ranges)
-- **License**: [MIT License](https://opensource.org/licenses/MIT)
-- **Source repository**: [github.com/edmcouncil/fibo](https://github.com/edmcouncil/fibo)
-- **Specification**: [spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
+- **著作権**：EDM Council, Inc.およびObject Management Group, Inc.（正確な年の範囲は各モジュールのヘッダーを参照）
+- **ライセンス**：[MIT License](https://opensource.org/licenses/MIT)
+- **ソースリポジトリ**：[github.com/edmcouncil/fibo](https://github.com/edmcouncil/fibo)
+- **仕様**：[spec.edmcouncil.org/fibo](https://spec.edmcouncil.org/fibo/)
 
-The ontology files in this lab are simplified, classroom-friendly adaptations. They preserve core FIBO semantics while reducing complexity for step-by-step instruction.
+このラボのオントロジーファイルは、授業で扱いやすいよう簡略化した翻案です。段階的に学習できるよう複雑さを抑えながら、FIBOの中核的なセマンティクスを維持しています。
 
 ```quiz
-Q: What organization develops and maintains FIBO?
-- The World Bank
-- The EDM Council and Object Management Group (OMG) [correct]
-- The European Central Bank
-- The W3C Web Ontology Working Group
-> FIBO is developed by the EDM Council (Enterprise Data Management Council) in collaboration with the Object Management Group. It is open source under the MIT License and hosted on GitHub at edmcouncil/fibo.
+Q: FIBOを開発・保守している組織はどれですか？
+- 世界銀行
+- EDM CouncilとObject Management Group（OMG） [correct]
+- 欧州中央銀行
+- W3C Web Ontology Working Group
+> FIBOは、EDM Council（Enterprise Data Management Council）がObject Management Groupと共同で開発しています。MIT Licenseのもとでオープンソースとして公開され、GitHubのedmcouncil/fiboでホストされています。
 ```

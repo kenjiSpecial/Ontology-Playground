@@ -1,7 +1,7 @@
 ---
-title: FIBO Loans Lab
+title: FIBOローンラボ
 slug: fibo-loans-lab
-description: Build a FIBO-inspired loans ontology step by step — adapted from the EDM Council Financial Industry Business Ontology (FIBO) under the MIT License.
+description: EDM CouncilのFinancial Industry Business Ontology（FIBO）を基に、MIT Licenseのもとで翻案したローンオントロジーを段階的に構築します。
 type: lab
 icon: 🏛️
 ---
