@@ -114,3 +114,44 @@ PATH=/home/kenji/.npm/_npx/ebaba8b9e55fd0a9/node_modules/node/bin:$PATH npm test
 1. Task 1 既存 `src/lib/catalogueLocalization.ts` の constructor parameter properties が Node 20 の `erasableSyntaxOnly` で TS1294 になるため、TypeScript を clean にできない。Task 2 の scope 外として未変更。
 2. 既存 `src/lib/router.ts` の `no-case-declarations` 3件と `OntologyGraph.tsx` の `getCy` dependency warning が残る。Task 2 の変更ではない。
 3. 現在の `content/ja/catalogue` には schema のみで実際の localized entry がないため、consumer regression は synthetic overlay fixture で検証した。overlay compiler の実データ生成自体は `npm run catalogue:build` で 71 entries 成功。
+
+## Fix round 1/5
+
+### Review finding 1: DataSources の bound entity 表示
+
+- covering test: `src/components/DataSourcesModal.test.tsx`
+- RED command:
+
+  ```text
+  PATH=/home/kenji/.npm/_npx/ebaba8b9e55fd0a9/node_modules/node/bin:$PATH npm test -- src/components/DataSourcesModal.test.tsx --run
+  ```
+
+  実装前は `Test Files 1 failed (1)` / `Tests 2 failed (2)`。overlay fixture の `顧客、注文` と fallback fixture の `Customer、Order` を見つけられず、consumer に残った固定 `Customer、Order、Product` が原因だった。
+
+- implementation: `dataBindings[].entityTypeId` を `currentOntology.entityTypes` へ解決し、解決できた entity のみ `getDisplayName()` で順序どおり join して demo binding notice に表示。unknown entityTypeId は表示しない。
+- GREEN command:
+
+  ```text
+  PATH=/home/kenji/.npm/_npx/ebaba8b9e55fd0a9/node_modules/node/bin:$PATH npm test -- src/components/DataSourcesModal.test.tsx src/components/InspectorPanel.test.tsx --run
+  ```
+
+  `Test Files 2 passed (2)` / `Tests 5 passed (5)`。
+
+### Review finding 2: Inspector property quest の実証不足
+
+- covering test: `src/components/InspectorPanel.test.tsx`
+- test hardening: localized `氏名`（internal name `name`）を表示する ontology を load し、generated `quest-4` を `startQuest()` して entity step を進め、active property step が `targetId: 'name'` であることを確認してから `氏名` の実際の property row を click。click 後の `currentStepIndex === 2` と selected entity の内部 ID を assert する。
+- RED note: この finding はテスト不足のみで、既存 `InspectorPanel.tsx` は以前から `tryAdvancePropertyQuestStep(prop.name)` と内部 property name を使用していた。そのため production behavior を変更せず、強化テストは追加直後から `Test Files 1 passed (1)` / `Tests 3 passed (3)` となった。誤った mock/実装を通すテストではないことを、表示された `氏名` の row click と active quest target assertion で確認した。
+- GREEN command:
+
+  ```text
+  PATH=/home/kenji/.npm/_npx/ebaba8b9e55fd0a9/node_modules/node/bin:$PATH npm test -- src/components/InspectorPanel.test.tsx --run
+  ```
+
+  `Test Files 1 passed (1)` / `Tests 3 passed (3)`。
+
+### Fix round verification
+
+- `PATH=/home/kenji/.npm/_npx/ebaba8b9e55fd0a9/node_modules/node/bin:$PATH npm test -- src/components/DataSourcesModal.test.tsx src/components/InspectorPanel.test.tsx --run`: 2 files / 5 tests passed。
+- `git diff --check`: clean。
+- fix round changed paths: `src/components/DataSourcesModal.tsx`, `src/components/DataSourcesModal.test.tsx`, `src/components/InspectorPanel.test.tsx`, this report。

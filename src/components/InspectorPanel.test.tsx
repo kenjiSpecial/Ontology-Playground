@@ -62,13 +62,15 @@ describe('InspectorPanel quest progression', () => {
               displayName: '顧客',
               displayDescription: '商品を購入する人です。',
               properties: entity.properties.map((property) =>
-                property.name === 'name' ? { ...property, displayName: '氏名' } : property,
+                property.name === 'name' ? { ...property, displayName: '氏名', isIdentifier: true } : { ...property, isIdentifier: false },
               ),
             }
           : entity,
       ),
     };
     useAppStore.getState().loadOntology(localized);
+    useAppStore.getState().startQuest('quest-4');
+    useAppStore.getState().advanceQuestStep();
     useAppStore.getState().selectEntity('customer');
 
     render(<InspectorPanel />);
@@ -76,6 +78,13 @@ describe('InspectorPanel quest progression', () => {
     expect(screen.getByText('顧客')).toBeTruthy();
     expect(screen.getByText('商品を購入する人です。')).toBeTruthy();
     expect(screen.getByText('氏名')).toBeTruthy();
+    expect(useAppStore.getState().activeQuest?.steps[1]).toMatchObject({
+      targetType: 'property',
+      targetId: 'name',
+    });
     expect(useAppStore.getState().selectedEntityId).toBe('customer');
+
+    fireEvent.click(screen.getByText('氏名'));
+    expect(useAppStore.getState().currentStepIndex).toBe(2);
   });
 });

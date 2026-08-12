@@ -11,6 +11,12 @@ interface DataSourcesModalProps {
 
 export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
   const { currentOntology, dataBindings } = useAppStore();
+  const boundEntityNames = dataBindings
+    .flatMap((binding) => {
+      const entity = currentOntology.entityTypes.find((candidate) => candidate.id === binding.entityTypeId);
+      return entity ? [getDisplayName(entity)] : [];
+    })
+    .join('、');
   
   return (
     <motion.div
@@ -172,7 +178,7 @@ export function DataSourcesModal({ onClose }: DataSourcesModalProps) {
                 .join('、')}
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-              {jaMessages.dataExchange.dataSources.demoBindingsBeforeValues}Customer、Order、Product
+              {jaMessages.dataExchange.dataSources.demoBindingsBeforeValues}{boundEntityNames}
               {jaMessages.dataExchange.dataSources.demoBindingsAfterValues}
             </div>
           </div>
