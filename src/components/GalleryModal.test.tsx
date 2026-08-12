@@ -118,7 +118,8 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     // Loading state appears first
-    expect(screen.getByText('Loading catalogue…')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'オントロジーカタログ' })).toBeTruthy();
+    expect(screen.getByText('カタログを読み込み中…')).toBeTruthy();
 
     // Entries appear after fetch
     await waitFor(() => {
@@ -126,7 +127,15 @@ describe('GalleryModal', () => {
     });
     expect(screen.getByText('Hospital Network')).toBeTruthy();
     expect(screen.getByText('Finance Ledger')).toBeTruthy();
-    expect(screen.queryByText('Loading catalogue…')).toBeNull();
+    expect(screen.queryByText('カタログを読み込み中…')).toBeNull();
+    expect(screen.getAllByText('小売')).toHaveLength(2);
+    expect(screen.getByText('3件中3件を表示')).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: '閉じる' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'RDFソースを表示' }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('button', { name: '埋め込みコードをコピー' }).length).toBeGreaterThan(0);
+    expect(screen.getByRole('combobox', { name: '提供元で絞り込む' })).toBeTruthy();
+    expect(screen.getByRole('combobox', { name: 'カテゴリで絞り込む' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'プルリクエストを作成' })).toBeTruthy();
   });
 
   it('shows error state on fetch failure', async () => {
@@ -134,7 +143,7 @@ describe('GalleryModal', () => {
     render(<GalleryModal onClose={onClose} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Failed to load catalogue/)).toBeTruthy();
+      expect(screen.getByText('カタログの読み込みに失敗しました（500）')).toBeTruthy();
     });
   });
 
@@ -147,7 +156,7 @@ describe('GalleryModal', () => {
       expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
-    const searchInput = screen.getByPlaceholderText(/Search by name/);
+    const searchInput = screen.getByPlaceholderText('名前、タグ、投稿者で検索…');
     await user.type(searchInput, 'hospital');
 
     expect(screen.queryByText('Fourth Coffee')).toBeNull();
@@ -164,7 +173,7 @@ describe('GalleryModal', () => {
       expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
-    const searchInput = screen.getByPlaceholderText(/Search by name/);
+    const searchInput = screen.getByPlaceholderText('名前、タグ、投稿者で検索…');
     await user.type(searchInput, 'ledger');
 
     expect(screen.queryByText('Fourth Coffee')).toBeNull();
@@ -182,7 +191,7 @@ describe('GalleryModal', () => {
     });
 
     // Select healthcare category
-    const categorySelect = screen.getByDisplayValue('All categories');
+    const categorySelect = screen.getByDisplayValue('すべてのカテゴリ');
     await user.selectOptions(categorySelect, 'healthcare');
 
     expect(screen.queryByText('Fourth Coffee')).toBeNull();
@@ -199,7 +208,7 @@ describe('GalleryModal', () => {
       expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
-    const sourceSelect = screen.getByDisplayValue('All sources');
+    const sourceSelect = screen.getByDisplayValue('すべての提供元');
     await user.selectOptions(sourceSelect, 'community');
 
     expect(screen.queryByText('Fourth Coffee')).toBeNull();
@@ -216,10 +225,10 @@ describe('GalleryModal', () => {
       expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
-    const searchInput = screen.getByPlaceholderText(/Search by name/);
+    const searchInput = screen.getByPlaceholderText('名前、タグ、投稿者で検索…');
     await user.type(searchInput, 'xyznonexistent');
 
-    expect(screen.getByText('No ontologies match your filters.')).toBeTruthy();
+    expect(screen.getByText('条件に一致するオントロジーはありません。')).toBeTruthy();
   });
 
   it('loads an ontology and navigates to its deep link', async () => {
@@ -232,7 +241,7 @@ describe('GalleryModal', () => {
     });
 
     // Click the first non-active ontology's "Load" button.
-    const loadButtons = screen.getAllByText('Load');
+    const loadButtons = screen.getAllByText('読み込む');
     await user.click(loadButtons[0]);
 
     const state = useAppStore.getState();
@@ -242,7 +251,7 @@ describe('GalleryModal', () => {
     expect(window.location.hash).toBe('#/catalogue/community/drsmith/hospital-net');
   });
 
-  it('shows "Community" badge only on community entries', async () => {
+  it('shows the Japanese community badge only on community entries', async () => {
     mockFetchSuccess();
     render(<GalleryModal onClose={onClose} />);
 
@@ -250,10 +259,10 @@ describe('GalleryModal', () => {
       expect(screen.getByText('Fourth Coffee')).toBeTruthy();
     });
 
-    // "Community" appears in the source filter dropdown AND as a badge.
+    // 「コミュニティ」は提供元フィルターとカードバッジに表示される。
     // Only Hospital Network is community, so there should be exactly 1 badge
     // plus 1 option in the dropdown = 2 total.
-    const allCommunity = screen.getAllByText('Community');
+    const allCommunity = screen.getAllByText('コミュニティ');
     expect(allCommunity).toHaveLength(2); // 1 dropdown option + 1 badge
 
     // The badge is a <span> inside a card, the option is in a <select>
@@ -270,14 +279,14 @@ describe('GalleryModal', () => {
     });
 
     // Fourth Coffee: 3 entities, 2 relationships
-    expect(screen.getByText('3 entities')).toBeTruthy();
-    expect(screen.getByText('2 relationships')).toBeTruthy();
+    expect(screen.getByText('3個のエンティティ型')).toBeTruthy();
+    expect(screen.getByText('2個のリレーションシップ')).toBeTruthy();
     // Hospital Network: 4 entities, 3 relationships
-    expect(screen.getByText('4 entities')).toBeTruthy();
-    expect(screen.getByText('3 relationships')).toBeTruthy();
+    expect(screen.getByText('4個のエンティティ型')).toBeTruthy();
+    expect(screen.getByText('3個のリレーションシップ')).toBeTruthy();
   });
 
-  it('Edit in Designer loads ontology into designer store and navigates to designer', async () => {
+  it('デザイナーで編集 loads ontology into designer store and navigates to designer', async () => {
     mockFetchSuccess();
     const user = userEvent.setup();
     render(<GalleryModal onClose={onClose} />);
@@ -287,7 +296,7 @@ describe('GalleryModal', () => {
     });
 
     // Click the "Edit in Designer" pencil button for the first entry
-    const editButtons = screen.getAllByTitle('Edit in Designer');
+    const editButtons = screen.getAllByTitle('デザイナーで編集');
     expect(editButtons.length).toBeGreaterThan(0);
     await user.click(editButtons[0]);
 
