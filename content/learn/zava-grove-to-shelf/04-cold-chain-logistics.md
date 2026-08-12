@@ -1,25 +1,25 @@
 ---
-title: Cold-Chain Logistics
+title: コールドチェーン物流
 slug: cold-chain-logistics
-description: Add Shipment and ColdChainSensor to model the perishable logistics layer — and the live temperature telemetry that drives Zava's most important alerting rule.
+description: ShipmentとColdChainSensorを追加し、生鮮品物流レイヤーと、Zavaで最も重要なアラート ルールを動かすリアルタイム温度テレメトリをモデル化します。
 order: 4
 embed: official/zava-grove-to-shelf-step-3
 ---
 
-## The most expensive minutes in Zava's day
+## Zavaにとって最も損失の大きい数分間
 
-Once a HarvestLot leaves the packhouse, the clock starts. Fruit is perishable. A 15-minute breach above the safe temperature for a variety can write off an entire reefer container — easily six figures of revenue. The cold-chain layer is where Zava's investment in semantics pays back hardest.
+HarvestLotが選果梱包施設を出た瞬間から、時間との勝負が始まります。果実は傷みやすく、品種ごとの安全温度を15分間超過しただけで冷蔵コンテナ全体が廃棄対象となり、売上損失は容易に6桁へ達します。コールドチェーン レイヤーは、Zavaのセマンティクスへの投資が最も大きな効果を生む領域です。
 
-Two new entities express this domain:
+この領域を次の二つの新しいエンティティで表現します。
 
-- **Shipment** — a reefer container or truck moving one or more HarvestLots toward a retail DC.
-- **ColdChainSensor** — a sensor attached to a shipment streaming temperature and humidity telemetry.
+- **Shipment** — 一つ以上のHarvestLotを小売物流センターへ運ぶ冷蔵コンテナまたはトラックです。
+- **ColdChainSensor** — 出荷に取り付けられ、温度と湿度のテレメトリをストリーミングするセンサーです。
 
-## Entities
+## エンティティ
 
 ### Shipment
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `shipmentId` | string | ✓ |
 | `departureDate` | datetime | |
@@ -29,31 +29,31 @@ Two new entities express this domain:
 
 ### ColdChainSensor
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `sensorId` | string | ✓ |
 | `sensorModel` | string | |
 | `temperatureC` | decimal (°C) | |
 | `humidityPct` | decimal (%) | |
 
-In Microsoft Fabric IQ, `ColdChainSensor` is the canonical example of a **time-series entity** — its readings are bound to an Eventhouse rather than a Lakehouse table. The ontology hides that split: queries traverse `Sensor → Shipment` without knowing the underlying engine.
+Microsoft Fabric IQでは、`ColdChainSensor`は**時系列エンティティ**の代表例です。センサーの読み取り値はLakehouseのテーブルではなくEventhouseにバインドされます。オントロジーがこの違いを隠すため、利用者は基盤となるエンジンを意識せずに、クエリで`Sensor → Shipment`をたどれます。
 
-## New relationships
+## 新しいリレーションシップ
 
-| From | Verb | To | Cardinality |
+| 始点 | 動詞 | 終点 | カーディナリティ |
 |---|---|---|---|
-| Shipment | carries | HarvestLot | one-to-many |
-| Shipment | monitoredBy | ColdChainSensor | one-to-many |
+| Shipment | carries | HarvestLot | 1対多 |
+| Shipment | monitoredBy | ColdChainSensor | 1対多 |
 
-Notice how `Shipment` acts as a **hub** — it bridges the static lakehouse world (HarvestLot lineage) to the streaming eventhouse world (sensor telemetry).
+`Shipment`が**ハブ**として機能している点に注目してください。静的なLakehouseの世界（HarvestLotの来歴）と、ストリーミングを扱うEventhouseの世界（センサー テレメトリ）を橋渡しします。
 
-## The cold-chain breach query
+## コールドチェーン温度逸脱クエリ
 
-The flagship Zava demo question:
+Zavaの代表的なデモでは、次のように質問します。
 
-> *"Shipment SH-2026-04812 just crossed 9°C. Which retailer orders are exposed?"*
+> *「出荷SH-2026-04812の温度が9°Cを超えました。どの小売注文が影響を受けますか？」*
 
-Today this is a five-system manual chase. With the ontology, it is a single traversal:
+現在、この問いに答えるには5つのシステムを手作業で追跡する必要があります。オントロジーを使えば、次の経路を一度たどるだけです。
 
 ```
 ColdChainSensor[temperatureC > FruitVariety.maxStorageTempC + 2]
@@ -62,21 +62,21 @@ ColdChainSensor[temperatureC > FruitVariety.maxStorageTempC + 2]
    → (later) Order → Store → Retailer
 ```
 
-We'll connect the retail side in the next step.
+次のステップで小売側を接続します。
 
-## The graph so far
+## ここまでのグラフ
 
 <ontology-embed id="official/zava-grove-to-shelf-step-3" diff="official/zava-grove-to-shelf-step-2" height="450px"></ontology-embed>
 
-*Eight entities. The right-hand branch (Sensor → Shipment) is the live telemetry side; the left-hand branch (HarvestLot → Plot → Farm → Grower) is the lineage side. The ontology unifies them.*
+*エンティティは8つです。右側の枝（Sensor → Shipment）がリアルタイム テレメトリ側、左側の枝（HarvestLot → Plot → Farm → Grower）が来歴側です。オントロジーが両者を統合します。*
 
 ```quiz
-Q: What does it mean that `Shipment` is described as a "hub" entity?
-- It is the largest entity in the graph
-- It connects two otherwise separate domains — lineage (harvest lots) and telemetry (sensors) — through a single shared concept [correct]
-- Every other entity must connect through it
-- Hubs are required for RDF compliance
-> A hub entity links domains that would otherwise live in different systems. Shipment connects HarvestLot (Lakehouse lineage) with ColdChainSensor (Eventhouse telemetry), so a single graph traversal spans both.
+Q: `Shipment`を「ハブ」エンティティと呼ぶのは、どういう意味ですか？
+- グラフ内で最大のエンティティであるという意味
+- 本来は分離している来歴（収穫ロット）とテレメトリ（センサー）の二つの領域を、一つの共通概念で接続するという意味 [correct]
+- 他のすべてのエンティティがShipmentを経由しなければならないという意味
+- RDF準拠にハブが必要であるという意味
+> ハブ エンティティは、本来なら別々のシステムに存在する領域を結び付けます。ShipmentはHarvestLot（Lakehouseの来歴）とColdChainSensor（Eventhouseのテレメトリ）を接続するため、一度のグラフ探索で両方を横断できます。
 ```
 
-Next we'll close the loop to retail — DCs, stores and the orders at risk.
+次は、小売物流センター、店舗、リスクのある注文を接続して、小売までの経路を完成させます。

@@ -1,7 +1,7 @@
 ---
-title: "Supply Chain Disruption & Risk Propagation"
+title: "サプライチェーン寸断とリスク伝播"
 slug: supply-chain-disruption-path
-description: "Master proactive risk management — model how supplier disruptions cascade through components and product lines, and automate mitigation decisions with ontology-driven data agents."
+description: "サプライヤーの寸断が部品や製品ラインへ連鎖する仕組みをモデル化し、オントロジーを活用するデータ エージェントで緩和策の判断を自動化する、予防的なリスク管理を習得します。"
 type: path
 icon: 📦
 ---

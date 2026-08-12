@@ -1,77 +1,77 @@
 ---
-title: Order Details & Categories
+title: 注文明細とカテゴリー
 slug: order-details-and-categories
-description: Add OrderLine as a linking entity between Order and Product, and introduce ProductCategory for grouping.
+description: OrderとProductをつなぐ中間エンティティとしてOrderLineを追加し、商品を分類するProductCategoryを導入します。
 order: 3
 embed: official/iq-lab-retail-step-2
 ---
 
-## The problem with many-to-many
+## 多対多の課題
 
-In Step 1, we connected Order directly to Product with a many-to-many relationship. That works for simple queries like "which products were in this order?" — but what about **quantities** and **line totals**?
+ステップ1では、OrderとProductを多対多のリレーションシップで直接接続しました。「この注文に含まれていた商品はどれですか？」という単純なクエリには対応できますが、**数量**と**明細金額**はどこに保持すればよいでしょうか。
 
-A direct many-to-many relationship can't carry attributes. If Customer A ordered 3 units of Product X and Customer B ordered 1 unit, where does the quantity live? Not on the Order (it has multiple products) and not on the Product (it appears in multiple orders).
+多対多の直接的なリレーションシップには属性を持たせられません。Customer AがProduct Xを3個、Customer Bが1個注文した場合、その数量はどこに保持すればよいでしょうか。複数の商品を含むOrderにも、複数の注文に現れるProductにも保持できません。
 
-## The linking entity pattern
+## 中間エンティティのパターン
 
-The solution is a **linking entity** — an entity type that sits between two others and carries the per-association attributes:
+解決策は**中間エンティティ**です。2つのエンティティの間に置き、それぞれの関連付けに固有の属性を保持するエンティティ型です。
 
-**OrderLine** connects an Order to a Product and holds:
+**OrderLine**はOrderとProductを接続し、次のプロパティを保持します。
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `orderLineId` | string | ✓ |
 | `quantity` | integer | |
 | `lineTotal` | decimal (USD) | |
 
-### New relationships
+### 新しいリレーションシップ
 
-- **OrderHasLineItem** — `Order` → `OrderLine` (one-to-many)
-  Each order has one or more line items.
+- **OrderHasLineItem** — `Order` → `OrderLine`（一対多）
+  各注文には1つ以上の明細項目があります。
 
-- **OrderLineReferencesProduct** — `OrderLine` → `Product` (many-to-one)
-  Each line item references exactly one product.
+- **OrderLineReferencesProduct** — `OrderLine` → `Product`（多対一）
+  各明細項目は必ず1つの商品を参照します。
 
-Now the traversal is: `Order` → `OrderLine` → `Product`, and each line item carries its own `quantity` and `lineTotal`.
+これで、`Order` → `OrderLine` → `Product`とたどれるようになり、各明細項目が固有の`quantity`と`lineTotal`を保持します。
 
-> **Design pattern:** Whenever a many-to-many relationship needs attributes (quantity, price, date), introduce a linking entity. This is the ontology equivalent of an association table in relational databases.
+> **設計パターン：** 多対多のリレーションシップに数量、価格、日付などの属性が必要な場合は、中間エンティティを導入します。これは、リレーショナルデータベースにおける関連テーブルに相当するオントロジーの表現です。
 
-## Organizing with categories
+## カテゴリーによる分類
 
-Products rarely exist in isolation — they belong to **categories** like "frozen goods", "household", or "electronics". Adding a ProductCategory entity lets us group products and answer questions like "Which category has the most returns?"
+商品は単独で存在することは少なく、「冷凍食品」「家庭用品」「電子機器」などの**カテゴリー**に属します。ProductCategoryエンティティを追加すると、商品を分類し、「返品が最も多いカテゴリーはどれですか？」といった質問に答えられます。
 
 **ProductCategory**:
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `categoryId` | string | ✓ |
 | `categoryName` | string | |
 
-### New relationship
+### 新しいリレーションシップ
 
-- **ProductInCategory** — `Product` → `ProductCategory` (many-to-one)
-  Each product belongs to exactly one category.
+- **ProductInCategory** — `Product` → `ProductCategory`（多対一）
+  各商品は必ず1つのカテゴリーに属します。
 
-## The graph at Step 2
+## ステップ2のグラフ
 
 <ontology-embed id="official/iq-lab-retail-step-2" diff="official/iq-lab-retail-step-1" height="400px"></ontology-embed>
 
-*Five entity types connected by five relationships. OrderLine acts as a bridge between Order and Product, carrying quantity data. ProductCategory groups products.*
+*5つのエンティティ型が5つのリレーションシップで接続されています。OrderLineはOrderとProductの橋渡し役となって数量データを保持し、ProductCategoryは商品を分類します。*
 
-## What we learned
+## 学んだこと
 
-- **Linking entities** solve the many-to-many attribute problem
-- When a relationship needs its own data, model it as an entity
-- **Hierarchies** (Product → ProductCategory) enable roll-up queries
-- The graph is growing — each new entity connects to existing ones
+- **中間エンティティ**は、多対多のリレーションシップに属性を持たせる際の課題を解決します
+- リレーションシップ自体にデータが必要な場合は、それをエンティティとしてモデル化します
+- **階層**（Product → ProductCategory）によってロールアップクエリが可能になります
+- 新しいエンティティを既存のエンティティへ接続することで、グラフが成長します
 
 ```quiz
-Q: When should you introduce a linking entity (like OrderLine) instead of a direct relationship?
-- When you have more than three entity types
-- When the relationship between two entities needs its own attributes [correct]
-- When both entity types have identifier properties
-- When the entities are in different namespaces
-> A linking entity is needed when a many-to-many relationship needs to carry its own data (like quantity or line total). A direct relationship cannot hold attributes.
+Q: 直接的なリレーションシップではなく、OrderLineのような中間エンティティを導入するのはどのような場合ですか？
+- エンティティ型が4つ以上ある場合
+- 2つのエンティティ間のリレーションシップ自体に属性が必要な場合 [correct]
+- 両方のエンティティ型に識別子プロパティがある場合
+- エンティティが異なる名前空間にある場合
+> 多対多のリレーションシップ自体に数量や明細金額などのデータを持たせる必要がある場合は、中間エンティティが必要です。直接的なリレーションシップには属性を保持できません。
 ```
 
-Next, we'll add geographic structure with Region and Store.
+次は、RegionとStoreを使って地理構造を追加します。

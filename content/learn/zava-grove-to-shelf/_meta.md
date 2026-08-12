@@ -1,7 +1,7 @@
 ---
-title: "Zava Grove-to-Shelf: Semantic Cold Chain"
+title: "Zava 果樹園から店頭まで：セマンティック コールドチェーン"
 slug: zava-grove-to-shelf
-description: Build the Zava grove-to-shelf ontology step by step — from grower and farm through cold-chain logistics to retail orders and sustainability.
+description: 生産者と農園からコールドチェーン物流、小売注文、サステナビリティまで、Zavaの果樹園から店頭までを結ぶオントロジーを段階的に構築します。
 type: lab
 icon: 🌾
 ---

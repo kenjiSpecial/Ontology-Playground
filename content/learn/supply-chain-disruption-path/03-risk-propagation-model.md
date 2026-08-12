@@ -1,162 +1,162 @@
 ---
-title: "Risk Propagation Model"
+title: "リスク伝播モデル"
 slug: risk-propagation-model
-description: "Understand how disruptions cascade — the 7 relationships that model supplier impact → component risk → product exposure → mitigation action."
+description: "サプライヤーへの影響から部品のリスク、製品のリスク、緩和策へと寸断が連鎖する仕組みを、7つのリレーションシップを通して理解します。"
 order: 3
 ---
 
-## The cascade: 7 relationships
+## 連鎖を表す7つのリレーションシップ
 
-The power of your ontology lies in its relationships — they encode how impact flows through your supply chain. A data agent follows these paths to answer questions like "How many product lines are exposed to this supplier failure?"
+このオントロジーの力はリレーションシップにあります。リレーションシップは、サプライチェーン内で影響が伝わる仕組みを表します。データ エージェントはこれらの経路をたどり、**「このサプライヤーの供給停止によって、いくつの製品ラインがリスクにさらされていますか？」**といった質問に答えます。
 
-### 1. **Supplier supplies Component** (one-to-many)
-
-```
-Supplier "ChipX Corp" 
-  supplies→ Component "GPU Module"
-         → Component "Memory Board"
-         → Component "Power Supply"
-```
-
-- **Why it matters**: Disrupting one supplier affects all its dependent components
-- **Query example**: "Show me all components from suppliers in Taiwan"
-
-### 2. **Component used in ProductLine** (many-to-many)
+### 1. **Supplier supplies Component**（一対多）
 
 ```
-Component "GPU Module"
-  usedIn→ ProductLine "Gaming Laptop 2024"
+Supplier "ChipX Corp"
+  supplies→ Component "GPUモジュール"
+         → Component "メモリーボード"
+         → Component "電源ユニット"
+```
+
+- **重要な理由**：1社のサプライヤーが寸断すると、そのサプライヤーに依存するすべての部品が影響を受けます
+- **クエリ例**：**「台湾のサプライヤーから調達している部品をすべて示してください。」**
+
+### 2. **Component used in ProductLine**（多対多）
+
+```
+Component "GPUモジュール"
+  usedIn→ ProductLine "ゲーミング ノートPC 2024"
        → ProductLine "Workstation Pro"
        → ProductLine "Tablet Plus"
 ```
 
-- **Why it matters**: A single component failure can halt multiple product lines
-- **Query example**: "How many product lines depend on this component?"
+- **重要な理由**：1つの部品を供給できなくなるだけで、複数の製品ラインが停止する可能性があります
+- **クエリ例**：**「この部品に依存する製品ラインはいくつありますか？」**
 
-### 3. **DisruptionEvent affects Supplier** (many-to-many)
+### 3. **DisruptionEvent affects Supplier**（多対多）
 
 ```
-DisruptionEvent "Taiwan Power Outage 2024-05-01"
+DisruptionEvent "台湾の停電 2024-05-01"
   affects→ Supplier "ChipX Corp"
         → Supplier "Memory Inc"
 ```
 
-- **Why it matters**: One disaster can hit multiple suppliers simultaneously
-- **Query example**: "Which suppliers are in the flood zone?"
+- **重要な理由**：1件の災害が複数のサプライヤーを同時に襲う可能性があります
+- **クエリ例**：**「洪水区域内にあるサプライヤーはどれですか？」**
 
-### 4. **DisruptionEvent triggers RiskAssessment** (one-to-many)
-
-```
-DisruptionEvent "Taiwan Power Outage"
-  triggers→ RiskAssessment "Gaming Laptop - Impact Analysis"
-         → RiskAssessment "Workstation - Impact Analysis"
-```
-
-- **Why it matters**: Each disruption triggers detailed impact analysis for affected product lines
-- **Query example**: "What's the total revenue at risk from this disruption?"
-
-### 5. **RiskAssessment recommends MitigationAction** (one-to-many)
+### 4. **DisruptionEvent triggers RiskAssessment**（一対多）
 
 ```
-RiskAssessment "Gaming Laptop - Impact Analysis"
-  recommends→ MitigationAction "Activate Alt Supplier X"
-           → MitigationAction "Increase Safety Stock"
-           → MitigationAction "Redesign Component"
+DisruptionEvent "台湾の停電"
+  triggers→ RiskAssessment "ゲーミング ノートPC - 影響分析"
+         → RiskAssessment "Workstation - 影響分析"
 ```
 
-- **Why it matters**: Each impact analysis produces a prioritized action list
-- **Query example**: "What's the best action to minimize disruption impact?"
+- **重要な理由**：各寸断によって、影響を受ける製品ラインごとの詳細な影響分析が開始されます
+- **クエリ例**：**「この寸断によってリスクにさらされる売上の合計はいくらですか？」**
 
-### 6. **MitigationAction activates AlternativeSupplier** (many-to-many)
+### 5. **RiskAssessment recommends MitigationAction**（一対多）
 
 ```
-MitigationAction "Activate Alt Supplier X"
+RiskAssessment "ゲーミング ノートPC - 影響分析"
+  recommends→ MitigationAction "代替サプライヤーXを稼働"
+           → MitigationAction "安全在庫を増やす"
+           → MitigationAction "部品を再設計"
+```
+
+- **重要な理由**：各影響分析から、優先順位を付けた対策一覧が得られます
+- **クエリ例**：**「寸断の影響を最小限に抑える最善の対策は何ですか？」**
+
+### 6. **MitigationAction activates AlternativeSupplier**（多対多）
+
+```
+MitigationAction "代替サプライヤーXを稼働"
   activates→ AlternativeSupplier "ChipX Europe"
           → AlternativeSupplier "SemiCorp Japan"
 ```
 
-- **Why it matters**: One action can bring multiple backups online simultaneously
-- **Query example**: "Which pre-qualified suppliers can take over?"
+- **重要な理由**：1件の対策で、複数の代替供給先を同時に稼働させられます
+- **クエリ例**：**「供給を引き継げる事前認定済みサプライヤーはどれですか？」**
 
-### 7. **AlternativeSupplier canReplace Supplier** (many-to-one)
+### 7. **AlternativeSupplier canReplace Supplier**（多対一）
 
 ```
 AlternativeSupplier "ChipX Europe"
   canReplace→ Supplier "ChipX Corp"
 
-AlternativeSupplier "SemiCorp Japan"  
+AlternativeSupplier "SemiCorp Japan"
   canReplace→ Supplier "ChipX Corp"
 ```
 
-- **Why it matters**: Multiple approved backups exist for critical suppliers
-- **Query example**: "Is there an approved backup for this supplier?"
+- **重要な理由**：重要なサプライヤーに対して、認定済みの代替先を複数確保できます
+- **クエリ例**：**「このサプライヤーには認定済みの代替先がありますか？」**
 
-## The complete cascade example
+## 寸断が連鎖する完全な例
 
-Let's trace impact through a real scenario:
+実際のシナリオに沿って影響をたどってみましょう。
 
 ```
-DISRUPTION
+寸断
 │
-├─ Taiwan Power Outage (2024-05-01, Critical severity)
+├─ 台湾の停電（2024-05-01、深刻度Critical）
 │
-├─ AFFECTS
+├─ 影響を与える
 │  └─ Supplier "ChipX Corp" (singleSourced=true)
-│     ├─ SUPPLIES
-│     │  ├─ Component "GPU Module" (daysOfSupplyOnHand=3)
-│     │  │  ├─ USED IN
-│     │  │  │  ├─ ProductLine "Gaming Laptop 2024" ($50M annual revenue)
-│     │  │  │  ├─ ProductLine "Workstation Pro" ($30M annual revenue)
+│     ├─ 供給する
+│     │  ├─ Component "GPUモジュール" (daysOfSupplyOnHand=3)
+│     │  │  ├─ 使用される
+│     │  │  │  ├─ ProductLine "ゲーミング ノートPC 2024"（年間売上$50M）
+│     │  │  │  ├─ ProductLine "Workstation Pro"（年間売上$30M）
 │     │  │  │
-│     │  │  └─ TRIGGERS RiskAssessment
+│     │  │  └─ RiskAssessmentを開始
 │     │  │     ├─ revenueAtRisk=$80M
 │     │  │     ├─ timeToImpactDays=3
 │     │  │     │
-│     │  │     └─ RECOMMENDS
-│     │  │        ├─ MitigationAction "Activate ChipX Europe"
+│     │  │     └─ 提案する
+│     │  │        ├─ MitigationAction "ChipX Europeを稼働"
 │     │  │        │  ├─ estimatedCost=$2M
 │     │  │        │  ├─ leadTimeSavedDays=2
 │     │  │        │  │
-│     │  │        │  └─ ACTIVATES
+│     │  │        │  └─ 稼働させる
 │     │  │        │     ├─ AlternativeSupplier "ChipX Europe" 
 │     │  │        │     │  ├─ qualificationStatus=Approved
-│     │  │        │     │  ├─ capacityAvailable=50,000 units/month
+│     │  │        │     │  ├─ capacityAvailable=50,000単位/月
 │     │  │        │     │  ├─ pricePremiumPercent=12%
 │     │  │        │     │  │
-│     │  │        │     │  └─ CAN REPLACE
+│     │  │        │     │  └─ 代替できる
 │     │  │        │     │     └─ Supplier "ChipX Corp"
 │     │  │        │     │
 │     │  │        │     └─ AlternativeSupplier "SemiCorp Japan"
-│     │  │        │        └─ (secondary option)
+│     │  │        │        └─ （第2候補）
 │     │  │        │
-│     │  │        └─ MitigationAction "Increase Safety Stock"
+│     │  │        └─ MitigationAction "安全在庫を増やす"
 │     │  │           └─ estimatedCost=$500K
 │     │  │
-│     │  └─ Component "Memory Board"
-│     │     └─ (similar cascade...)
+│     │  └─ Component "メモリーボード"
+│     │     └─ （同様に連鎖）
 ```
 
-## Why this structure enables automation
+## この構造で自動化できる理由
 
-Your data agent can now:
+これでデータ エージェントは次の処理を実行できます。
 
-1. **Detect** — "Monitor these suppliers and this region"
-2. **Trace** — "When ChipX Corp has issues, automatically trace to all 14 affected product lines"
-3. **Quantify** — "Calculate total revenue at risk ($80M) and time to impact (3 days)"
-4. **Recommend** — "Activate pre-qualified alternatives that save 2 days and cost $2M vs. $80M loss"
-5. **Act** — "Send procurement alerts, update production schedules, notify stakeholders"
-6. **Learn** — "Track which actions actually worked and their real vs. estimated impact"
+1. **検知** — **「これらのサプライヤーとこの地域を監視してください。」**
+2. **追跡** — **「ChipX Corpで問題が発生したら、影響を受ける14の製品ラインすべてへ自動的にたどってください。」**
+3. **定量化** — **「リスクにさらされる売上の合計（8,000万ドル）と影響発生までの日数（3日）を計算してください。」**
+4. **提案** — **「8,000万ドルの損失に対し、200万ドルの費用で2日短縮できる事前認定済みの代替先を稼働させてください。」**
+5. **実行** — **「調達アラートを送信し、生産スケジュールを更新して、関係者へ通知してください。」**
+6. **学習** — **「実際に効果があった対策と、影響の実績と見積もりの差を追跡してください。」**
 
-## Cardinality rules
+## カーディナリティの規則
 
-| Relationship | Cardinality | Why |
+| リレーションシップ | カーディナリティ | 理由 |
 |---|---|---|
-| Supplier → Component | 1:N | One supplier may provide many components |
-| Component → ProductLine | M:N | Components reused; products share components |
-| Disruption → Supplier | M:N | One disaster hits multiple suppliers; supplier faces multiple threats |
-| Disruption → Assessment | 1:N | Each disruption spawns assessments for each affected product line |
-| Assessment → Action | 1:N | Each assessment recommends multiple actions |
-| Action → Alternative | M:N | One action activates multiple backups; backups handle multiple situations |
-| Alternative → Supplier | M:1 | Multiple pre-qualified backups exist for one primary supplier |
+| Supplier → Component | 1:N | 1社のサプライヤーが多数の部品を供給できるため |
+| Component → ProductLine | M:N | 部品は再利用され、複数の製品が部品を共有するため |
+| Disruption → Supplier | M:N | 1件の災害が複数のサプライヤーを襲い、1社も複数の脅威に直面するため |
+| Disruption → Assessment | 1:N | 各寸断から、影響を受ける製品ラインごとの評価が作られるため |
+| Assessment → Action | 1:N | 各評価が複数の対策を提案するため |
+| Action → Alternative | M:N | 1件の対策で複数の代替先を稼働でき、1つの代替先も複数の状況へ対応できるため |
+| Alternative → Supplier | M:1 | 1社の主要サプライヤーに対して、事前認定済みの代替先を複数用意できるため |
 
-Next, we'll see how to use this model to execute mitigation workflows in practice.
+次に、このモデルを使って緩和ワークフローを実行する方法を見ていきます。

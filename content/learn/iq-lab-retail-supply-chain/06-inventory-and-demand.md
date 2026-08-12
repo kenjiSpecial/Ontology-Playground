@@ -1,99 +1,99 @@
 ---
-title: Inventory & Demand
+title: 在庫と需要
 slug: inventory-and-demand
-description: Add Inventory, Forecast, and DemandSignal to track stock levels and predict future demand across warehouses and regions.
+description: Inventory、Forecast、DemandSignalを追加し、倉庫や地域をまたいで在庫水準を追跡し、将来の需要を予測します。
 order: 6
 embed: official/iq-lab-retail-step-5
 ---
 
-## From transactions to planning
+## 取引から計画へ
 
-Steps 1–4 modelled what **has happened** — orders, shipments, deliveries. Now we add entities for what **is happening** (inventory levels, demand signals) and what **will happen** (forecasts). This is where ontology really shines: unifying historical, real-time, and predictive data under one model.
+ステップ1〜4では、注文、出荷、配送という**過去に起きたこと**をモデル化しました。ここでは、在庫水準や需要シグナルといった**現在起きていること**と、予測という**将来起きること**を表すエンティティを追加します。履歴データ、リアルタイムデータ、予測データを1つのモデルに統合できることが、オントロジーの大きな強みです。
 
-## Inventory
+## Inventoryエンティティ
 
-Stock levels at each warehouse:
+各倉庫の在庫水準を表します。
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `inventoryId` | string | ✓ |
 | `stockLevel` | integer | |
 | `reorderPoint` | integer | |
 
-The `reorderPoint` indicates the threshold below which new stock should be ordered — a critical metric for supply chain management.
+`reorderPoint`は、在庫がこの値を下回ったら補充を発注すべきしきい値を示します。サプライチェーン管理における重要な指標です。
 
-## Forecast
+## Forecastエンティティ
 
-Predicted demand for products:
+商品の予測需要を表します。
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `forecastId` | string | ✓ |
 | `forecastDate` | date | |
 | `predictedDemand` | integer | |
 
-## DemandSignal
+## DemandSignalエンティティ
 
-Real-time indicators of customer demand — search trends, social media mentions, weather patterns:
+検索トレンド、ソーシャルメディアでの言及、気象パターンなど、顧客需要を示すリアルタイムの指標を表します。
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `signalId` | string | ✓ |
 | `signalDate` | datetime | |
 | `signalStrength` | decimal | |
 
-## New relationships
+## 新しいリレーションシップ
 
-Five new relationships connect inventory and demand to existing entities:
+5つの新しいリレーションシップで、在庫と需要を既存のエンティティへ接続します。
 
-- **InventoryForProduct** — `Inventory` → `Product` (many-to-one)
-  Stock level for a specific product.
+- **InventoryForProduct** — `Inventory` → `Product`（多対一）
+  特定商品の在庫水準を表します。
 
-- **InventoryAtWarehouse** — `Inventory` → `Warehouse` (many-to-one)
-  Where the inventory is stored. Combined with InventoryForProduct, this creates the intersection: "How much of Product X is at Warehouse Y?"
+- **InventoryAtWarehouse** — `Inventory` → `Warehouse`（多対一）
+  在庫の保管場所を表します。InventoryForProductと組み合わせることで、「Warehouse YにProduct Xはいくつありますか？」という、商品と倉庫が交わる情報を表せます。
 
-- **ForecastForProduct** — `Forecast` → `Product` (many-to-one)
-  Predicted demand for a specific product.
+- **ForecastForProduct** — `Forecast` → `Product`（多対一）
+  特定商品の予測需要を表します。
 
-- **DemandSignalForProduct** — `DemandSignal` → `Product` (many-to-one)
-  Real-time demand indicator for a product.
+- **DemandSignalForProduct** — `DemandSignal` → `Product`（多対一）
+  商品に対するリアルタイムの需要指標を表します。
 
-- **DemandSignalInRegion** — `DemandSignal` → `Region` (many-to-one)
-  Where the demand signal originated.
+- **DemandSignalInRegion** — `DemandSignal` → `Region`（多対一）
+  需要シグナルが発生した地域を表します。
 
-## Cross-source unification
+## データソース横断の統合
 
-In a real Fabric IQ deployment, these entities might come from very different sources:
+実際のFabric IQ環境では、これらのエンティティが大きく異なるデータソースから取得される場合があります。
 
-| Entity | Typical source |
+| エンティティ | 一般的なデータソース |
 |---|---|
-| Inventory | Eventhouse (real-time updates) |
-| Forecast | Lakehouse (batch ML predictions) |
-| DemandSignal | Eventhouse (streaming data) |
-| Product | Both Lakehouse (catalog) and Eventhouse (discounts) |
+| Inventory | Eventhouse（リアルタイム更新） |
+| Forecast | Lakehouse（バッチ処理による機械学習予測） |
+| DemandSignal | Eventhouse（ストリーミングデータ） |
+| Product | Lakehouse（カタログ）とEventhouse（割引）の両方 |
 
-The ontology **unifies all of these** under a single connected graph. A query like "For products with high demand signals in the southwest, what's the current inventory at nearby warehouses?" traverses across all sources seamlessly.
+オントロジーは、これらすべてを1つの接続グラフに**統合します**。「南西地域で需要シグナルが強い商品のうち、近隣倉庫の現在庫はいくつですか？」というクエリは、すべてのデータソースを継ぎ目なく横断します。
 
-## The graph at Step 5
+## ステップ5のグラフ
 
 <ontology-embed id="official/iq-lab-retail-step-5" diff="official/iq-lab-retail-step-4" height="450px"></ontology-embed>
 
-*Thirteen entity types. Inventory links Product to Warehouse. DemandSignal connects Product to Region. The graph now spans commerce, logistics, and planning domains.*
+*13個のエンティティ型があります。InventoryはProductとWarehouseをつなぎ、DemandSignalはProductとRegionを接続します。グラフはコマース、物流、計画の各ドメインにまたがるようになりました。*
 
-## What we learned
+## 学んだこと
 
-- Ontologies can unify **historical, real-time, and predictive** data
-- **Inventory** is a classic intersection entity — it sits between Product and Warehouse
-- **DemandSignal** connects to both Product and Region, enabling cross-dimensional analysis
-- Cross-source unification is the core value proposition — one model, multiple data engines
+- オントロジーは**履歴、リアルタイム、予測**の各データを統合できます
+- **Inventory**は代表的な交差エンティティで、ProductとWarehouseの間に位置します
+- **DemandSignal**はProductとRegionの両方に接続し、複数の軸にまたがる分析を可能にします
+- データソース横断の統合が中核的な価値です。1つのモデルで複数のデータエンジンを扱えます
 
 ```quiz
-Q: Why is Inventory called an "intersection entity"?
-- It stores more data than other entities
-- It sits between Product and Warehouse, representing stock of a specific product at a specific location [correct]
-- It has the most relationships in the ontology
-- It is the only entity sourced from Eventhouse
-> Inventory intersects Product and Warehouse — each inventory record answers "how much of Product X is at Warehouse Y?", making it a classic intersection (or junction) entity.
+Q: Inventoryが「交差エンティティ」と呼ばれるのはなぜですか？
+- ほかのエンティティより多くのデータを格納するため
+- ProductとWarehouseの間に位置し、特定の場所にある特定商品の在庫を表すため [correct]
+- オントロジー内で最も多くのリレーションシップを持つため
+- Eventhouseをデータソースとする唯一のエンティティであるため
+> InventoryはProductとWarehouseが交わる情報を表します。各在庫レコードが「Warehouse YにProduct Xはいくつありますか？」という問いに答えるため、代表的な交差エンティティ（またはジャンクションエンティティ）です。
 ```
 
-One more step: we'll add Promotion and Return to complete the picture.
+残りは1ステップです。PromotionとReturnを追加して、全体像を完成させます。

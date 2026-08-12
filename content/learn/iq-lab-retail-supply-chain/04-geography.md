@@ -1,76 +1,76 @@
 ---
-title: Geography
+title: 地理情報
 slug: geography
-description: Model Region and Store to add geographic structure — where orders are fulfilled and where stores are located.
+description: RegionとStoreをモデル化し、注文が履行される地域と店舗の所在地を表す地理構造を追加します。
 order: 4
 embed: official/iq-lab-retail-step-3
 ---
 
-## Adding location context
+## 場所のコンテキストを追加する
 
-Commerce doesn't happen in a vacuum — it happens in **places**. Adding geographic entities lets us answer questions like:
+コマースは何もない場所で行われるのではなく、必ず特定の**場所**で行われます。地理エンティティを追加すると、次のような質問に答えられます。
 
-- "What were total sales in the southwest region?"
-- "Which stores in the northeast have declining order volume?"
-- "Does the southwest region require cold-chain logistics?"
+- 「南西地域の総売上はいくらでしたか？」
+- 「北東地域で注文量が減少している店舗はどれですか？」
+- 「南西地域にはコールドチェーン物流が必要ですか？」
 
-## Region
+## Regionエンティティ
 
-Regions represent broad geographic areas that contain stores and warehouses:
+Regionは、店舗や倉庫を含む広域の地理区分を表します。
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `regionId` | string | ✓ |
 | `regionName` | string | |
 | `timezone` | string | |
 | `coldChainRequired` | boolean | |
 
-The `coldChainRequired` property is a good example of a **boolean property** — it captures a yes/no business rule (does this region need refrigerated shipping?) as a queryable attribute rather than burying it in documentation.
+`coldChainRequired`は、**ブール型プロパティ**の分かりやすい例です。「この地域では冷蔵輸送が必要か」という「はい／いいえ」で答えられるビジネスルールを、文書に埋もれさせず、クエリ可能な属性として保持します。
 
-## Store
+## Storeエンティティ
 
-Stores are the physical retail locations where customers place orders:
+Storeは、顧客が注文を行う物理的な小売店舗を表します。
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `storeId` | string | ✓ |
 | `storeName` | string | |
 | `address` | string | |
 
-## New relationships
+## 新しいリレーションシップ
 
-- **OrderFulfilledToRegion** — `Order` → `Region` (many-to-one)
-  Each order is fulfilled in one region. This enables regional sales analysis.
+- **OrderFulfilledToRegion** — `Order` → `Region`（多対一）
+  各注文は1つの地域で履行されます。これにより、地域別の売上分析が可能になります。
 
-- **StoreInRegion** — `Store` → `Region` (many-to-one)
-  Each store belongs to one region. Combined with the order relationship, this creates two paths to Region — useful for different analytical perspectives.
+- **StoreInRegion** — `Store` → `Region`（多対一）
+  各店舗は1つの地域に属します。注文のリレーションシップと組み合わせることで、Regionへ至る経路が2つでき、異なる観点から分析できます。
 
-## Geographic hierarchies
+## 地理階層
 
-Notice the pattern: **Store** → **Region** forms a **geographic hierarchy**. In a more detailed ontology, you might add City, State, or Country levels. The key principle is:
+**Store** → **Region**が**地理階層**を形成していることに注目してください。より詳細なオントロジーでは、City、State、Countryなどの階層を追加することもできます。重要な原則は次のとおりです。
 
-> Each level in the hierarchy connects to the next via a many-to-one relationship. This enables automatic roll-up: store-level data aggregates to region-level totals.
+> 階層の各レベルは、多対一のリレーションシップで次のレベルに接続します。これにより自動的なロールアップが可能になり、店舗レベルのデータを地域レベルの合計へ集計できます。
 
-## The graph at Step 3
+## ステップ3のグラフ
 
 <ontology-embed id="official/iq-lab-retail-step-3" diff="official/iq-lab-retail-step-2" height="400px"></ontology-embed>
 
-*Seven entity types. Region and Store add geographic context. Notice how Order now connects to both Customer (who bought) and Region (where it was fulfilled).*
+*7つのエンティティ型があります。RegionとStoreが地理的なコンテキストを追加します。OrderがCustomer（購入者）とRegion（履行された地域）の両方に接続されたことに注目してください。*
 
-## What we learned
+## 学んだこと
 
-- **Geographic entities** enable location-based analytics
-- **Boolean properties** (like `coldChainRequired`) capture business rules
-- **Hierarchies** allow data to roll up from granular to aggregate
-- An entity can have multiple relationships to different entities — Order connects to Customer, Product (via OrderLine), and Region
+- **地理エンティティ**によって、場所に基づく分析が可能になります
+- `coldChainRequired`のような**ブール型プロパティ**でビジネスルールを表現できます
+- **階層**によって、詳細なデータを上位レベルへロールアップできます
+- 1つのエンティティは異なるエンティティへの複数のリレーションシップを持てます。OrderはCustomer、OrderLineを介したProduct、Regionに接続します
 
 ```quiz
-Q: Why is it useful to model Region as a separate entity instead of adding a "region" text property on Store?
-- It saves storage space
-- It enables roll-up queries and maintains a single source of truth for geographic data [correct]
-- It makes the ontology diagram look better
-- Fabric IQ requires it
-> Modelling Region as a separate entity creates a hierarchy: Store → Region. This lets IQ aggregate data by region ("total sales in the northeast") and ensures region metadata is defined once, not duplicated across every store.
+Q: Storeに「region」というテキストプロパティを追加するのではなく、Regionを独立したエンティティとしてモデル化すると、どのような利点がありますか？
+- ストレージ容量を節約できる
+- ロールアップクエリを実行でき、地理データの信頼できる唯一の情報源を維持できる [correct]
+- オントロジー図の見栄えがよくなる
+- Fabric IQで必須になっている
+> Regionを独立したエンティティとしてモデル化すると、Store → Regionという階層ができます。これにより、IQは「北東地域の総売上」のように地域別にデータを集計でき、地域のメタデータを店舗ごとに重複させず、1か所だけで定義できます。
 ```
 
-Next, we'll model how orders actually get delivered.
+次は、注文が実際に配送される仕組みをモデル化します。

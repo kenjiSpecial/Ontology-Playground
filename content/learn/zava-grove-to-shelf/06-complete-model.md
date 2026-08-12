@@ -1,77 +1,77 @@
 ---
-title: Complete Model
+title: 完全なモデル
 slug: complete-model
-description: Add SustainabilityProgram to close the grove-to-shelf model — 12 entities, 13 relationships, ready for the demo.
+description: SustainabilityProgramを追加して、12個のエンティティと13個のリレーションシップからなる果樹園から店頭までのモデルを完成させ、デモに備えます。
 order: 6
 embed: official/zava-grove-to-shelf-step-5
 ---
 
-## The last entity: sustainability
+## 最後のエンティティ：サステナビリティ
 
-Zava runs a grower-development program — internally codenamed **Dreams** — that partner farms can opt into. It funds water-efficiency, fair-pay and biodiversity initiatives. Today this data lives in a marketing system, disconnected from the supply chain.
+Zavaは、社内コードネームを**Dreams**とする生産者育成プログラムを運営しており、提携農園は任意で参加できます。このプログラムは、水利用の効率化、公正な報酬、生物多様性に関する取り組みに資金を提供します。現在、このデータはマーケティング システムにあり、サプライチェーンから切り離されています。
 
-One entity and one relationship pull it into the model:
+一つのエンティティと一つのリレーションシップを追加し、この情報をモデルへ取り込みます。
 
 ### SustainabilityProgram
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `programId` | string | ✓ |
 | `name` | string | |
 | `focusArea` | string | |
 | `startYear` | integer | |
 
-### New relationship
+### 新しいリレーションシップ
 
-| From | Verb | To | Cardinality |
+| 始点 | 動詞 | 終点 | カーディナリティ |
 |---|---|---|---|
-| Farm | participatesIn | SustainabilityProgram | many-to-many |
+| Farm | participatesIn | SustainabilityProgram | 多対多 |
 
-A many-to-many because a single farm can be in several programs (e.g. *Dreams Water* and *Dreams Biodiversity*) and a single program enrolls many farms.
+一つの農園が複数のプログラム（例：*Dreams Water*と*Dreams Biodiversity*）に参加でき、一つのプログラムにも多数の農園が参加するため、多対多になります。
 
-## The complete graph
+## 完成したグラフ
 
 <ontology-embed id="official/zava-grove-to-shelf-step-5" diff="official/zava-grove-to-shelf-step-4" height="520px"></ontology-embed>
 
-*12 entities, 13 relationships. Every business domain Zava cares about is now a first-class concept connected by named edges.*
+*12個のエンティティと13個のリレーションシップです。Zavaにとって重要なすべてのビジネス領域が第一級の概念となり、名前付きのエッジで接続されました。*
 
-## What this model unlocks on stage
+## デモで答えられるようになる問い
 
-Five questions, each previously a multi-system, multi-day effort, all now answerable from one ontology:
+以前は複数のシステムを使い、何日もかけなければ答えられなかった次の5つの問いに、一つのオントロジーから答えられるようになります。
 
-| Question | Path |
+| 問い | 経路 |
 |---|---|
-| *"Show me last quarter's revenue from mandarins, broken down by retail chain and origin country."* | `Order forVariety FruitVariety[category=citrus]`, group by `Store.retailerName` and `HarvestLot → Plot → Farm.country` |
-| *"Which growers had quality-check failures on blueberries in the last 30 days?"* | `QualityCheck[passed=false] → HarvestLot[ofVariety.category=berry] → Plot → Farm ← owns ← Grower` |
-| *"Which shipments in transit have temperature above the safe threshold for their variety?"* | `Shipment monitoredBy ColdChainSensor[temperatureC > carries.harvestLot.ofVariety.maxStorageTempC]` |
-| *"For the breach on shipment SH-2026-04812, which retailer orders are at risk and what is the revenue exposure?"* | `Shipment[id=SH-2026-04812] → RetailDC supplies Store places Order[forVariety = breached variety, status=open]` then sum `kilograms × unitPriceEur` |
-| *"What percentage of our berry volume this season came from Dreams-program farms?"* | `HarvestLot[ofVariety.category=berry, harvestDate∈season]`, group by whether `fromPlot → Farm participatesIn SustainabilityProgram[name~"Dreams"]` |
+| *「前四半期のマンダリンによる売上を、小売チェーン別、原産国別に示してください。」* | `Order forVariety FruitVariety[category=citrus]`をたどり、`Store.retailerName`と`HarvestLot → Plot → Farm.country`でグループ化 |
+| *「過去30日間にブルーベリーの品質検査で不合格があった生産者は誰ですか？」* | `QualityCheck[passed=false] → HarvestLot[ofVariety.category=berry] → Plot → Farm ← owns ← Grower` |
+| *「輸送中の出荷のうち、品種ごとの安全しきい値を温度が超えているものはどれですか？」* | `Shipment monitoredBy ColdChainSensor[temperatureC > carries.harvestLot.ofVariety.maxStorageTempC]` |
+| *「出荷SH-2026-04812の温度逸脱によって、どの小売注文にリスクがあり、影響を受ける売上はいくらですか？」* | `Shipment[id=SH-2026-04812] → RetailDC supplies Store places Order[forVariety = breached variety, status=open]`をたどり、`kilograms × unitPriceEur`を合計 |
+| *「今季のベリー取扱量のうち、Dreamsプログラム参加農園からの仕入れは何パーセントですか？」* | `HarvestLot[ofVariety.category=berry, harvestDate∈season]`を対象に、`fromPlot → Farm participatesIn SustainabilityProgram[name~"Dreams"]`を満たすかどうかでグループ化 |
 
-## What we built
+## 構築したもの
 
-| Step | Entities added | Cumulative | Key concept |
+| ステップ | 追加したエンティティ | 累計 | 主要な概念 |
 |---|---|---|---|
-| 1 | Grower, Farm, Plot, FruitVariety | 4 | Multi-origin sourcing, traceability anchor |
-| 2 | HarvestLot, QualityCheck | 6 | Lineage events, four-stage QC regime |
-| 3 | Shipment, ColdChainSensor | 8 | Hub entities, time-series binding |
-| 4 | RetailDC, Store, Order | 11 | Closing the loop to revenue |
-| 5 | SustainabilityProgram | 12 | Many-to-many CSR overlay |
+| 1 | Grower、Farm、Plot、FruitVariety | 4 | 複数産地からの調達、トレーサビリティの基点 |
+| 2 | HarvestLot、QualityCheck | 6 | 来歴イベント、4段階の品質管理体制 |
+| 3 | Shipment、ColdChainSensor | 8 | ハブ エンティティ、時系列バインディング |
+| 4 | RetailDC、Store、Order | 11 | 売上までの経路を完成 |
+| 5 | SustainabilityProgram | 12 | 多対多のCSR情報を重ね合わせる |
 
-## Key takeaways
+## 重要なポイント
 
-1. **One vocabulary spans five systems.** Agronomy ERPs, packhouse QC apps, IoT eventhouses, retail EDI feeds and CSR records all become bindings on the same 12-entity model.
-2. **Hub entities matter.** `HarvestLot` is the lineage hub. `Shipment` is the lakehouse↔eventhouse hub. `FruitVariety` is the supply↔demand hub.
-3. **Time-series telemetry is first-class.** `ColdChainSensor` looks just like any other entity in the ontology — the underlying storage choice (Eventhouse) is invisible to the question-asker.
-4. **Sustainability isn't a side spreadsheet.** Adding `SustainabilityProgram` lets CSR questions ride the same graph as revenue questions.
-5. **The ontology becomes the contract.** GQL queries, Fabric Data Agent prompts, and Activator rules all reference the same entity and relationship names.
+1. **一つの語彙で5つのシステムを横断できます。** 農業ERP、選果梱包施設の品質管理アプリ、IoT Eventhouse、小売EDIフィード、CSR記録はすべて、同じ12エンティティのモデルに対するバインディングになります。
+2. **ハブ エンティティが重要です。** `HarvestLot`は来歴のハブ、`Shipment`はLakehouseとEventhouseを結ぶハブ、`FruitVariety`は供給と需要を結ぶハブです。
+3. **時系列テレメトリを第一級の概念として扱います。** `ColdChainSensor`はオントロジー内の他のエンティティと同じように見えます。質問する人からは、基盤のストレージとしてEventhouseを選んでいることが見えません。
+4. **サステナビリティを独立したスプレッドシートに閉じ込めません。** `SustainabilityProgram`を追加することで、CSRに関する問いでも売上に関する問いと同じグラフをたどれます。
+5. **オントロジーが契約になります。** GQLクエリ、Fabric Data Agentのプロンプト、Activatorルールはすべて、同じエンティティ名とリレーションシップ名を参照します。
 
 ```quiz
-Q: In Zava's complete model, the question *"What percentage of our berry volume this season came from Dreams-program farms?"* requires which path?
+Q: Zavaの完全なモデルで、*「今季のベリー取扱量のうち、Dreamsプログラム参加農園からの仕入れは何パーセントですか？」*という問いに答えるには、どの経路が必要ですか？
 - Order → Store → RetailDC → Farm
 - HarvestLot → Plot → Farm → SustainabilityProgram [correct]
 - ColdChainSensor → Shipment → Farm → SustainabilityProgram
 - FruitVariety → SustainabilityProgram
-> Volume is recorded on HarvestLot. To learn whether that lot came from a Dreams-program farm, walk HarvestLot → fromPlot → Plot → (contained by) Farm → participatesIn → SustainabilityProgram and filter on the program name.
+> 取扱量はHarvestLotに記録されています。そのロットがDreamsプログラム参加農園から来たかどうかを確認するには、HarvestLot → fromPlot → Plot →（その区画を含む）Farm → participatesIn → SustainabilityProgramとたどり、プログラム名で絞り込みます。
 ```
 
-You've completed the Zava Grove-to-Shelf lab. Open the [Step 5 ontology](#/catalogue/official/zava-grove-to-shelf-step-5) in the playground to query, extend, or export it.
+これでZavaの「果樹園から店頭まで」ラボは完了です。プレイグラウンドで[ステップ5のオントロジー](#/catalogue/official/zava-grove-to-shelf-step-5)を開き、クエリ、拡張、エクスポートを試してください。

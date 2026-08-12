@@ -1,27 +1,27 @@
 ---
-title: Orchard Foundation
+title: 果樹園の基盤
 slug: orchard-foundation
-description: Define Grower, Farm, Plot and FruitVariety — the four entities that capture Zava's multi-origin sourcing model.
+description: Zavaの複数産地調達モデルを表す4つのエンティティ、Grower、Farm、Plot、FruitVarietyを定義します。
 order: 2
 embed: official/zava-grove-to-shelf-step-1
 ---
 
-## Where Zava's data starts
+## Zavaのデータの起点
 
-Zava sources premium fruit from a network of partner producers. Before we can talk about quality, shipments or retail orders, we need a vocabulary for **who grows what, where**.
+Zavaは提携生産者のネットワークから高級果実を調達しています。品質、出荷、小売注文を扱う前に、**誰が、どこで、何を栽培しているか**を表す語彙が必要です。
 
-Four entities capture this:
+次の4つのエンティティで表現します。
 
-- **Grower** — the partner company (e.g. *Finca La Marina S.L.*).
-- **Farm** — the geographic site a grower owns or operates.
-- **Plot** — a managed parcel inside a farm, planted with one variety.
-- **FruitVariety** — the commercial variety (e.g. *Nadorcott* mandarin, *Sekoya Pop* blueberry).
+- **Grower** — 提携企業（例：*Finca La Marina S.L.*）です。
+- **Farm** — 生産者が所有または運営する地理的な農園です。
+- **Plot** — 農園内で管理され、一つの品種が植えられている区画です。
+- **FruitVariety** — 商用品種（例：*Nadorcott*マンダリン、*Sekoya Pop*ブルーベリー）です。
 
-## Entities
+## エンティティ
 
 ### Grower
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `growerId` | string | ✓ |
 | `name` | string | |
@@ -29,11 +29,11 @@ Four entities capture this:
 | `partnerSince` | date | |
 | `isMasterGrower` | boolean | |
 
-`isMasterGrower` flags Zava's strategic, long-term partners.
+`isMasterGrower`は、Zavaの戦略的な長期パートナーを示します。
 
 ### Farm
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `farmId` | string | ✓ |
 | `name` | string | |
@@ -43,7 +43,7 @@ Four entities capture this:
 
 ### Plot
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `plotId` | string | ✓ |
 | `hectares` | decimal (ha) | |
@@ -51,36 +51,36 @@ Four entities capture this:
 
 ### FruitVariety
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `varietyId` | string | ✓ |
 | `commercialName` | string | |
 | `category` | string | |
 | `shelfLifeDays` | integer (days) | |
 
-## Relationships
+## リレーションシップ
 
-| From | Verb | To | Cardinality |
+| 始点 | 動詞 | 終点 | カーディナリティ |
 |---|---|---|---|
-| Grower | owns | Farm | one-to-many |
-| Farm | contains | Plot | one-to-many |
-| Plot | grows | FruitVariety | many-to-one |
+| Grower | owns | Farm | 1対多 |
+| Farm | contains | Plot | 1対多 |
+| Plot | grows | FruitVariety | 多対1 |
 
-The chain `Grower → Farm → Plot → FruitVariety` is what makes **end-to-end traceability** possible: from a piece of fruit on the shelf back to the exact plot it came from.
+`Grower → Farm → Plot → FruitVariety`という連鎖により、店頭の一つの果実から、その果実が収穫された正確な区画までさかのぼる**エンドツーエンドのトレーサビリティ**が実現します。
 
-## The graph so far
+## ここまでのグラフ
 
 <ontology-embed id="official/zava-grove-to-shelf-step-1" height="380px"></ontology-embed>
 
-*Four entities and three relationships are already enough to answer questions like "How many hectares of Nadorcott mandarin does Zava source from Spain?"*
+*4つのエンティティと3つのリレーションシップだけで、「ZavaはスペインからNadorcottマンダリンを何ヘクタール分調達していますか？」といった問いに答えられます。*
 
 ```quiz
-Q: In Zava's model, why is `Plot` a separate entity from `Farm` rather than just a property of `Farm`?
-- It makes the graph look denser
-- A farm can host multiple plots each planted with a different variety, and traceability requires plot-level identity [correct]
-- Plots have different owners than farms
-- It's required by RDF
-> Plots are first-class because a single farm typically grows several varieties side-by-side, and Zava needs to trace each harvest lot back to the specific plot — not just the farm.
+Q: Zavaのモデルで、`Plot`を`Farm`の単なるプロパティではなく、別のエンティティにするのはなぜですか？
+- グラフを密に見せるため
+- 一つの農園に、それぞれ異なる品種を植えた複数の区画が存在でき、トレーサビリティには区画単位の識別情報が必要だから [correct]
+- 区画と農園では所有者が異なるから
+- RDFで必須だから
+> 通常、一つの農園では複数の品種を隣り合わせで栽培しています。Zavaは各収穫ロットを農園だけでなく特定の区画まで追跡する必要があるため、区画を第一級のエンティティとして扱います。
 ```
 
-Next, we'll add the **harvest events** and the famous **four-stage quality check**.
+次は、**収穫イベント**とZavaで知られる**4段階の品質検査**を追加します。
