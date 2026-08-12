@@ -98,7 +98,7 @@ describe('ImportExportModal integration', () => {
     expect(state.currentOntology.relationships[0].name).toBe('produces');
 
     // Success message should be shown
-    expect(screen.getByText('Ontology loaded successfully!')).toBeTruthy();
+    expect(screen.getByText('オントロジーを読み込みました！')).toBeTruthy();
   });
 
   it('shows an error for malformed RDF', async () => {
@@ -110,7 +110,7 @@ describe('ImportExportModal integration', () => {
     await userEvent.upload(fileInput, file);
 
     await waitFor(() => {
-      expect(screen.getByText(/RDF parse error/)).toBeTruthy();
+      expect(screen.getByText(/RDFの解析エラー/)).toBeTruthy();
     });
 
     // Store should remain unchanged (still default Fourth Coffee)
@@ -130,7 +130,7 @@ describe('ImportExportModal integration', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(screen.getByText(/Unsupported file format/)).toBeTruthy();
+      expect(screen.getByText(/未対応のファイル形式/)).toBeTruthy();
     });
 
     // Store should remain unchanged

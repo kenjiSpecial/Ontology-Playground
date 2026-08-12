@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { X, FileText, Copy, Check } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { useState } from 'react';
+import { jaFormatters, jaMessages } from '../locales/ja';
 
 interface OntologySummaryModalProps {
   onClose: () => void;
@@ -22,22 +23,22 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
     lines.push('');
     
     // Entities section
-    lines.push('## Entities');
+    lines.push(`## ${jaMessages.dataExchange.summary.entities}`);
     lines.push('');
     currentOntology.entityTypes.forEach(entity => {
       lines.push(`### ${entity.icon} ${entity.name}`);
       lines.push(`${entity.description}`);
       lines.push('');
-      lines.push('**Properties:**');
+      lines.push(`**${jaMessages.dataExchange.summary.properties}:**`);
       entity.properties.forEach(prop => {
-        const identifier = prop.isIdentifier ? ' (identifier)' : '';
+        const identifier = prop.isIdentifier ? `（${jaMessages.dataExchange.summary.identifier}）` : '';
         lines.push(`- **${prop.name}** (${prop.type})${identifier}: ${prop.description}`);
       });
       lines.push('');
     });
     
     // Relationships section
-    lines.push('## Relationships');
+    lines.push(`## ${jaMessages.dataExchange.summary.relationships}`);
     lines.push('');
     currentOntology.relationships.forEach(rel => {
       const fromEntity = currentOntology.entityTypes.find(e => e.id === rel.from);
@@ -75,18 +76,19 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FileText size={20} style={{ color: 'var(--accent)' }} />
-            <h2>Ontology Summary</h2>
+            <h2>{jaMessages.dataExchange.summary.title}</h2>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button 
               className="icon-btn" 
               onClick={handleCopy} 
-              title="Copy to clipboard"
+              title={copied ? jaMessages.dataExchange.summary.copied : jaMessages.dataExchange.summary.copy}
+              aria-label={copied ? jaMessages.dataExchange.summary.copied : jaMessages.dataExchange.summary.copy}
               style={{ background: copied ? 'var(--ms-green)' : 'var(--bg-tertiary)' }}
             >
               {copied ? <Check size={18} color="white" /> : <Copy size={18} />}
             </button>
-            <button className="modal-close" onClick={onClose}>
+            <button className="modal-close" onClick={onClose} aria-label={jaMessages.common.close}>
               <X size={20} />
             </button>
           </div>
@@ -99,7 +101,7 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
           </div>
 
           <div className="summary-section">
-            <h4>Entities ({currentOntology.entityTypes.length})</h4>
+            <h4>{jaFormatters.entities(currentOntology.entityTypes.length)}</h4>
             <div className="summary-entities">
               {currentOntology.entityTypes.map(entity => (
                 <div key={entity.id} className="summary-entity-card">
@@ -127,7 +129,7 @@ export function OntologySummaryModal({ onClose }: OntologySummaryModalProps) {
           </div>
 
           <div className="summary-section">
-            <h4>Relationships ({currentOntology.relationships.length})</h4>
+            <h4>{jaFormatters.relationships(currentOntology.relationships.length)}</h4>
             <div className="summary-relationships">
               {currentOntology.relationships.map(rel => {
                 const fromEntity = currentOntology.entityTypes.find(e => e.id === rel.from);

@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { X, Cloud, Loader2, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
+import { jaFormatters, jaMessages } from '../locales/ja';
 import {
   createOntology,
   updateOntologyDefinition,
@@ -31,14 +32,14 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
 
   const handleLoadWorkspace = useCallback(async () => {
     if (!token.trim() || !workspaceId.trim()) {
-      setError('Both token and workspace ID are required.');
+      setError(jaMessages.dataExchange.fabric.missingCredentials);
       return;
     }
 
     // Basic UUID format validation
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(workspaceId.trim())) {
-      setError('Workspace ID must be a valid UUID (e.g., cfafbeb1-8037-4d0c-896e-a46fb27ff229).');
+      setError(jaMessages.dataExchange.fabric.invalidWorkspaceId);
       return;
     }
 
@@ -51,9 +52,9 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
       setStep('workspace');
     } catch (err) {
       if (err instanceof FabricApiError) {
-        setError(`API error (${err.status}): ${err.message}`);
+        setError(jaFormatters.fabricApiError(err.status, err.message));
       } else {
-        setError(err instanceof Error ? err.message : 'Failed to connect to workspace');
+        setError(err instanceof Error ? err.message : jaMessages.dataExchange.fabric.connectFailed);
       }
     } finally {
       setLoading(false);
@@ -85,9 +86,9 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
       setStep('done');
     } catch (err) {
       if (err instanceof FabricApiError) {
-        setError(`API error (${err.status}): ${err.message}`);
+        setError(jaFormatters.fabricApiError(err.status, err.message));
       } else {
-        setError(err instanceof Error ? err.message : 'Push failed');
+        setError(err instanceof Error ? err.message : jaMessages.dataExchange.fabric.genericPushFailed);
       }
       setStep('error');
     }
@@ -121,13 +122,13 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
               <Cloud size={20} color="var(--ms-blue)" />
             </div>
             <div>
-              <h2 style={{ fontSize: 20, fontWeight: 600 }}>Push to Microsoft Fabric</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 600 }}>{jaMessages.dataExchange.fabric.title}</h2>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
-                Create or update an ontology in your Fabric workspace
+                {jaMessages.dataExchange.fabric.subtitle}
               </p>
             </div>
           </div>
-          <button className="icon-btn" onClick={onClose}><X size={20} /></button>
+          <button className="icon-btn" onClick={onClose} aria-label={jaMessages.common.close}><X size={20} /></button>
         </div>
 
         {/* Ontology summary */}
@@ -140,7 +141,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
         }}>
           <strong>{currentOntology.name}</strong>
           <span style={{ color: 'var(--text-secondary)', marginLeft: 8 }}>
-            {currentOntology.entityTypes.length} entity types, {currentOntology.relationships.length} relationships
+            {jaFormatters.dataExchangeOntologyCounts(currentOntology.entityTypes.length, currentOntology.relationships.length)}
           </span>
         </div>
 
@@ -164,7 +165,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
           <div>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-                Workspace ID
+                {jaMessages.dataExchange.fabric.workspaceId}
               </label>
               <input
                 type="text"
@@ -183,19 +184,19 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 }}
               />
               <p style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>
-                Find this in Fabric portal → Workspace settings → Overview
+                {jaMessages.dataExchange.fabric.workspaceHelp}
               </p>
             </div>
 
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-                Access Token
+                {jaMessages.dataExchange.fabric.accessToken}
               </label>
               <input
                 type="password"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
-                placeholder="Paste your bearer token here"
+                placeholder={jaMessages.dataExchange.fabric.tokenPlaceholder}
                 spellCheck={false}
                 style={{
                   width: '100%', padding: '8px 12px',
@@ -208,8 +209,8 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 }}
               />
               <p style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>
-                Bearer token with <code>Item.ReadWrite.All</code> scope.
-                Get one from the Fabric REST API &quot;Try It&quot; page or via MSAL.
+                {jaMessages.dataExchange.fabric.tokenHelpBeforeScope}<code>Item.ReadWrite.All</code>
+                {jaMessages.dataExchange.fabric.tokenHelpAfterScope}
               </p>
             </div>
 
@@ -219,7 +220,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
               disabled={loading}
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
             >
-              {loading ? <><Loader2 size={14} className="spin" /> Connecting...</> : 'Connect to Workspace'}
+              {loading ? <><Loader2 size={14} className="spin" /> {jaMessages.dataExchange.fabric.connecting}</> : jaMessages.dataExchange.fabric.connect}
             </button>
           </div>
         )}
@@ -229,7 +230,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
           <div>
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 8 }}>
-                Action
+                {jaMessages.dataExchange.fabric.action}
               </label>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button
@@ -243,7 +244,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                     cursor: 'pointer', fontSize: 13, fontWeight: 600,
                   }}
                 >
-                  Create New
+                  {jaMessages.dataExchange.fabric.createNew}
                 </button>
                 <button
                   onClick={() => setMode('update')}
@@ -258,7 +259,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                     fontSize: 13, fontWeight: 600,
                   }}
                 >
-                  Update Existing ({existingOntologies.length})
+                  {jaFormatters.fabricExistingCount(existingOntologies.length)}
                 </button>
               </div>
             </div>
@@ -266,7 +267,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
             {mode === 'update' && existingOntologies.length > 0 && (
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-                  Select Ontology
+                  {jaMessages.dataExchange.fabric.selectOntology}
                 </label>
                 <select
                   value={selectedOntologyId}
@@ -280,7 +281,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                     fontSize: 13,
                   }}
                 >
-                  <option value="">— Select —</option>
+                  <option value="">{jaMessages.dataExchange.fabric.select}</option>
                   {existingOntologies.map(o => (
                     <option key={o.id} value={o.id}>
                       {o.displayName} ({o.id.slice(0, 8)}…)
@@ -296,7 +297,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 onClick={() => { setStep('credentials'); setError(''); }}
                 style={{ flex: 1 }}
               >
-                Back
+                {jaMessages.dataExchange.fabric.back}
               </button>
               <button
                 className="btn btn-primary"
@@ -304,7 +305,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 disabled={mode === 'update' && !selectedOntologyId}
                 style={{ flex: 2 }}
               >
-                {mode === 'create' ? 'Create & Push' : 'Update Definition'}
+                {mode === 'create' ? jaMessages.dataExchange.fabric.createAndPush : jaMessages.dataExchange.fabric.updateDefinition}
               </button>
             </div>
           </div>
@@ -315,10 +316,10 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
           <div style={{ textAlign: 'center', padding: '32px 0' }}>
             <Loader2 size={32} color="var(--ms-blue)" style={{ animation: 'spin 1s linear infinite' }} />
             <p style={{ marginTop: 16, fontSize: 14, color: 'var(--text-secondary)' }}>
-              {mode === 'create' ? 'Creating ontology in Fabric...' : 'Updating ontology definition...'}
+              {mode === 'create' ? jaMessages.dataExchange.fabric.creating : jaMessages.dataExchange.fabric.updating}
             </p>
             <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 4 }}>
-              This may take a moment while Fabric provisions the resource.
+              {jaMessages.dataExchange.fabric.provisioning}
             </p>
 
             <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
@@ -330,7 +331,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
           <div style={{ textAlign: 'center', padding: '24px 0' }}>
             <CheckCircle size={40} color="var(--ms-green)" />
             <p style={{ marginTop: 12, fontSize: 16, fontWeight: 600 }}>
-              {mode === 'create' ? 'Ontology Created!' : 'Definition Updated!'}
+              {mode === 'create' ? jaMessages.dataExchange.fabric.created : jaMessages.dataExchange.fabric.updated}
             </p>
             {result && (
               <div style={{
@@ -339,9 +340,9 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 borderRadius: 'var(--radius-md)',
                 fontSize: 13, textAlign: 'left',
               }}>
-                <div><strong>Name:</strong> {result.displayName}</div>
-                <div><strong>ID:</strong> <code style={{ fontSize: 11 }}>{result.id}</code></div>
-                <div><strong>Workspace:</strong> <code style={{ fontSize: 11 }}>{result.workspaceId}</code></div>
+                <div><strong>{jaMessages.dataExchange.fabric.name}</strong> {result.displayName}</div>
+                <div><strong>{jaMessages.dataExchange.fabric.id}</strong> <code style={{ fontSize: 11 }}>{result.id}</code></div>
+                <div><strong>{jaMessages.dataExchange.fabric.workspace}</strong> <code style={{ fontSize: 11 }}>{result.workspaceId}</code></div>
               </div>
             )}
             <button
@@ -349,7 +350,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
               onClick={onClose}
               style={{ marginTop: 20 }}
             >
-              Done
+              {jaMessages.dataExchange.fabric.done}
             </button>
           </div>
         )}
@@ -359,7 +360,7 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
           <div style={{ textAlign: 'center', padding: '24px 0' }}>
             <AlertCircle size={40} color="#D13438" />
             <p style={{ marginTop: 12, fontSize: 14, color: '#D13438' }}>
-              Push failed. Check the error above and try again.
+              {jaMessages.dataExchange.fabric.pushFailed}
             </p>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 20 }}>
               <button
@@ -368,10 +369,10 @@ export function FabricExportModal({ onClose }: FabricExportModalProps) {
                 style={{ display: 'flex', alignItems: 'center', gap: 6 }}
               >
                 <RefreshCw size={14} />
-                Start Over
+                {jaMessages.dataExchange.fabric.startOver}
               </button>
               <button className="btn btn-primary" onClick={onClose}>
-                Close
+                {jaMessages.dataExchange.fabric.close}
               </button>
             </div>
           </div>
