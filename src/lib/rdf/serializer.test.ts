@@ -58,7 +58,6 @@ describe('deriveBaseUri', () => {
   it('handles empty result with fallback', () => {
     expect(deriveBaseUri('&&&')).toBe('http://example.org/ontology/unnamed/');
   });
-
 });
 
 describe('serializeToRDF', () => {
