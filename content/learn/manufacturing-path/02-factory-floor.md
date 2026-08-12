@@ -1,25 +1,25 @@
 ---
-title: "Factory Floor"
+title: "工場内の設備"
 slug: factory-floor
-description: "Define Machine and Sensor — the IoT foundation that monitors factory equipment in real time."
+description: "工場設備をリアルタイムで監視するIoTの基盤として、MachineとSensorを定義します。"
 order: 2
 embed: official/manufacturing-step-1
 ---
 
-## The IoT foundation
+## IoTの基盤
 
-Every smart factory starts with two concepts:
+すべてのスマート工場は、次の2つの概念から始まります。
 
-- **Machine** — what equipment is on the factory floor?
-- **Sensor** — what data is it generating?
+- **Machine** — 工場内にはどの設備があるか？
+- **Sensor** — その設備からどのようなデータが生成されているか？
 
-Machines and sensors form the telemetry backbone. Before tracking production or quality, you need to know what's running and what it's reporting.
+機械とセンサーは、テレメトリの基盤を形成します。生産や品質を追跡する前に、どの設備が稼働し、何を報告しているかを把握する必要があります。
 
-## Defining the entities
+## エンティティの定義
 
 ### Machine
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `machineId` | string | ✓ |
 | `name` | string | |
@@ -27,11 +27,11 @@ Machines and sensors form the telemetry backbone. Before tracking production or 
 | `status` | string | |
 | `installDate` | date | |
 
-The `status` property tracks operational state — `running`, `idle`, `maintenance`, or `offline`. This enables real-time dashboards and maintenance scheduling.
+`status` プロパティは、`running`、`idle`、`maintenance`、`offline` などの稼働状態を追跡します。これにより、リアルタイムのダッシュボード表示と保全計画の作成が可能になります。
 
 ### Sensor
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `sensorId` | string | ✓ |
 | `type` | string | |
@@ -39,35 +39,35 @@ The `status` property tracks operational state — `running`, `idle`, `maintenan
 | `lastReading` | float | |
 | `threshold` | float | |
 
-The `threshold` property defines the alert boundary. When `lastReading` exceeds `threshold`, the system triggers an alarm. This pattern is fundamental to predictive maintenance.
+`threshold` プロパティは警告のしきい値を定義します。`lastReading` が `threshold` を超えると、システムがアラームを発します。このパターンは予知保全の基礎です。
 
-## Relationships
+## リレーションシップ
 
-- **monitors** — `Sensor` → `Machine` (many-to-one)
-  Multiple sensors monitor the same machine — one for temperature, another for vibration, etc.
+- **monitors** — `Sensor` → `Machine`（多対一）
+  複数のセンサーが同じ機械を監視します。たとえば、一方は温度を、もう一方は振動を監視します。
 
-> **Ownership hierarchy:** In IoT ontologies, sensors belong to machines. The direction matters: sensors monitor machines, not the other way around. This parent-child hierarchy is how IoT platforms organize telemetry data.
+> **所有階層：** IoTオントロジーでは、センサーは機械に属します。向きが重要であり、センサーが機械を監視します。その逆ではありません。IoTプラットフォームは、この親子階層を使ってテレメトリデータを整理します。
 
-## The graph so far
+## 現時点のグラフ
 
 <ontology-embed id="official/manufacturing-step-1" height="300px"></ontology-embed>
 
-*A simple but meaningful start: machines monitored by sensors.*
+*センサーで監視される機械という、シンプルながら意味のある出発点です。*
 
-## What we learned
+## 学んだこと
 
-- **IoT hierarchies** use parent-child relationships (Sensor → Machine)
-- **Status properties** enable real-time operational tracking
-- **Threshold properties** power predictive maintenance alerts
-- Even two entities can form a useful telemetry backbone
+- **IoT階層**では、親子のリレーションシップ（Sensor → Machine）を使用します
+- **状態プロパティ**により、稼働状態をリアルタイムで追跡できます
+- **しきい値プロパティ**により、予知保全の警告を発せられます
+- 2つのエンティティだけでも、有用なテレメトリ基盤を構築できます
 
 ```quiz
-Q: Why does the Sensor entity have both lastReading and threshold properties?
-- To store backup values in case one is wrong
-- The threshold defines the alert boundary — when lastReading exceeds it, the system triggers an alarm for predictive maintenance [correct]
-- Both values are required by all IoT standards
-- The threshold is used to calculate the sensor's accuracy
-> The threshold pattern is fundamental to predictive maintenance. By comparing the current reading against a known safe boundary, the system can automatically detect anomalies and alert operators before equipment failure occurs.
+Q: SensorエンティティがlastReadingとthresholdの両方のプロパティを持つのはなぜですか？
+- 一方の値が誤っている場合に備えて、予備の値を保存するため
+- thresholdが警告の境界を定義し、lastReadingがそれを超えたときに予知保全のアラームを発するため [correct]
+- すべてのIoT規格で両方の値が必須だから
+- センサーの精度を計算するためにthresholdを使用するから
+> しきい値のパターンは、予知保全の基礎です。現在の測定値を既知の安全限界と比較することで、システムは異常を自動検出し、設備が故障する前に担当者へ警告できます。
 ```
 
-Next, we'll add production tracking with Work Orders and Parts.
+次は、Work-OrderとPartによる生産追跡を追加します。

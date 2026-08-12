@@ -1,43 +1,43 @@
 ---
-title: "Scenario Overview"
+title: "シナリオ概要"
 slug: scenario-overview
-description: "Meet the Smart Manufacturing system — an IoT-enabled factory that needs an ontology to connect machines, sensors, production, and quality control."
+description: "機械、センサー、生産、品質管理をつなぐオントロジーが必要なIoT対応工場、スマート製造システムを紹介します。"
 order: 1
 ---
 
-## The scenario
+## シナリオ
 
-You are designing the data model for a **smart manufacturing facility**. The factory manages:
+あなたは、**スマート製造施設**のデータモデルを設計しています。この工場では、次の要素を管理します。
 
-- **Machines** on the factory floor with maintenance schedules and operational status
-- **Sensors** collecting real-time data — temperature, vibration, pressure readings
-- **Work Orders** tracking production jobs with priorities and deadlines
-- **Parts** representing components being manufactured with specifications and tolerances
-- **Quality Checks** recording inspection results, pass/fail status, and defect codes
+- 工場内に配置され、保全スケジュールと稼働状態を持つ**機械**
+- 温度、振動、圧力などのリアルタイムデータを収集する**センサー**
+- 優先度と納期を含む生産ジョブを追跡する**作業指示**
+- 仕様と公差を含む、製造対象の構成部品を表す**部品**
+- 検査結果、合否、欠陥コードを記録する**品質検査**
 
-Data flows from IoT sensors, MES (Manufacturing Execution Systems), ERP platforms, and quality management databases.
+データは、IoTセンサー、MES（製造実行システム）、ERPプラットフォーム、品質管理データベースから流入します。
 
-## Why an ontology?
+## オントロジーが必要な理由
 
-A production question like **"Which machines with abnormal sensor readings produced parts that failed quality checks last week?"** crosses IoT telemetry, production schedules, part tracking, and inspection records.
+**「先週、センサーの異常値が発生した機械のうち、品質検査で不合格となった部品を製造したものはどれか？」**という生産上の問いに答えるには、IoTテレメトリ、生産スケジュール、部品追跡、検査記録を横断する必要があります。
 
-With an ontology, this maps to: `Machine → Sensor (reading > threshold)` and `Machine → Work-Order → Part → Quality-Check (passed=false)`.
+オントロジーでは、これを `Machine → Sensor (reading > threshold)` と `Machine → Work-Order → Part → Quality-Check (passed=false)` に対応付けられます。
 
-## What we'll build
+## 構築するもの
 
-| Step | Entities | What you'll learn |
+| ステップ | エンティティ | 学ぶ内容 |
 |---|---|---|
-| 1 | Machine, Sensor | IoT relationships, telemetry hierarchies |
-| 2 | + Work-Order, Part | Production tracking, manufacturing chains |
-| 3 | + Quality-Check | Inspection loops, closing the production cycle |
+| 1 | Machine、Sensor | IoTリレーションシップ、テレメトリ階層 |
+| 2 | + Work-Order、Part | 生産追跡、製造チェーン |
+| 3 | + Quality-Check | 検査ループ、生産サイクルの完結 |
 
-By the end, you'll have a 5-entity, 5-relationship ontology covering sensor monitoring through quality assurance.
+完了時には、センサー監視から品質保証までを網羅する、5つのエンティティと5つのリレーションシップからなるオントロジーが完成します。
 
-## Key concepts
+## 重要な概念
 
-- **IoT hierarchies** — machines own sensors, readings flow upward
-- **Production chains** — work orders produce parts
-- **Quality loops** — inspections feed back into production decisions
-- **Operational status** — real-time state tracking (running, idle, maintenance)
+- **IoT階層** — 機械がセンサーを所有し、測定値が上位へ集約されます
+- **生産チェーン** — 作業指示に基づいて部品を製造します
+- **品質ループ** — 検査結果を生産上の判断へフィードバックします
+- **稼働状態** — `running`、`idle`、`maintenance` などの状態をリアルタイムで追跡します
 
-Let's start with the factory floor.
+まずは工場内の設備から始めましょう。

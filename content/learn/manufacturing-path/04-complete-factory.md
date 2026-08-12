@@ -1,18 +1,18 @@
 ---
-title: "Complete Factory Model"
+title: "完成した工場モデル"
 slug: complete-factory
-description: "Add Quality-Check to complete the manufacturing ontology — closing the loop from production to inspection."
+description: "Quality-Checkを追加して製造オントロジーを完成させ、生産から検査までのループを完結させます。"
 order: 4
 embed: official/manufacturing-step-3
 ---
 
-## Closing the quality loop
+## 品質ループの完結
 
-Manufacturing doesn't end when a part is produced — it must be inspected. **Quality-Check** closes the production cycle by verifying that parts meet specifications.
+製造は、部品が完成した時点では終わりません。検査が必要です。**Quality-Check**は、部品が仕様を満たしていることを検証し、生産サイクルを完結させます。
 
-## Quality-Check entity
+## Quality-Checkエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `checkId` | string | ✓ |
 | `inspector` | string | |
@@ -20,33 +20,33 @@ Manufacturing doesn't end when a part is produced — it must be inspected. **Qu
 | `passed` | boolean | |
 | `defectCode` | string | |
 
-The `passed` boolean is the critical property — it determines whether a part ships or gets reworked. The `defectCode` property categorizes failures for root cause analysis.
+`passed` 真偽値は、部品を出荷するか、再加工するかを決める重要なプロパティです。`defectCode` プロパティは、不合格の原因を分類して根本原因分析に役立てます。
 
-## New relationship
+## 新しいリレーションシップ
 
-- **inspects** — `Quality-Check` → `Part` (many-to-one)
-  Each quality check inspects a specific part. A part may undergo multiple inspections (initial check, re-check after rework).
+- **inspects** — `Quality-Check` → `Part`（多対一）
+  各品質検査は特定の部品を検査します。1つの部品が、初回検査や再加工後の再検査など、複数回の検査を受けることもあります。
 
-> **Feedback loop:** When a quality check fails, the production chain reverses: `Quality-Check (passed=false) → Part → Work-Order → Machine`. This feedback loop is how smart factories identify problematic machines and improve production quality over time.
+> **フィードバックループ：** 品質検査で不合格になると、`Quality-Check (passed=false) → Part → Work-Order → Machine` の順に生産チェーンを遡れます。このフィードバックループにより、スマート工場は問題のある機械を特定し、時間をかけて生産品質を改善できます。
 
-## The complete graph
+## 完成したグラフ
 
 <ontology-embed id="official/manufacturing-step-3" diff="official/manufacturing-step-2" height="500px"></ontology-embed>
 
-*The complete Smart Manufacturing ontology: 5 entities, 5 relationships. Quality-Check closes the feedback loop from inspection back to production.*
+*5つのエンティティと5つのリレーションシップからなる、完成したスマート製造オントロジーです。Quality-Checkが、検査から生産へ戻るフィードバックループを完結させます。*
 
-## What the complete model enables
+## 完成したモデルでできること
 
-| Question | Graph path |
+| 質問 | グラフの経路 |
 |---|---|
-| Which machines produce parts that fail inspection? | Machine → Part ← Quality-Check (passed=false) |
-| Which sensors were abnormal when defective parts were produced? | Sensor → Machine → Part ← Quality-Check (passed=false) |
-| What is the defect rate by work order priority? | Work-Order (priority) → Part ← Quality-Check |
-| Which parts need re-inspection? | Part ← Quality-Check (passed=false, count > 1) |
+| 検査で不合格となる部品を製造した機械はどれか？ | Machine → Part ← Quality-Check (passed=false) |
+| 不良部品が製造されたとき、異常値を示していたセンサーはどれか？ | Sensor → Machine → Part ← Quality-Check (passed=false) |
+| 作業指示の優先度別の不良率はいくらか？ | Work-Order (priority) → Part ← Quality-Check |
+| 再検査が必要な部品はどれか？ | Part ← Quality-Check (passed=false, count > 1) |
 
-## GQL query example
+## GQLクエリの例
 
-Correlate sensor anomalies with quality failures:
+センサー異常と品質上の不合格を関連付けます。
 
 ```gql
 MATCH (s:Sensor)-[:monitors]->(m:Machine)-[:has_part]->(p:Part)<-[:inspects]-(qc:QualityCheck)
@@ -54,29 +54,29 @@ WHERE s.lastReading > s.threshold AND qc.passed = false
 RETURN m.name, s.type, s.lastReading, p.name, qc.defectCode
 ```
 
-## What we built
+## 構築したもの
 
-| Step | Entities added | Cumulative | Key concept |
+| ステップ | 追加したエンティティ | 累計 | 重要な概念 |
 |---|---|---|---|
-| 1 | Machine, Sensor | 2 | IoT hierarchy, telemetry |
-| 2 | Work-Order, Part | 4 | Production chains, tolerances |
-| 3 | Quality-Check | 5 | Feedback loops, inspection |
+| 1 | Machine、Sensor | 2 | IoT階層、テレメトリ |
+| 2 | Work-Order、Part | 4 | 生産チェーン、公差 |
+| 3 | Quality-Check | 5 | フィードバックループ、検査 |
 
-## Key takeaways
+## 重要なポイント
 
-1. **IoT hierarchies** organize sensors under machines for telemetry aggregation
-2. **Production chains** connect equipment to output through scheduling entities
-3. **Quality feedback loops** enable root cause analysis across the production chain
-4. **Threshold-based alerts** power predictive maintenance
-5. **Boolean properties** (passed) create clear decision points in the workflow
+1. **IoT階層**はセンサーを機械の配下に整理し、テレメトリを集約します
+2. **生産チェーン**は、スケジュールを表すエンティティを介して設備と生産物をつなぎます
+3. **品質フィードバックループ**により、生産チェーン全体の根本原因分析が可能になります
+4. **しきい値に基づく警告**が予知保全を支えます
+5. **真偽値プロパティ**（passed）は、ワークフロー内に明確な判断点を作ります
 
 ```quiz
-Q: How does Quality-Check create a feedback loop in the manufacturing ontology?
-- It connects directly to Machine
-- A failed check traces back through Part → Work-Order → Machine, identifying the source of defects [correct]
-- It loops back to the Sensor entity
-- Quality checks don't create feedback loops
-> When a quality check fails, the path Quality-Check → Part → Work-Order → Machine traces the defect back to its source. This feedback loop is fundamental to continuous improvement in smart manufacturing — identifying which machines, work orders, or conditions produce defective parts.
+Q: Quality-Checkは、製造オントロジー内でどのようにフィードバックループを作りますか？
+- Machineへ直接つながります
+- 不合格となった検査からPart → Work-Order → Machineと遡り、不良の発生源を特定します [correct]
+- Sensorエンティティへ戻るループを作ります
+- 品質検査はフィードバックループを作りません
+> 品質検査で不合格になると、Quality-Check → Part → Work-Order → Machineという経路で不良の発生源まで遡れます。このフィードバックループは、どの機械、作業指示、条件が不良部品を生み出したかを特定し、スマート製造を継続的に改善するための基礎です。
 ```
 
-You've completed the Smart Manufacturing learning path! Load any step from the [catalogue](#/catalogue) to explore it interactively.
+スマート製造の学習パスはこれで完了です。[カタログ](#/catalogue)から任意のステップを読み込み、対話的に探索してみましょう。
