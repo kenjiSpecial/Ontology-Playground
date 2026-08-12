@@ -73,7 +73,7 @@ reviewStatus: under-human-review
 この時点で、モデルには2つの独立したサブグラフがあります。
 
 1. **産業**：Sector ← Subsector ← IndustryGroup
-2. **地理**：Region ← Country（Jurisdictionを介する）およびRegion ← Jurisdiction
+2. **地理**：Country ← Jurisdiction → Region
 
 後のステップでは「ローン分類＋規制」の第3クラスターを追加しますが、この産業・地理クラスターとは自動的には接続されません。領域横断分析には、実運用のポートフォリオデータ側で、ローンを`IndustryGroup`、`Jurisdiction`、`LoanType`、`ConcentrationCategory`へ結ぶ関係が必要です。
 
