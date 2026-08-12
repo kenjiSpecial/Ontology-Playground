@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { OntologyDesigner } from '../components/OntologyDesigner';
 import { DesignerPreview } from '../components/designer/DesignerPreview';
+import { DesignerValidation } from '../components/designer/DesignerActions';
 import { EntityForm } from '../components/designer/EntityForm';
+import { RelationshipForm } from '../components/designer/RelationshipForm';
 import { SubmitCatalogueModal } from '../components/designer/SubmitCatalogueModal';
 import { TemplatePicker } from '../components/designer/TemplatePicker';
 import { designerTemplates } from '../data/designerTemplates';
@@ -70,6 +72,30 @@ describe('Japanese ontology designer', () => {
     expect(screen.getByTitle('プロパティを削除')).toBeInTheDocument();
   });
 
+  it('renders Japanese relationship fields, accessibility labels, and validation feedback', () => {
+    useDesignerStore.getState().addEntity();
+    useDesignerStore.getState().addEntity();
+    const [from, to] = useDesignerStore.getState().ontology.entityTypes;
+    useDesignerStore.getState().addRelationship(from.id, to.id);
+    const relationshipId = useDesignerStore.getState().ontology.relationships[0].id;
+    useDesignerStore.getState().addRelationshipAttribute(relationshipId);
+
+    const { unmount } = render(<RelationshipForm />);
+
+    expect(screen.getByRole('heading', { name: 'リレーションシップ（1）' })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('リレーションシップ名')).toBeInTheDocument();
+    expect(screen.getByText('接続元')).toBeInTheDocument();
+    expect(screen.getByText('接続先')).toBeInTheDocument();
+    expect(screen.getByText('カーディナリティ')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('属性名')).toBeInTheDocument();
+    expect(screen.getByTitle('属性を削除')).toBeInTheDocument();
+
+    unmount();
+    useDesignerStore.getState().validate();
+    render(<DesignerValidation />);
+    expect(screen.getByText(/修正が必要な問題が\d+件あります/)).toBeInTheDocument();
+  });
+
   it('renders Japanese preview controls and local RDF import errors', () => {
     render(<DesignerPreview />);
 
@@ -90,9 +116,17 @@ describe('Japanese ontology designer', () => {
     expect(screen.getByRole('heading', { name: 'テンプレートから始める' })).toBeInTheDocument();
     expect(screen.getByText('小売')).toBeInTheDocument();
     expect(screen.getByText('顧客、製品、注文')).toBeInTheDocument();
-    expect(designerTemplates[0].id).toBe('retail');
-    expect(designerTemplates[0].ontology.entityTypes[0].name).toBe('Customer');
-    expect(designerTemplates[0].ontology.relationships[0].name).toBe('places');
+    expect(designerTemplates.map((template) => ({
+      id: template.id,
+      entities: template.ontology.entityTypes.map((entity) => entity.name),
+      relationships: template.ontology.relationships.map((relationship) => relationship.name),
+    }))).toEqual([
+      { id: 'retail', entities: ['Customer', 'Product', 'Order'], relationships: ['places', 'contains'] },
+      { id: 'healthcare', entities: ['Patient', 'Provider', 'Encounter'], relationships: ['hasEncounter', 'seenBy'] },
+      { id: 'finance', entities: ['Party', 'Account', 'Transaction'], relationships: ['owns', 'hasTransaction'] },
+      { id: 'iot', entities: ['Device', 'Sensor', 'Reading'], relationships: ['hasSensor', 'produces'] },
+      { id: 'education', entities: ['Student', 'Course', 'Instructor'], relationships: ['enrolledIn', 'taughtBy'] },
+    ]);
   });
 
   it('renders Japanese catalogue submission guidance while preserving technical paths', () => {

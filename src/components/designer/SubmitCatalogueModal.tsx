@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { X, Github, ExternalLink, Download, Check } from 'lucide-react';
-import { useDesignerStore } from '../../store/designerStore';
+import { designerRdfFilename, useDesignerStore } from '../../store/designerStore';
 import { serializeToRDF } from '../../lib/rdf/serializer';
 import { jaMessages } from '../../locales/ja';
 
@@ -16,12 +16,11 @@ export function SubmitCatalogueModal({ onClose }: SubmitCatalogueModalProps) {
 
   const handleDownloadRdf = () => {
     const rdf = serializeToRDF(ontology, []);
-    const slug = ontology.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ontology';
     const blob = new Blob([rdf], { type: 'application/rdf+xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${slug}.rdf`;
+    a.download = designerRdfFilename(ontology.name);
     a.click();
     URL.revokeObjectURL(url);
     setDownloaded(true);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Download, AlertTriangle, CheckCircle, Upload, Github, FilePlus, Undo2, Redo2 } from 'lucide-react';
-import { useDesignerStore } from '../../store/designerStore';
+import { designerRdfFilename, useDesignerStore } from '../../store/designerStore';
 import type { ValidationError } from '../../store/designerStore';
 import { useAppStore } from '../../store/appStore';
 import { serializeToRDF } from '../../lib/rdf/serializer';
@@ -31,8 +31,7 @@ export function DesignerToolbar() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const suffix = errors.length > 0 ? '-draft' : '';
-      a.download = `${ontology.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'ontology'}${suffix}.rdf`;
+      a.download = designerRdfFilename(ontology.name, errors.length > 0);
       a.click();
       URL.revokeObjectURL(url);
     } catch {

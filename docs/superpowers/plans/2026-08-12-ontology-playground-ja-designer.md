@@ -13,6 +13,7 @@
 - Work on `feature/ja-designer` from external fork `origin/main` in the isolated worktree.
 - Issue: `kenjiSpecial/Ontology-Playground#11`; parent: `kenjiSpecial/kura#644`.
 - Preserve route names, ontology IDs, entity/relationship/property IDs and technical names, RDF/XML syntax, JSON keys, type enum values, cardinality values, and imported data.
+- Keep the localized default ontology label mapped to the legacy `my-ontology` URI/file seed, and create new entities with an empty display name while retaining the `new-entity-*` ID seed.
 - Translate template card labels/descriptions only; do not translate the template ontology payload.
 - Do not edit gallery/import-export/Fabric/AI Builder/learning/catalogue/deployment files.
 - Use Node 20 for every npm command. Stage exact paths only and never push to `upstream`.

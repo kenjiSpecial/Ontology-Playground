@@ -34,9 +34,5 @@ describe('Japanese message catalog', () => {
     expect(jaFormatters.questRewardPoints(100)).toBe('+100ポイント');
     expect(jaFormatters.earnedBadges(2)).toBe('獲得バッジ（2）');
     expect(jaFormatters.totalPoints(350)).toBe('合計: 350ポイント');
-    expect(jaFormatters.designerEntityCount(2)).toBe('エンティティ型（2）');
-    expect(jaFormatters.designerPropertyCount(3)).toBe('プロパティ（3）');
-    expect(jaFormatters.designerValidationIssueCount(2)).toBe('修正が必要な問題が2件あります');
-    expect(jaFormatters.designerNameTooLong('エンティティ型', 'Customer')).toContain('26文字以内');
   });
 });

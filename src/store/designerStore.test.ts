@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useDesignerStore, validateOntology, isValidFabricIQName, fabricIQNameError } from './designerStore';
+import { designerRdfFilename, useDesignerStore, validateOntology, isValidFabricIQName, fabricIQNameError } from './designerStore';
 import type { Ontology } from '../data/ontology';
 
 // Reset store between tests
@@ -268,11 +268,18 @@ describe('useDesignerStore actions', () => {
     expect(ontology.relationships).toEqual([]);
   });
 
+  it('keeps safe legacy-compatible RDF filenames for Japanese designer names', () => {
+    expect(designerRdfFilename('マイ オントロジー')).toBe('my-ontology.rdf');
+    expect(designerRdfFilename('マイ オントロジー', true)).toBe('my-ontology-draft.rdf');
+    expect(designerRdfFilename('日本語のモデル')).toBe('ontology.rdf');
+  });
+
   it('addEntity adds an entity with a default identifier property', () => {
     useDesignerStore.getState().addEntity();
     const { ontology } = useDesignerStore.getState();
     expect(ontology.entityTypes).toHaveLength(1);
-    expect(ontology.entityTypes[0].name).toBe('New Entity');
+    expect(ontology.entityTypes[0].name).toBe('');
+    expect(ontology.entityTypes[0].id).toMatch(/^new-entity-/);
     expect(ontology.entityTypes[0].properties).toHaveLength(1);
     expect(ontology.entityTypes[0].properties[0].isIdentifier).toBe(true);
   });
@@ -510,8 +517,8 @@ describe('undo / redo', () => {
     useDesignerStore.getState().updateEntity(entityId, { name: 'Customer' });
 
     useDesignerStore.getState().undo();
-    // Should be back to "New Entity"
-    expect(useDesignerStore.getState().ontology.entityTypes[0].name).toBe('New Entity');
+    // Should be back to the empty localized-input state
+    expect(useDesignerStore.getState().ontology.entityTypes[0].name).toBe('');
 
     // Mutating the current state shouldn't affect the redo stack
     useDesignerStore.getState().redo();

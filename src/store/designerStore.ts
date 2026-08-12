@@ -22,6 +22,16 @@ export interface ValidationError {
 // an alphanumeric character.
 
 const FABRIC_IQ_NAME_RE = /^[A-Za-z0-9]([A-Za-z0-9_-]{0,24}[A-Za-z0-9])?$/;
+export const DEFAULT_DESIGNER_ONTOLOGY_NAME = 'マイ オントロジー';
+
+export function designerRdfFilename(name: string, draft = false): string {
+  const asciiSlug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const slug = asciiSlug || (name === DEFAULT_DESIGNER_ONTOLOGY_NAME ? 'my-ontology' : 'ontology');
+  return `${slug}${draft ? '-draft' : ''}.rdf`;
+}
 
 export function isValidFabricIQName(name: string): boolean {
   return FABRIC_IQ_NAME_RE.test(name);
@@ -230,7 +240,7 @@ interface DesignerState {
 
 function emptyOntology(): Ontology {
   return {
-    name: 'マイ オントロジー',
+    name: DEFAULT_DESIGNER_ONTOLOGY_NAME,
     description: '',
     entityTypes: [],
     relationships: [],
@@ -255,11 +265,11 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
 
   // ─ Entities ─────────────────────────────────────────────────────────────
   addEntity: () => {
-    const name = 'New Entity';
+    const name = '';
     const colorIdx = get().ontology.entityTypes.length % ENTITY_COLORS.length;
     const iconIdx = get().ontology.entityTypes.length % ENTITY_ICONS.length;
     const entity: EntityType = {
-      id: nextEntityId(name),
+      id: nextEntityId('New Entity'),
       name,
       description: '',
       icon: ENTITY_ICONS[iconIdx],
