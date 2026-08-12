@@ -64,8 +64,8 @@ Shipmentは**ハブエンティティ**として機能します。Productを介�
 |---|---|
 | オーガニック豆を提供するサプライヤーは？ | Product (isOrganic=true) → Supplier |
 | 遅延した出荷を受け取った店舗は？ | Shipment (status=Delayed) → Store |
-| 最上位のサプライヤーの評価は？ | Product → Supplier (sort by rating) |
-| 最大規模の店舗に出荷する認証済みサプライヤーは？ | Supplier → Shipment → Store (sort by capacity) |
+| 最上位のサプライヤーの評価は？ | Product → Supplier（ratingで並べ替え） |
+| 最大規模の店舗に出荷する認証済みサプライヤーは？ | Supplier → Shipment → Store（capacityで並べ替え） |
 
 ## GQLクエリの例
 
