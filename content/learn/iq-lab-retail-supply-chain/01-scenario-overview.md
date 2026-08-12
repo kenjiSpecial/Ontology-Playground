@@ -1,50 +1,50 @@
 ---
-title: Scenario Overview
+title: シナリオ概要
 slug: scenario-overview
-description: Meet the retail supply chain scenario — why ontologies matter for multi-system retail data, and what we'll build in this lab.
+description: 小売サプライチェーンのシナリオを通して、複数システムにまたがる小売データにオントロジーが重要な理由と、このラボで構築するものを学びます。
 order: 1
 ---
 
-## The problem
+## 課題
 
-You work for a fictional retail company that manages orders, products, customers, warehouses, and shipments across multiple regions. Data lives in multiple systems:
+あなたは架空の小売企業に勤務し、複数の地域にまたがる注文、商品、顧客、倉庫、出荷を管理しています。データは複数のシステムに分散しています。
 
-- An **Eventhouse** stores real-time transactional data — orders, shipments, demand signals.
-- A **Lakehouse** holds dimensional data — product catalogs, customer profiles, forecasts.
+- **Eventhouse**には、注文、出荷、需要シグナルなどのリアルタイム取引データが格納されています。
+- **Lakehouse**には、商品カタログ、顧客プロファイル、予測などのディメンションデータが格納されています。
 
-Traditional approaches require analysts to know _which_ system holds _which_ data and how to join across them. A single question like **"Which promotions drove returns in the southwest region?"** requires traversing from returns → products → promotions → regions — touching both systems and multiple tables.
+従来の方法では、アナリストが「どの」システムに「どの」データがあり、システム間でどう結合するかを把握しておく必要があります。**「南西地域で返品につながったプロモーションはどれですか？」**という1つの質問に答えるだけでも、返品 → 商品 → プロモーション → 地域とたどり、両方のシステムと複数のテーブルを扱わなければなりません。
 
-## Why ontology?
+## オントロジーが必要な理由
 
-An ontology solves this by creating a **semantic layer** over the raw data:
+オントロジーは、生データの上に**セマンティックレイヤー**を作ることで、この課題を解決します。
 
-| Without ontology | With ontology |
+| オントロジーがない場合 | オントロジーがある場合 |
 |---|---|
-| Analysts must know table names and join columns | Business users ask questions in plain language |
-| Column names like `cust_lt_val` are opaque | Properties like *Customer lifetime value* are self-describing |
-| Cross-system queries require manual orchestration | The ontology maps concepts to sources transparently |
-| Adding a new data source means rewriting queries | Adding a new binding extends the model without breaking queries |
+| アナリストがテーブル名と結合列を把握する必要がある | ビジネスユーザーが自然な言葉で質問できる |
+| `cust_lt_val`のような列名では意味が分かりにくい | *顧客生涯価値*のようなプロパティなら意味が明確になる |
+| システム横断クエリを手作業で連携させる必要がある | オントロジーが概念をデータソースへ透過的にマッピングする |
+| データソースを追加するたびにクエリを書き直す必要がある | 新しいバインディングを追加しても既存クエリを壊さずモデルを拡張できる |
 
-## What we'll build
+## 構築するもの
 
-Over the next six steps, we'll progressively build a **Retail Supply Chain ontology** with 15 entity types and 18 relationships:
+この先の6ステップで、15個のエンティティ型と18個のリレーションシップを持つ**小売サプライチェーンのオントロジー**を段階的に構築します。
 
-1. **Core Commerce** — Customer, Order, Product
-2. **Order Details & Categories** — OrderLine, ProductCategory
-3. **Geography** — Region, Store
-4. **Fulfillment & Logistics** — Shipment, Carrier, Warehouse
-5. **Inventory & Demand** — Inventory, Forecast, DemandSignal
-6. **Complete Model** — Promotion, Return
+1. **コマースの中核** — Customer、Order、Product
+2. **注文明細とカテゴリー** — OrderLine、ProductCategory
+3. **地理情報** — Region、Store
+4. **フルフィルメントと物流** — Shipment、Carrier、Warehouse
+5. **在庫と需要** — Inventory、Forecast、DemandSignal
+6. **完全なモデル** — Promotion、Return
 
-Each step introduces new concepts and shows the growing graph. By the end, you'll have a fully connected ontology that could power graph queries, GQL, and natural-language Data Agent interactions in Microsoft Fabric IQ.
+各ステップで新しい概念を導入し、グラフが成長する様子を示します。最後には、Microsoft Fabric IQでグラフクエリやGQL、データ エージェントとの自然言語による対話に利用できる、完全に接続されたオントロジーが完成します。
 
-## Key concepts we'll cover
+## 学習する主要な概念
 
-- **Entity types** and **identifier properties** — the building blocks
-- **Relationships** and **cardinality** — how entities connect
-- **Linking entities** — using OrderLine to bridge Order and Product
-- **Geographic hierarchies** — modelling Region → Store
-- **Cross-source unification** — one entity, multiple data sources
-- **Graph traversal** — following connections to answer complex questions
+- **エンティティ型**と**識別子プロパティ** — モデルの構成要素
+- **リレーションシップ**と**カーディナリティ** — エンティティ同士の接続方法
+- **中間エンティティ** — OrderLineを使ってOrderとProductを橋渡しする方法
+- **地理階層** — Region → Storeのモデル化
+- **データソース横断の統合** — 1つのエンティティと複数のデータソース
+- **グラフ探索** — 接続をたどって複雑な質問に答える方法
 
-Let's start with the three most fundamental entities in any commerce system.
+まずは、あらゆるコマースシステムの基礎となる3つのエンティティから始めましょう。

@@ -94,6 +94,19 @@ const TRANSLATED_COURSES: readonly LocalizedCourseFiles[] = [
       '04-complete-model.md',
     ],
   },
+  {
+    directory: 'iq-lab-retail-supply-chain',
+    files: [
+      '_meta.md',
+      '01-scenario-overview.md',
+      '02-core-commerce.md',
+      '03-order-details-and-categories.md',
+      '04-geography.md',
+      '05-fulfillment-and-logistics.md',
+      '06-inventory-and-demand.md',
+      '07-complete-model.md',
+    ],
+  },
 ];
 
 function parseMarkdownFile(path: string): { frontmatter: Map<string, string>; body: string } {

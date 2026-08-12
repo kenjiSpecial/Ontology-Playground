@@ -1,32 +1,32 @@
 ---
-title: Core Commerce
+title: コマースの中核
 slug: core-commerce
-description: Define Customer, Order, and Product — the three foundational entities of any retail ontology — and connect them with relationships.
+description: あらゆる小売オントロジーの基礎となるCustomer、Order、Productを定義し、リレーションシップで接続します。
 order: 2
 embed: official/iq-lab-retail-step-1
 ---
 
-## The foundation
+## 基礎
 
-Every retail system starts with three core concepts:
+あらゆる小売システムは、次の3つの中核概念から始まります。
 
-- **Customer** — who is buying?
-- **Order** — what transaction happened?
-- **Product** — what was purchased?
+- **Customer** — 誰が購入するのか
+- **Order** — どのような取引が発生したのか
+- **Product** — 何が購入されたのか
 
-These three entity types form the heart of the ontology. Everything else we add in later steps connects back to them.
+この3つのエンティティ型がオントロジーの中心になります。後のステップで追加するすべての要素が、これらのエンティティにつながります。
 
-## Defining entity types
+## エンティティ型の定義
 
-Each entity type needs:
+各エンティティ型には、次の要素が必要です。
 
-1. A **name** — singular, descriptive (e.g. `Customer`, not `Customers` or `tbl_cust`)
-2. An **identifier property** — a unique key for each instance
-3. **Properties** — the attributes that describe each instance
+1. **名前** — 単数形で内容が分かる名前（`Customer`など。`Customers`や`tbl_cust`は避けます）
+2. **識別子プロパティ** — 各インスタンスを一意に識別するキー
+3. **プロパティ** — 各インスタンスを記述する属性
 
-### Customer
+### Customerエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `customerId` | string | ✓ |
 | `name` | string | |
@@ -34,71 +34,71 @@ Each entity type needs:
 | `loyaltyTier` | string | |
 | `lifetimeValue` | decimal (USD) | |
 
-The `customerId` uniquely identifies each customer. Properties like `loyaltyTier` and `lifetimeValue` are business-meaningful names that map to potentially cryptic column names in the source database.
+`customerId`は各顧客を一意に識別します。`loyaltyTier`や`lifetimeValue`のようにビジネス上の意味が分かる名前を持つプロパティを、データソース内の分かりにくい列名へマッピングできます。
 
-### Order
+### Orderエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `orderId` | string | ✓ |
 | `orderDate` | datetime | |
 | `status` | string | |
 | `totalAmount` | decimal (USD) | |
 
-### Product
+### Productエンティティ
 
-| Property | Type | Identifier? |
+| プロパティ | 型 | 識別子？ |
 |---|---|---|
 | `productId` | string | ✓ |
 | `name` | string | |
 | `unitCost` | decimal (USD) | |
 | `discountPercent` | decimal (%) | |
 
-## Connecting with relationships
+## リレーションシップによる接続
 
-Entities alone are just isolated tables. **Relationships** turn them into a connected graph:
+エンティティだけでは、独立したテーブルにすぎません。**リレーションシップ**によって、エンティティを接続されたグラフに変えられます。
 
-- **OrderPlacedByCustomer** — `Order` → `Customer` (many-to-one)
-  Each order is placed by exactly one customer, but a customer can place many orders.
+- **OrderPlacedByCustomer** — `Order` → `Customer`（多対一）
+  各注文を行う顧客は必ず1人ですが、1人の顧客が複数の注文を行うことができます。
 
-- **OrderContainsProduct** — `Order` → `Product` (many-to-many)
-  An order can contain multiple products, and a product can appear in multiple orders.
+- **OrderContainsProduct** — `Order` → `Product`（多対多）
+  1件の注文に複数の商品を含めることができ、1つの商品が複数の注文に含まれることもあります。
 
-### Cardinality matters
+### カーディナリティの重要性
 
-The cardinality tells the system how to count and aggregate:
+カーディナリティは、データの数え方と集計方法をシステムに伝えます。
 
-| Cardinality | Meaning | Example |
+| カーディナリティ | 意味 | 例 |
 |---|---|---|
-| one-to-one | Exactly one on each side | Employee → Badge |
-| one-to-many | One parent, many children | Customer → Orders |
-| many-to-one | Many children, one parent | Orders → Customer |
-| many-to-many | No restriction | Orders ↔ Products |
+| 一対一 | 両側にそれぞれ1つだけ | Employee → Badge |
+| 一対多 | 1つの親に複数の子 | Customer → Orders |
+| 多対一 | 複数の子に1つの親 | Orders → Customer |
+| 多対多 | 数の制約なし | Orders ↔ Products |
 
-Choosing the right cardinality ensures that queries like "How many orders did each customer place?" return correct counts.
+適切なカーディナリティを選ぶことで、「各顧客は何件注文しましたか？」のようなクエリが正しい件数を返せるようになります。
 
-## The graph so far
+## ここまでのグラフ
 
-With just three entities and two relationships, we already have a connected graph:
+わずか3つのエンティティと2つのリレーションシップで、すでに接続されたグラフができました。
 
 <ontology-embed id="official/iq-lab-retail-step-1" height="350px"></ontology-embed>
 
-*Customer, Order, and Product connected by two relationships. This is the foundation everything else builds on.*
+*Customer、Order、Productが2つのリレーションシップで接続されています。これが、以降のすべての要素を構築する基礎です。*
 
-## What we learned
+## 学んだこと
 
-- Every entity type needs an identifier property
-- Use business-meaningful names, not internal column names
-- Relationships have cardinality that affects how data is counted
-- Even three entities create a useful connected graph
+- すべてのエンティティ型に識別子プロパティが必要です
+- 内部列名ではなく、ビジネス上の意味が分かる名前を使います
+- リレーションシップには、データの数え方に影響するカーディナリティがあります
+- 3つのエンティティだけでも、役立つ接続グラフを作れます
 
 ```quiz
-Q: A Customer can place many Orders, but each Order belongs to one Customer. What cardinality is this?
-- One-to-one
-- Many-to-many
-- One-to-many [correct]
-- Many-to-one
-> From Customer's perspective this is one-to-many: one customer can have many orders. From Order's perspective it's many-to-one. The relationship is defined as Customer → Order with one-to-many cardinality.
+Q: 1人のCustomerが複数のOrderを行えますが、各Orderは1人のCustomerに属します。このカーディナリティはどれですか？
+- 一対一
+- 多対多
+- 一対多 [correct]
+- 多対一
+> Customerから見ると一対多です。1人の顧客が複数の注文を行えます。Orderから見ると多対一です。このリレーションシップはCustomer → Orderの向きで、一対多のカーディナリティとして定義されます。
 ```
 
-Next, we'll add detail to orders and organize products into categories.
+次は、注文に明細を追加し、商品をカテゴリーに分類します。
