@@ -1,15 +1,10 @@
-# Ontology Catalog Import Skill
+# Ontology Catalog Import
 
-Use this skill when an RDF/OWL file needs to become a catalogue-ready ontology entry.
+The canonical instructions are in [`SKILL.md`](SKILL.md). Use this file as a
+directory router for callers that open the skill folder.
 
-## Trigger examples
-
-- "Import this customer ontology into external catalogue"
-- "Make this RDF catalogue-ready"
-- "Add this OWL file under community"
-
-## Outputs
-
-- Folder in `catalogue/external/...` or `catalogue/community/...`
-- RDF file + `metadata.json`
-- Passing compile/validation checks
+- External/customer RDF/OWL: follow [`SKILL.md`](SKILL.md).
+- Original contributor submission: use
+  [`community-ontology-contribution`](../community-ontology-contribution/SKILL.md).
+- Ontology School tutorialization: use
+  [`ontology-school-path-generator`](../ontology-school-path-generator/SKILL.md).

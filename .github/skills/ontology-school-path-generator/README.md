@@ -1,16 +1,5 @@
-# Ontology School Path Generator Skill
+# Ontology School Path Generator
 
-Use this skill to tutorialize a source ontology into a full school module.
-
-## Trigger examples
-
-- "Create an ontology school module from this RDF"
-- "Generate a 5-step lab from this customer ontology"
-- "Tutorialize this ontology with progressive embeds"
-
-## Outputs
-
-- Step ontologies in `catalogue/official/<slug>-step-*` (category `school`)
-- Course markdown in `content/learn/<course>/`
-- Quiz blocks + embed diffs
-- Passing QA/build
+The canonical instructions are in [`SKILL.md`](SKILL.md). Use this file as a
+directory router for callers that open the skill folder. Follow the skill for
+progressive steps, embeds, diffs, quizzes, review authorization, and QA.
