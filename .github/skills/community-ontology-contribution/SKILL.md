@@ -1,80 +1,29 @@
 ---
 name: community-ontology-contribution
-description: "Add a contributor ontology to catalogue/community/. Use when a community member submits an RDF/OWL file and wants it listed in the Playground catalogue under their GitHub username."
+description: "Add a contributor-authored RDF/OWL ontology under the repository's community owner/slug path with valid metadata and compiler checks. Use for original community submissions; route external-source imports to ontology-catalog-import."
 ---
 
-# Community Ontology Contribution Skill
+# Community Ontology Contribution
 
-## Goal
+Use this skill for an original community submission that should be listed
+under the contributor's lowercased GitHub username. Do not use it for an
+ontology imported from an external source; route that work to
+[`ontology-catalog-import`](../ontology-catalog-import/SKILL.md).
 
-Place a contributor's ontology under the correct catalogue path and produce
-a valid, compilable community entry.
+## Catalogue contract
 
-Accept only submissions that are new or materially different from existing
-catalogue entries and that contribute reusable community value. A good community
-ontology models a domain, workflow, teaching scenario, or reusable pattern that
-others can inspect, learn from, or adapt. Do not accept vanity-only entries,
-placeholder ontologies, duplicates, or profiles of a person or organization with
-no meaningful domain model.
+The compiler scans exactly:
 
----
-
-## CRITICAL: Directory Structure
-
-The catalogue compiler scans **exactly three levels deep**:
-
-```
+```text
 catalogue/community/<github-username>/<slug>/
 ```
 
-Both the `<github-username>` folder **and** the `<slug>` subfolder are
-**required**. Files placed directly in `catalogue/community/<github-username>/`
-will be **silently skipped** by the compiler and the ontology will never appear
-in the catalogue.
+Both directories are required. A file placed directly under
+`catalogue/community/<github-username>/` is silently skipped. Put the source
+in that directory as `ontology.rdf` or `ontology.owl`; the compiler accepts a
+`.rdf` or `.owl` file and the repository convention keeps the filename clear.
 
-### ✅ Correct
-
-```
-catalogue/community/jane-doe/supply-chain/
-├── metadata.json
-└── ontology.rdf        ← or ontology.owl
-```
-
-### ❌ Wrong — silently skipped
-
-```
-catalogue/community/jane-doe/
-├── metadata.json       ← wrong depth
-└── ontology.rdf        ← wrong depth
-```
-
----
-
-## Step-by-Step Workflow
-
-### 1. Determine the username and slug
-
-- `<github-username>` — the contributor's GitHub username (lowercased, as-is)
-- `<slug>` — short kebab-case name for this ontology (e.g. `supply-chain`, `hr-system`)
-
-### 2. Create the directory
-
-```bash
-mkdir -p catalogue/community/<github-username>/<slug>/
-```
-
-### 3. Place the RDF/OWL file
-
-Copy the file in and rename it `ontology.rdf` (or `ontology.owl`):
-
-```bash
-cp <source-file> catalogue/community/<github-username>/<slug>/ontology.rdf
-```
-
-### 4. Create `metadata.json`
-
-Required fields (`name`, `description`, `category`) — missing any one causes a
-compile error:
+Add `metadata.json` with the compiler's required string fields:
 
 ```json
 {
@@ -87,74 +36,38 @@ compile error:
 }
 ```
 
-**`category` must be one of:**
-`retail` | `healthcare` | `finance` | `manufacturing` | `education` | `food` | `media` | `events` | `general` | `school` | `fibo`
+The compiler derives the catalogue ID from the path. Do not add an `id` or
+other fields unless the schema and compiler have been updated first. Confirm
+the category against `scripts/compile-catalogue.ts` rather than copying a
+stale list into the skill.
 
-No extra fields are allowed (`additionalProperties: false` in the schema).
-The catalogue ID is derived from the filesystem path, so do **not** add an
-`id` field. The `fabric_forum_user_name` and `author_linkedin` fields are also
-not in the schema — omit them unless the schema is updated first.
+Accept submissions that add a reusable domain, workflow, teaching scenario, or
+other community value. Reject vanity-only, placeholder, and duplicate entries.
 
-### 4a. Person names in examples or sample data
+## Person names
 
-If you create, repair, or normalize sample instances, examples, docs, quests, or
-RDF/OWL literals that need person names, first use the `name-generator` skill.
-Do not invent customer, employee, patient, student, instructor, reviewer, or
-other human names.
+If the submission adds a person name to sample data, examples, docs, quests, or
+RDF/OWL literals, use [`name-generator`](../name-generator/SKILL.md) and its
+approved `FullName` CSV. Never invent a name.
 
-All new person names must come from the `FullName` column in:
+## Validation
 
-```text
-data/reference/FNF-2026-06-01-01002-0268.csv
-```
-
-### 5. Validate
+Run the focused catalogue checks when catalogue content is changed:
 
 ```bash
 npm run catalogue:build
+npm run validate
 ```
 
-Look for:
+Run the full application build only when the requested change also changes
+generated output or application behavior. Inspect the compiled entry for the
+expected `community/<github-username>/<slug>` ID and `source: "community"`.
 
-```
-✔ community/<slug>
-```
+## Completion
 
-If you see a compile error or the entry is absent, re-check:
-- Directory depth (username folder + slug subfolder both present?)
-- All three required fields in `metadata.json` (`name`, `description`, `category`)
-- Valid `category` value
-- No extra fields in `metadata.json`
-- Whether the submission is genuinely new and useful for the wider community
-
-### 6. Full build check
-
-```bash
-npm run build
-```
-
----
-
-## Common Mistakes (from real PRs)
-
-| Mistake | Effect | Fix |
-|---------|--------|-----|
-| Files at `community/<username>/` with no slug subfolder | Silently skipped — entry never appears | Add `<slug>/` subfolder |
-| Missing `name` field in `metadata.json` | Compile error | Add `"name": "..."` |
-| Invalid `category` value | Compile error | Use one of the allowed values |
-| Extra fields (`id`, `fabric_forum_user_name`, etc.) | Compile error (`additionalProperties`) | Remove the extra fields |
-| Ontology file named something other than `ontology.rdf/.owl` | Inconsistent with repo convention | Rename to `ontology.rdf` or `ontology.owl` |
-| Vanity-only or duplicate submission | Not accepted in review | Ask for a reusable domain model or reject |
-
----
-
-## Done Criteria
-
-- [ ] `npm run catalogue:build` outputs a successful community catalogue entry
-- [ ] `npm run build` passes with no TypeScript or Vite errors
-- [ ] Entry appears in `public/catalogue.json` with correct `name`, `description`, `category`
-- [ ] `source` field in compiled entry is `"community"`
-- [ ] Submission is new or materially different from existing catalogue entries
-- [ ] Submission has a clear reusable domain, workflow, or teaching value
-- [ ] Any person names introduced while preparing the contribution came from the
-  `name-generator` skill / approved CSV fixture
+- The path has both username and slug directories.
+- The source and metadata files are regular files and metadata has the
+  required fields.
+- The entry compiles, validates, and remains materially useful to the
+  community.
+- Any introduced person names are present in the approved CSV.

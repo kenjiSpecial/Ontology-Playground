@@ -1,64 +1,50 @@
 ---
 name: ontology-school-path-generator
-description: "Generate Ontology School course paths/labs with progressive step ontologies from source ontology material. Use when user asks to tutorialize an ontology into school lessons and per-step builds."
+description: "Turn source ontology material into an Ontology School course with progressive step ontologies, embeds, diffs, quizzes, and QA. Use when tutorialization is requested."
 ---
 
-# Ontology School Path Generator Skill
+# Ontology School Path Generator
 
-## Goal
+Use this skill only when the user asks to tutorialize ontology material into a
+course. Read the references that affect the requested output:
 
-Generate a complete Ontology School course with progressive ontology steps.
+- [`docs/authoring-guide.md`](../../../docs/authoring-guide.md)
+- [`docs/learn-content-guide.md`](../../../docs/learn-content-guide.md)
+- [`docs/embed-guide.md`](../../../docs/embed-guide.md)
+- An existing lab under `content/learn/` and its step ontologies
 
-## Read First
+## Course contract
 
-1. `docs/authoring-guide.md`
-2. `docs/learn-content-guide.md`
-3. `docs/embed-guide.md`
-4. Example lab:
-- `content/learn/iq-lab-retail-supply-chain/`
-- `catalogue/official/iq-lab-retail-step-1/`
+Extract a teachable subset, choose a progressive step count appropriate to the
+source (4–7 is the default), and place step ontologies under
+`catalogue/official/<slug>-step-N/` with `"category": "school"`. Create the
+course under `content/learn/<course-slug>/`, add `<ontology-embed>` elements and
+progressive `diff` blocks, and include at least one quiz per article by
+default. If the requested teaching design needs a different step or quiz
+pattern, use that explicit configuration and keep it covered by the QA
+validator.
 
-## Workflow
+If lesson content is pending approval, add
+`reviewStatus: under-human-review` to its frontmatter. Open or create the
+review Issue only when the user explicitly requests it or an authorized
+workflow grants that action; otherwise report the review-needed handoff.
 
-1. Extract a teachable subset from source ontology.
-2. Define step progression (4-7 steps).
-3. Create step ontologies under `catalogue/official/<slug>-step-N/`.
-4. Mark step ontologies with `"category": "school"`.
-5. Create course under `content/learn/<course-slug>/`.
-6. Add `<ontology-embed>` + `diff` for progressive steps.
-7. Include at least one quiz per article.
+## Person names
 
-## Person Names
+When course text, step ontologies, examples, sample data, quests, quizzes, or
+docs need person names, use [`name-generator`](../name-generator/SKILL.md) and
+the approved CSV. Keep selected names consistent across source markdown, RDF,
+generated output, and tests.
 
-If the course, step ontologies, examples, sample data, quests, quiz text, or docs
-need any person names, first use the `name-generator` skill. Do not invent
-customer, employee, patient, student, instructor, reviewer, or other human names.
+## Validation
 
-All generated person names must come from:
+When school content is changed, run:
 
-```text
-data/reference/FNF-2026-06-01-01002-0268.csv
+```bash
+npm run qa:tutorial-content
 ```
 
-Use the CSV `FullName` column by default, and keep selected names consistent
-across source markdown, RDF/OWL examples, generated catalogue data, and tests.
-
-## Validate
-
-- `npm run qa:tutorial-content`
-- `npm run build`
-
-## Human Review Flow
-
-If lesson content is not yet approved:
-
-- Add `reviewStatus: under-human-review` to article frontmatter
-- Open review issue via `.github/ISSUE_TEMPLATE/ontology-school-review.yml`
-
-## Done Criteria
-
-- Course renders in `/#/learn`
-- Step ontologies are isolated in School category
-- Any person names introduced by the lesson or sample data came from the
-  `name-generator` skill / approved CSV fixture
-- Builds and validators pass
+Run `npm run build` when generated catalogue/learning output or application
+behavior is part of the requested change. Completion means the course renders,
+step ontologies remain in the School category, embeds and quizzes pass QA, and
+any introduced names come from the approved fixture.

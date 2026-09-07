@@ -1,95 +1,62 @@
 ---
 name: theme-authoring
-description: "Add a new color theme to the Ontology Playground. Use when someone wants to create, author, or plug in a theme, palette, color scheme, dark mode, or light mode, or add an entry to the theme picker. Covers the appStore registration plus the CSS token block."
+description: "Add a registered Ontology Playground color theme across the picker and CSS token system, then verify contrast, persistence, and graph surfaces. Use for a new theme or palette."
 ---
 
-# Theme Authoring Skill
+# Theme Authoring
 
-## Goal
+Use this skill when adding a new theme entry. Read the architecture and current
+token blocks in:
 
-Plug a new color theme into the Playground so it appears in the header theme
-picker, is remembered across sessions, and themes every surface (main graph,
-designer preview, learn pages) — with no component or graph-rendering edits.
+1. [`docs/theme-authoring-guide.md`](../../../docs/theme-authoring-guide.md)
+2. [`src/store/appStore.ts`](../../../src/store/appStore.ts)
+3. [`src/styles/app.css`](../../../src/styles/app.css)
 
-## Read First
-
-1. [`docs/theme-authoring-guide.md`](../../../docs/theme-authoring-guide.md) — full architecture, token table, gotchas, worked example.
-2. [`src/store/appStore.ts`](../../../src/store/appStore.ts) — `ThemeId`, `THEME_OPTIONS`, `DARK_BASED_THEMES`, `isDarkTheme`, `themeClass`.
-3. [`src/styles/app.css`](../../../src/styles/app.css) — the `:root` / `.light-theme` / `.theme-aurora` / `.theme-crimson` token blocks (copy the nearest one).
-
-## Intake Questions
-
-Ask the user:
-
-1. Theme **id** (lowercase, e.g. `indigo`) and **display label** (e.g. `Indigo`)?
-2. **Dark-based or light-based?** (Determines `DARK_BASED_THEMES` membership and which block to copy.)
-3. **Accent / signature color** (used for the picker swatch and `--ms-blue*` / `--info`)?
-4. Any specific surface, text, or graph colors, or should they be derived from the accent?
+Ask only for theme decisions that are missing and materially affect the
+implementation: the id/label, light or dark basis, accent, or any explicit
+surface/text/graph colors. Reuse existing instructions and repository values
+when they are already provided.
 
 ## Procedure
 
-Make all edits in [`src/store/appStore.ts`](../../../src/store/appStore.ts) and
-[`src/styles/app.css`](../../../src/styles/app.css). The guide's
-"Add a theme in six steps" section has copy-paste snippets.
+Keep the change in `src/store/appStore.ts` and `src/styles/app.css`:
 
-1. Add the id to the `ThemeId` union.
-2. Add a `THEME_OPTIONS` entry: `{ id, label, swatch }` (swatch = accent hex).
-3. If **dark-based**, add the id to `DARK_BASED_THEMES`. If light-based, leave it out.
-4. Add a `themeClass()` case:
-   - dark-based → `return 'theme-<id>';`
-   - light-based → `return 'light-theme theme-<id>';` (layer over the light base).
-5. Add a `.theme-<id>` block in `app.css` by copying `.theme-aurora` (dark) or
-   `.theme-crimson` (light) and retuning the tokens.
-6. Verify (see below).
+1. Add the id to `ThemeId` and add its `{ id, label, swatch }` option.
+2. Register dark-based themes in `DARK_BASED_THEMES`; leave light themes out.
+3. Return `theme-<id>` for dark themes, or `light-theme theme-<id>` for light
+   themes, from `themeClass()`.
+4. Add the matching CSS token block by adapting the nearest existing theme.
 
-## Critical Rules
+## Non-negotiable visual rules
 
-- **Opaque canvas base for light themes.** `--chess-square-light` is the graph
-  canvas's solid backdrop. The theme class sits on `.app-container`, not `<body>`,
-  and `<body>` stays dark (`#1B1B1B`). A translucent `--chess-square-light` lets
-  the dark body bleed through → dark canvas + unreadable labels. Use an opaque
-  light color (e.g. `#FBF7F8`), not `rgba(..., 0.03)`. (Guide → Gotcha 1.)
-- **Graph colors are CSS-driven.** Define `--graph-bg`, `--graph-node-text`,
-  `--graph-edge-color`, `--graph-edge-text`, `--graph-edge-label-bg` in the
-  block; the graph and designer read them at runtime. No `.tsx` edits.
-- **Meet WCAG 2.1 AA contrast.** Text and labels need 4.5:1; graph edge lines and
-  other non-text need 3:1. Set `--on-accent` (label color on accent fills) to a
-  **dark** value for a **light** accent (white fails on Aurora's mint) and white
-  for a dark accent. Edge text must clear 4.5:1 against `--graph-edge-label-bg`.
-  Stat-tile icons/values (`--stat-blue/green/purple`) need 3:1 over the tint and
-  cascade automatically (bright from `:root`, dark from `.light-theme`). Amber
-  text/icons use `--ms-yellow-fg` (bright `#FFB900` on dark, dark gold `#8A6A00`
-  on light); the `.progress-fill` stops `--progress-from`/`--progress-to` each
-  need 3:1 on the `--bg-tertiary` track.
-  `npm run test:a11y` enforces this for every theme. (Guide → Accessibility.)
-- **Register dark themes** in `DARK_BASED_THEMES` so `darkMode` is correct
-  (graph fallback, label backplate, PNG export bg).
-- **Don't introduce brand names** in ids, labels, comments, or commits. Use
-  generic palette names (e.g. Aurora, Crimson, Indigo, Sand).
+- Light themes must give `--chess-square-light` an opaque light value. The
+  theme class is on `.app-container`, while `body` remains dark; translucency
+  makes the graph canvas unreadable.
+- Define `--graph-bg`, `--graph-node-text`, `--graph-edge-color`,
+  `--graph-edge-text`, and `--graph-edge-label-bg` in the theme block so the
+  graph and designer use the theme tokens.
+- Meet WCAG 2.1 AA: text/labels need 4.5:1, non-text graph lines need 3:1,
+  and edge text must clear 4.5:1 against its label background. Set
+  `--on-accent` for the accent's actual luminance, keep stat and amber token
+  contrast, and ensure progress-fill endpoints clear 3:1 against the track.
+- Keep dark-theme membership correct for graph fallbacks, label backplates,
+  and PNG export backgrounds.
+- Use generic palette names; do not introduce brand names in ids, labels,
+  comments, or commits.
 
-## Person Names
+## Verification
 
-If any example data, docs, or sample instances need person names, use the
-`name-generator` skill — do not invent names.
-
-## Validate
+Run the checks appropriate to the changed surface:
 
 ```bash
-npm run dev          # switch to the theme in the header; check graph, designer, learn pages
-npm run test:a11y    # WCAG 2.1 AA contrast for every theme (also a CI gate)
-npx tsc --noEmit     # the ThemeId union change is type-checked here
-npm run build        # full build
+npm run test:a11y
+npx tsc --noEmit
+npm run build
 ```
 
-If `npm run build` only changed `public/learn.json` (a timestamp), revert it:
-`git checkout -- public/learn.json`.
-
-## Done Criteria
-
-- New swatch + label appear in the picker; selection check mark tracks state.
-- Theme persists across reload (`localStorage['theme']`).
-- Main graph, designer preview, and learn pages are legible in the new theme;
-  the graph canvas backdrop matches the theme (Gotcha 1 satisfied).
-- Dark, Light, Aurora, Crimson unchanged.
-- `npm run test:a11y` passes (WCAG 2.1 AA contrast for the new theme).
-- `tsc --noEmit` and `npm run build` pass; no brand references introduced.
+For a visual change, switch the theme in the running app and inspect the main
+graph, designer preview, learn pages, picker persistence, and canvas backdrop.
+Preserve existing working-tree changes when inspecting generated build output;
+do not automatically checkout or restore files. Completion requires the new
+theme to be registered, persistent, legible, contrast-compliant, and unable
+to change the existing Dark, Light, Aurora, or Crimson behavior.

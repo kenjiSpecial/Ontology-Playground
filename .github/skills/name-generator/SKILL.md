@@ -1,106 +1,40 @@
 ---
 name: name-generator
-description: "Generate approved person names for examples, demos, quests, tests, docs, and sample data. Use when a task needs fictional person names, customer names, employee names, patient names, student names, instructor names, or other human names."
+description: "Select fictional person names from this repository's approved CSV for examples, demos, tests, docs, quests, and sample data. Use only when a task needs a human name."
 ---
 
-# Name Generator Skill
+# Name Generator
 
-## Goal
-
-Generate person names for this repository from the approved local name fixture:
+Use the repository fixture as the only source of fictional person names:
 
 ```text
 data/reference/FNF-2026-06-01-01002-0268.csv
 ```
 
-Do not invent person names. Every person name used in examples, sample data,
-quests, tests, demos, docs, or generated ontology content must come from the
-CSV `FullName` column.
+Read the `FullName` column by default. Use `FullNameNative` only when the user
+explicitly requests native-script or locale-specific display text. If the
+task does not specify a quantity, select the minimum number needed and keep
+each chosen name stable across its coupled examples, expected results, tests,
+and generated content.
 
-## Source File
-
-CSV columns:
-
-```text
-FirstName,LastName,FullName,FirstNameNative,LastNameNative,FullNameNative,Gender,Language
-```
-
-Use `FullName` by default. Use `FullNameNative` only when the user explicitly
-asks for native-script names or locale-specific display text.
-
-## Workflow
-
-### 1. Decide how many names are needed
-
-Identify the role and quantity from the task, for example:
-
-- sample customers
-- employees or managers
-- patients or clinicians
-- students or instructors
-- reviewers, approvers, assignees, or contributors
-
-If the task does not specify quantity, use the minimum number needed for the
-example or test.
-
-### 2. Read names from the CSV
-
-Use the CSV fixture as the only source. A quick shell-friendly way to inspect
-the first approved names is:
+For a quick inspection:
 
 ```bash
 awk -F, 'NR > 1 { print $3 }' data/reference/FNF-2026-06-01-01002-0268.csv | head
 ```
 
-For random sampling:
+Use a proper CSV parser if the fixture gains quoted fields containing commas.
+Choose distinct names for distinct entities and preserve the spelling in the
+fixture. Email addresses and IDs may remain generic.
 
-```bash
-awk -F, 'NR > 1 { print rand() "\t" $3 }' data/reference/FNF-2026-06-01-01002-0268.csv | sort -n | cut -f2- | head -n 5
-```
-
-If names with commas or quotes are ever added to the CSV, use a proper CSV
-parser instead of field splitting.
-
-### 3. Fit names to the scenario
-
-- Choose distinct names for distinct entities.
-- Keep the selected names stable within a scenario so queries, expected results,
-  docs, and sample instances stay consistent.
-- Do not alter spellings unless the surrounding file has a strict ASCII-only
-  convention. If ASCII is required, choose names from the CSV that are already
-  ASCII-compatible.
-- Email addresses and IDs may be generic (`customer001@example.com`) and do not
-  need to use the person's name.
-
-### 4. Update all dependent examples
-
-When replacing a name in code or content, update every coupled surface:
-
-- sample instances
-- query prompts and curated query matches
-- expected test strings
-- rendered docs or generated content source files
-- catalogue examples or learning materials
-
-Regenerate compiled artifacts when source content changes:
-
-```bash
-npm run catalogue:build
-npm run learn:build
-```
+When replacing a name, update the dependent sample instances, prompts,
+expected strings, docs, and generated sources that belong to the same task.
+Regenerate catalogue or learning output only when those sources changed.
 
 ## Validation
 
-Before finishing a name-generation or name-replacement task:
-
-1. Verify each selected name appears in the CSV `FullName` column.
-2. Search for removed placeholder names to ensure no stale references remain.
-3. Run focused tests for touched code paths.
-4. Run `npm run build` when generated catalogue or learning output changes.
-
-## Done Criteria
-
-- [ ] All person names used by the task come from `data/reference/FNF-2026-06-01-01002-0268.csv`.
-- [ ] No invented placeholder names remain in the touched examples.
-- [ ] Related prompts, sample data, expected results, and tests are consistent.
-- [ ] Relevant tests or build commands have passed, or any skipped validation is clearly reported.
+- Verify each selected name is in the chosen CSV column: `FullName` by default,
+  or `FullNameNative` only when that display was explicitly requested.
+- Search for stale removed names when this is a replacement task.
+- Run focused tests for changed code paths.
+- Run the relevant build when generated catalogue or learning output changed.
